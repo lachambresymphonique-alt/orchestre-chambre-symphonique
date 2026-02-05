@@ -4,6 +4,7 @@ import { FadeIn } from '@/components/FadeIn';
 import { ImagePlaceholder } from '@/components/PlaceholderIcon';
 import { MediaTabs } from '@/components/MediaTabs';
 import { getPayloadClient } from '@/lib/payload';
+import { RefreshOnSave } from '@/components/RefreshOnSave';
 
 export const metadata: Metadata = {
   title: 'Médias — La Chambre Symphonique',
@@ -100,6 +101,7 @@ export default async function Medias() {
 
   return (
     <>
+      <RefreshOnSave />
       {/* PAGE HEADER */}
       <div className="page-header">
         <div className="container">

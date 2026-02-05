@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { FadeIn } from '@/components/FadeIn';
 import { PersonPlaceholder } from '@/components/PlaceholderIcon';
 import { getPayloadClient } from '@/lib/payload';
+import { RefreshOnSave } from '@/components/RefreshOnSave';
 
 export const metadata: Metadata = {
   title: 'Musiciens — La Chambre Symphonique',
@@ -40,6 +41,7 @@ export default async function Musiciens() {
 
   return (
     <>
+      <RefreshOnSave />
       {/* PAGE HEADER */}
       <div className="page-header">
         <div className="container">
