@@ -2,6 +2,7 @@ import { buildConfig } from 'payload';
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob';
+import { fr } from '@payloadcms/translations/languages/fr';
 import sharp from 'sharp';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -30,8 +31,10 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     meta: {
-      titleSuffix: ' — Chambre Symphonique',
+      titleSuffix: ' — La Chambre Symphonique',
+      description: 'Panneau d\'administration du site de La Chambre Symphonique',
     },
+    avatar: 'default',
   },
 
   collections: [
@@ -46,6 +49,11 @@ export default buildConfig({
   ],
 
   globals: [SiteSettings, HomePage, AboutPage, SupportPage],
+
+  i18n: {
+    supportedLanguages: { fr },
+    fallbackLanguage: 'fr',
+  },
 
   editor: lexicalEditor(),
 

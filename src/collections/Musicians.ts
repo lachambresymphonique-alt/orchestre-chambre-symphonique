@@ -2,17 +2,30 @@ import type { CollectionConfig } from 'payload';
 
 export const Musicians: CollectionConfig = {
   slug: 'musicians',
-  admin: { useAsTitle: 'name' },
+  labels: { singular: 'Musicien', plural: 'Musiciens' },
+  admin: {
+    useAsTitle: 'name',
+    group: 'Contenu',
+    description: 'Membres de l\'orchestre, classés par section.',
+    defaultColumns: ['name', 'instrument', 'section'],
+  },
   defaultSort: 'order',
   fields: [
-    { name: 'name', type: 'text', required: true, label: 'Nom' },
-    { name: 'role', type: 'text', required: true, label: 'Rôle' },
+    { name: 'name', type: 'text', required: true, label: 'Nom complet' },
+    {
+      name: 'role',
+      type: 'text',
+      required: true,
+      label: 'Rôle',
+      admin: { description: 'Ex : « Directeur artistique », « Violoniste »' },
+    },
     { name: 'instrument', type: 'text', label: 'Instrument' },
     {
       name: 'section',
       type: 'select',
       required: true,
       label: 'Section',
+      admin: { description: 'Détermine le regroupement sur la page Musiciens.' },
       options: [
         { label: 'Direction artistique', value: 'direction' },
         { label: 'Cordes', value: 'cordes' },
@@ -26,7 +39,8 @@ export const Musicians: CollectionConfig = {
       type: 'number',
       required: true,
       defaultValue: 0,
-      admin: { position: 'sidebar' },
+      label: 'Ordre d\'affichage',
+      admin: { position: 'sidebar', description: 'Plus petit = affiché en premier.' },
     },
   ],
 };
