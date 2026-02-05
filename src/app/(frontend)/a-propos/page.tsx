@@ -5,9 +5,9 @@ import { ImagePlaceholder } from '@/components/PlaceholderIcon';
 import { getPayloadClient } from '@/lib/payload';
 
 export const metadata: Metadata = {
-  title: 'À propos — Orchestre de la Chambre Symphonique',
+  title: 'À propos — La Chambre Symphonique',
   description:
-    "Découvrez l'histoire, la mission et les valeurs de l'Orchestre de la Chambre Symphonique.",
+    "Découvrez l'histoire de La Chambre Symphonique, orchestre fondé en 2017 par Loïc Emmelin, et son parcours de violoniste et chef d'orchestre.",
 };
 
 export default async function APropos() {
@@ -31,8 +31,8 @@ export default async function APropos() {
           </p>
           <h1>À propos de l&apos;orchestre</h1>
           <p>
-            Une aventure musicale collective portée par la passion, l&apos;exigence et
-            le partage.
+            Un orchestre fondé en 2017 par Loïc Emmelin, porté par la passion
+            et l&apos;ambition du répertoire symphonique.
           </p>
         </div>
       </div>

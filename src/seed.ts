@@ -13,7 +13,7 @@ async function seed() {
   await payload.create({
     collection: 'users',
     data: {
-      email: 'admin@chambre-symphonique.fr',
+      email: 'admin@lachambresymphonique.fr',
       password: 'changeme123',
       name: 'Admin',
     },
@@ -25,31 +25,49 @@ async function seed() {
   console.log('Creating concerts...')
   const concerts = [
     {
-      day: '14',
-      monthYear: 'Mars 2026',
-      title: 'Les Quatre Saisons revisitées',
-      venue: 'Salle Gaveau, Paris',
-      program: 'Vivaldi, Piazzolla, Glass — Direction : Marie Laurent',
-      bookingLink: '#',
+      day: '13',
+      monthYear: 'Juin 2025',
+      title: 'Grande Messe en ut mineur — Mozart',
+      venue: 'Abbaye Saint-Philibert, Tournus',
+      program: 'Mozart, Messe en ut mineur K.427 — Avec le Chœur Opus 71, dir. Christian Garneret',
+      bookingLink: 'https://www.helloasso.com/associations/la-chambre-symphonique',
       order: 1,
     },
     {
-      day: '28',
-      monthYear: 'Mars 2026',
-      title: 'Mozart & Beethoven',
-      venue: 'Théâtre des Champs-Élysées, Paris',
-      program: 'Symphonie n°40, Quatuor op. 18 — Direction : Jean Dufour',
-      bookingLink: '#',
+      day: '14',
+      monthYear: 'Juin 2025',
+      title: 'Grande Messe en ut mineur — Mozart',
+      venue: 'Église Saint-Cosme, Chalon-sur-Saône',
+      program: 'Mozart, Messe en ut mineur K.427 — Avec le Chœur Opus 71, dir. Christian Garneret',
+      bookingLink: 'https://www.helloasso.com/associations/la-chambre-symphonique',
       order: 2,
     },
     {
-      day: '12',
-      monthYear: 'Avril 2026',
-      title: 'Soirée Romantique',
-      venue: 'Philharmonie de Paris',
-      program: 'Schubert, Brahms, Schumann — Soliste : Claire Dubois, piano',
-      bookingLink: '#',
+      day: '15',
+      monthYear: 'Juin 2025',
+      title: 'Grande Messe en ut mineur — Mozart',
+      venue: 'Basilique Notre-Dame, Beaune',
+      program: 'Mozart, Messe en ut mineur K.427 — Avec le Chœur Opus 71, dir. Christian Garneret',
+      bookingLink: 'https://www.helloasso.com/associations/la-chambre-symphonique',
       order: 3,
+    },
+    {
+      day: '8',
+      monthYear: 'Août 2025',
+      title: 'Mouvements Symphoniques — Musiques pour la danse',
+      venue: 'La Commanderie, Dôle',
+      program: 'Debussy — Prélude à l\'après-midi d\'un faune, Prokofiev — Roméo et Juliette Suite n°2, Ravel — Valse & Boléro',
+      bookingLink: 'https://www.helloasso.com/associations/la-chambre-symphonique',
+      order: 4,
+    },
+    {
+      day: '10',
+      monthYear: 'Août 2025',
+      title: 'Mouvements Symphoniques — Musiques pour la danse',
+      venue: 'Église de Saint-Marcel, Cluny — Grandes Heures de Cluny',
+      program: 'Debussy — Prélude à l\'après-midi d\'un faune, Prokofiev — Roméo et Juliette Suite n°2, Ravel — Valse & Boléro',
+      bookingLink: 'https://www.grandesheuresdecluny.com',
+      order: 5,
     },
   ]
 
@@ -63,27 +81,7 @@ async function seed() {
   console.log('Creating musicians...')
   const musicians = [
     // Direction
-    { name: 'Marie Laurent', role: "Directrice artistique & Chef d'orchestre", section: 'direction' as const, order: 1 },
-    { name: 'Jean Dufour', role: "Chef d'orchestre associé", section: 'direction' as const, order: 2 },
-    // Cordes
-    { name: 'Isabelle Moreau', role: 'Premier violon solo', instrument: 'Violon', section: 'cordes' as const, order: 3 },
-    { name: 'Antoine Berger', role: 'Second violon solo', instrument: 'Violon', section: 'cordes' as const, order: 4 },
-    { name: 'Sophie Chen', role: 'Alto solo', instrument: 'Alto', section: 'cordes' as const, order: 5 },
-    { name: 'Thomas Petit', role: 'Violoncelle solo', instrument: 'Violoncelle', section: 'cordes' as const, order: 6 },
-    { name: 'Nicolas Fabre', role: 'Contrebasse solo', instrument: 'Contrebasse', section: 'cordes' as const, order: 7 },
-    { name: 'Léa Martin', role: 'Tuttiste', instrument: 'Violon', section: 'cordes' as const, order: 8 },
-    { name: 'Paul Richard', role: 'Tuttiste', instrument: 'Violon', section: 'cordes' as const, order: 9 },
-    { name: 'Émilie Roux', role: 'Tuttiste', instrument: 'Alto', section: 'cordes' as const, order: 10 },
-    // Vents
-    { name: 'Claire Dubois', role: 'Flûte solo', instrument: 'Flûte traversière', section: 'vents' as const, order: 11 },
-    { name: 'Marc Leroy', role: 'Hautbois solo', instrument: 'Hautbois', section: 'vents' as const, order: 12 },
-    { name: 'Julie Perrin', role: 'Clarinette solo', instrument: 'Clarinette', section: 'vents' as const, order: 13 },
-    { name: 'Alexandre Simon', role: 'Basson solo', instrument: 'Basson', section: 'vents' as const, order: 14 },
-    { name: 'David Mercier', role: 'Cor solo', instrument: "Cor d'harmonie", section: 'vents' as const, order: 15 },
-    // Claviers
-    { name: 'Hélène Garnier', role: 'Pianiste', instrument: 'Piano', section: 'claviers' as const, order: 16 },
-    { name: 'Lucas Bernard', role: 'Claveciniste', instrument: 'Clavecin', section: 'claviers' as const, order: 17 },
-    { name: 'Raphaël Blanc', role: 'Percussionniste', instrument: 'Timbales & Percussions', section: 'claviers' as const, order: 18 },
+    { name: 'Loïc Emmelin', role: "Fondateur, Directeur artistique & Chef d'orchestre", section: 'direction' as const, order: 1 },
   ]
 
   for (const musician of musicians) {
@@ -98,46 +96,39 @@ async function seed() {
     // Videos
     {
       type: 'video' as const,
-      title: 'Concert intégral — Les Quatre Saisons',
-      description: 'Vivaldi, interprété en formation de chambre. Salle Gaveau, Paris.',
-      date: 'Décembre 2025',
+      title: 'L\'aube sur la rivière Moskova — Moussorgski',
+      description: 'Prologue de l\'Acte I de La Khovanchtchina. La Chambre Symphonique, dir. Loïc Emmelin.',
+      date: '2024',
       order: 1,
     },
     {
       type: 'video' as const,
-      title: "Documentaire — Coulisses de l'orchestre",
-      description: 'Un regard intime sur la vie quotidienne des musiciens et le processus de création.',
-      date: 'Octobre 2025',
+      title: 'Simple Symphony — Benjamin Britten',
+      description: 'Mouvements 3 et 4. La Chambre Symphonique, dir. Loïc Emmelin.',
+      date: '2022',
       order: 2,
-    },
-    {
-      type: 'video' as const,
-      title: "Masterclass — L'art du quatuor à cordes",
-      description: 'Marie Laurent partage sa vision de la musique de chambre avec de jeunes musiciens.',
-      date: 'Septembre 2025',
-      order: 3,
     },
     // Audio
     {
       type: 'audio' as const,
-      title: 'Beethoven — Quatuors op. 18',
-      description: "Intégrale des quatuors à cordes opus 18. Enregistré au Studio de Meudon.",
-      date: '2024 — Album',
+      title: 'Shéhérazade — Rimski-Korsakov',
+      description: 'Concert symphonique, février 2025. La Chambre Symphonique, dir. Loïc Emmelin.',
+      date: 'Février 2025',
+      order: 3,
+    },
+    {
+      type: 'audio' as const,
+      title: 'Le Lac des cygnes — Tchaïkovski',
+      description: 'Suite du ballet. Cathédrale Saint-Vincent, Chalon-sur-Saône, juin 2023.',
+      date: 'Juin 2023',
       order: 4,
     },
     {
       type: 'audio' as const,
-      title: 'Schubert — La Truite',
-      description: 'Quintette en la majeur, D. 667. Enregistrement live au Festival de Verbier.',
-      date: '2023 — Album',
+      title: 'Une nuit sur le Mont Chauve — Moussorgski',
+      description: 'Cathédrale Saint-Vincent, Chalon-sur-Saône, juin 2023.',
+      date: 'Juin 2023',
       order: 5,
-    },
-    {
-      type: 'audio' as const,
-      title: 'Debussy & Ravel — Quatuors',
-      description: 'Les deux quatuors à cordes emblématiques du répertoire français.',
-      date: '2022 — Album',
-      order: 6,
     },
   ]
 
@@ -150,14 +141,13 @@ async function seed() {
   // ──────────────────────────────────────────────
   console.log('Creating partners...')
   const partners = [
-    { name: 'Ministère de la Culture', order: 1 },
-    { name: 'Région Île-de-France', order: 2 },
-    { name: 'Ville de Paris', order: 3 },
-    { name: 'Fondation pour la Musique', order: 4 },
-    { name: 'Sacem', order: 5 },
-    { name: 'France Musique', order: 6 },
-    { name: 'Mécénat Musical', order: 7 },
-    { name: 'Philharmonie de Paris', order: 8 },
+    { name: 'Grandes Heures de Cluny', order: 1 },
+    { name: 'Chœur Opus 71', order: 2 },
+    { name: 'Athina Culture Comm', order: 3 },
+    { name: 'Conservatoire de Chalon-sur-Saône', order: 4 },
+    { name: 'CNSMD de Lyon', order: 5 },
+    { name: 'HelloAsso', order: 6 },
+    { name: 'BFC Classique', order: 7 },
   ]
 
   for (const partner of partners) {
@@ -170,40 +160,34 @@ async function seed() {
   console.log('Creating timeline events...')
   const timelineEvents = [
     {
-      year: '2010',
+      year: '2017',
       description:
-        "Fondation de l'Orchestre de la Chambre Symphonique par Marie Laurent et un groupe de musiciens partageant la même vision artistique. Premier concert à la Salle Cortot.",
+        "Fondation de La Chambre Symphonique par Loïc Emmelin, chef d'orchestre atypique, violoniste de formation et docteur en sciences. L'association voit le jour avec l'ambition de rassembler des musiciens passionnés autour du répertoire symphonique.",
       order: 1,
     },
     {
-      year: '2013',
+      year: '2018',
       description:
-        "Première résidence artistique au Festival d'Aix-en-Provence. L'orchestre commence à se faire remarquer par la critique pour ses interprétations audacieuses.",
+        "Premier concert en février 2018. Loïc Emmelin devient chef assistant de Fabrice Pierre pour l'Atelier XX-21 de musique contemporaine au CNSMD de Lyon.",
       order: 2,
-    },
-    {
-      year: '2016',
-      description:
-        'Lancement du programme de médiation culturelle "Musique pour Tous" dans les écoles d\'Île-de-France. Plus de 5 000 élèves touchés dès la première année.',
-      order: 3,
-    },
-    {
-      year: '2019',
-      description:
-        'Premier enregistrement discographique consacré aux quatuors de Beethoven, salué par la presse spécialisée. Tournée européenne dans 12 pays.',
-      order: 4,
     },
     {
       year: '2022',
       description:
-        'Installation dans la nouvelle salle de répétition au coeur de Paris. Début de la collaboration avec la Philharmonie de Paris pour la saison "Nouvelles Voix".',
-      order: 5,
+        "L'orchestre poursuit son développement avec des programmes de plus en plus ambitieux, interprétant notamment la Simple Symphony de Benjamin Britten.",
+      order: 3,
+    },
+    {
+      year: '2023',
+      description:
+        "Concert de fin de saison à la Cathédrale Saint-Vincent de Chalon-sur-Saône avec un programme autour de Tchaïkovski (Le Lac des cygnes), Saint-Saëns, Moussorgski (Une nuit sur le Mont Chauve) et Offenbach.",
+      order: 4,
     },
     {
       year: '2025',
       description:
-        "Célébration des 15 ans de l'orchestre avec une saison exceptionnelle mêlant grands classiques et créations mondiales. Lancement de la plateforme de concerts en ligne.",
-      order: 6,
+        "Saison riche avec Shéhérazade de Rimski-Korsakov en février, la Grande Messe en ut mineur de Mozart avec le Chœur Opus 71 en juin, et les Grandes Heures de Cluny en août avec un programme dédié aux musiques pour la danse (Debussy, Prokofiev, Ravel).",
+      order: 5,
     },
   ]
 
@@ -217,30 +201,30 @@ async function seed() {
   console.log('Creating support tiers...')
   const supportTiers = [
     {
-      name: 'Cercle Allegro',
-      minAmount: 50,
+      name: 'Adhérent',
+      minAmount: 10,
       description:
-        'Recevez notre lettre exclusive, des invitations aux répétitions ouvertes et votre nom au programme de saison.',
-      ctaText: 'Rejoindre',
-      ctaLink: '#',
+        "Devenez membre de l'association et recevez en avant-première les informations sur nos concerts, nos projets et la vie de l'orchestre.",
+      ctaText: 'Adhérer',
+      ctaLink: 'https://www.helloasso.com/associations/la-chambre-symphonique/adhesions/2025-adhesion-a-la-chambre-symphonique-1',
       highlighted: false,
       order: 1,
     },
     {
-      name: 'Cercle Vivace',
-      minAmount: 200,
+      name: 'Donateur',
+      minAmount: 50,
       description:
-        'En plus des avantages Allegro : places privilégiées, rencontre avec les artistes après concert, accès aux événements privés.',
-      ctaText: 'Rejoindre',
-      ctaLink: '#',
+        "Soutenez financièrement l'orchestre et contribuez à la réalisation de nos concerts et de nos actions de médiation. Chaque don compte et permet de faire vivre la musique symphonique.",
+      ctaText: 'Faire un don',
+      ctaLink: 'https://www.helloasso.com/associations/la-chambre-symphonique',
       highlighted: true,
       order: 2,
     },
     {
-      name: 'Cercle Maestoso',
-      minAmount: 1000,
+      name: 'Mécène',
+      minAmount: 500,
       description:
-        'Tous les avantages précédents, plus : dîner annuel avec la direction, mention sur nos supports de communication, accès VIP à tous nos événements.',
+        "Entreprises et particuliers, devenez mécènes de La Chambre Symphonique. Bénéficiez d'une visibilité privilégiée et contribuez au rayonnement de la musique symphonique en Bourgogne et en Rhône-Alpes.",
       ctaText: 'Nous contacter',
       ctaLink: '/contact',
       highlighted: false,
@@ -260,24 +244,22 @@ async function seed() {
     slug: 'site-settings',
     data: {
       contact: {
-        address: '12 Rue de la Musique\n75008 Paris, France',
-        email: 'contact@chambre-symphonique.fr',
-        phone: '+33 1 42 00 00 00',
+        address: 'Bourgogne — Rhône-Alpes\nFrance',
+        email: 'contact@lachambresymphonique.fr',
+        phone: '',
       },
       social: {
-        facebook: '#',
-        instagram: '#',
+        facebook: 'https://www.facebook.com/lachambresymphonique',
+        instagram: 'https://www.instagram.com/lachambresymphonique/',
         youtube: '#',
-        linkedin: '#',
-        tiktok: '#',
+        linkedin: 'https://www.linkedin.com/company/la-chambre-symphonique',
+        tiktok: '',
       },
       hours: [
-        { label: 'Lundi — Vendredi', hours: '9h00 — 18h00' },
-        { label: 'Samedi', hours: '10h00 — 13h00' },
-        { label: 'Dimanche', hours: 'Fermé' },
+        { label: 'Association bénévole', hours: 'Contactez-nous par email' },
       ],
       footerDescription:
-        "L'Orchestre de la Chambre Symphonique est un ensemble musical d'excellence dédié à la musique de chambre et symphonique.",
+        "La Chambre Symphonique est un orchestre fondé en 2017 par Loïc Emmelin, rassemblant plus de 80 musiciens — professionnels, futurs professionnels et amateurs éclairés — autour de la passion du répertoire symphonique.",
     },
   })
 
@@ -289,11 +271,11 @@ async function seed() {
     slug: 'home-page',
     data: {
       hero: {
-        subtitle: 'Saison 2025 — 2026',
-        titleLine1: "L'émotion de la musique",
-        titleLine2Italic: 'de chambre',
+        subtitle: 'Orchestre symphonique',
+        titleLine1: 'La Chambre',
+        titleLine2Italic: 'Symphonique',
         description:
-          "Un ensemble d'artistes passionnés au service d'un répertoire riche et exigeant, de la musique baroque aux créations contemporaines.",
+          "Plus de 80 musiciens réunis par la passion du répertoire symphonique. Un orchestre jeune et ambitieux, acteur de la vitalité de la musique orchestrale en Bourgogne et en Rhône-Alpes.",
         ctaPrimaryText: 'Prochains concerts',
         ctaPrimaryLink: '#concerts',
         ctaSecondaryText: "Découvrir l'orchestre",
@@ -301,18 +283,18 @@ async function seed() {
       },
       presentation: {
         subtitle: 'Notre histoire',
-        title: "Un orchestre au service\nde l'excellence musicale",
+        title: "Un orchestre au service\nde la musique symphonique",
         paragraphs:
-          "Fondé en 2010, l'Orchestre de la Chambre Symphonique réunit des musiciens d'exception autour d'une vision commune : rendre la musique de chambre accessible à tous, sans jamais compromettre l'exigence artistique.\n\nDe la musique baroque aux compositions contemporaines, notre répertoire témoigne d'une curiosité insatiable et d'un amour profond pour toutes les formes d'expression musicale.",
+          "Fondée en 2017, La Chambre Symphonique rassemble des étudiants de conservatoires français, suisses et belges, des amateurs éclairés et de jeunes musiciens professionnels qui se retrouvent pour partager leur passion avec le plus grand nombre.\n\nNous avons volontairement voulu ouvrir les portes de l'orchestre à tous ceux qui voulaient jouer et surtout bien jouer. La Chambre Symphonique se veut un acteur de la vitalité de la musique orchestrale, en stimulant le développement et l'exploration du répertoire symphonique à travers un langage musical tourné vers le public, pour que chaque concert soit toujours une rencontre.",
         ctaText: 'En savoir plus',
         ctaLink: '/a-propos',
-        signature: '— Marie Laurent, Directrice artistique',
+        signature: '— Loïc Emmelin, Fondateur & Directeur artistique',
       },
       newsletter: {
         subtitle: 'Restez informé',
-        title: 'Être informé des prochains concerts',
+        title: 'Suivez nos prochains concerts',
         description:
-          "Inscrivez-vous à notre lettre d'information pour recevoir en avant-première nos dates de concert, nos actualités et nos offres exclusives.",
+          "Inscrivez-vous à notre lettre d'information pour recevoir en avant-première nos dates de concert, nos actualités et nos projets.",
       },
     },
   })
@@ -325,16 +307,16 @@ async function seed() {
     slug: 'about-page',
     data: {
       intro: {
-        subtitle: 'Notre mission',
-        title: 'Porter la musique de chambre\nau plus grand nombre',
+        subtitle: 'Qui sommes-nous',
+        title: 'Un orchestre jeune\net ambitieux',
         content:
-          "L'Orchestre de la Chambre Symphonique est né d'une conviction profonde : la musique classique n'est pas un art élitiste, mais un langage universel capable de toucher chaque individu, quelle que soit son origine ou sa culture.\n\nDepuis sa création en 2010, notre ensemble réunit des musiciens issus des plus grandes formations européennes, unis par une même passion : offrir des interprétations vibrantes qui honorent le répertoire tout en le rendant vivant et accessible.\n\nNotre approche artistique mêle rigueur d'interprétation et ouverture d'esprit. Nous explorons avec la même ferveur les chefs-d'oeuvre du répertoire classique et les créations contemporaines, convaincus que la tradition se nourrit de l'innovation.\n\nAu-delà des concerts, nous menons un important travail de médiation culturelle auprès des publics scolaires, hospitaliers et des territoires éloignés de l'offre culturelle. Car la musique prend tout son sens lorsqu'elle est partagée.",
+          "La Chambre Symphonique est un orchestre fondé en 2017 par le chef d'orchestre Loïc Emmelin. Constitué de jeunes musiciens professionnels ou en voie de professionnalisation, l'orchestre est reconnu pour son sérieux, sa joie de vivre et des programmes toujours plus ambitieux.\n\nSelon les œuvres, l'orchestre réunit de 40 à 80 musiciens issus de conservatoires supérieurs ou régionaux de France, de Suisse et de Belgique, d'amateurs éclairés ou de jeunes musiciens professionnels.\n\nInitialement violoniste dans la classe de Martine Lecointre au Conservatoire de Givors, Loïc Emmelin a été initié à la direction d'orchestre par Philippe Fournier, avant de se perfectionner pendant six ans au Conservatoire Régional de Chalon-sur-Saône dans la classe de Philippe Cambreling, puis au Conservatoire Frédéric Chopin de Paris dans la classe d'Adrian McDonnell.\n\nDepuis 2018, il est chef assistant de Fabrice Pierre pour les productions de l'Atelier XX-21 au CNSMD de Lyon, et a été plus récemment chef assistant de Benjamin Levy auprès de l'Orchestre National de Cannes, de l'Ensemble Pelléas et de l'Opéra National de Lyon.",
       },
       stats: [
-        { number: '35', label: 'Musiciens' },
-        { number: '80+', label: 'Concerts par an' },
-        { number: '15', label: "Années d'existence" },
-        { number: '50k', label: 'Spectateurs par an' },
+        { number: '80+', label: 'Musiciens' },
+        { number: '7', label: "Années d'existence" },
+        { number: '2017', label: 'Année de fondation' },
+        { number: '40-80', label: 'Musiciens par concert' },
       ],
     },
   })
@@ -348,24 +330,24 @@ async function seed() {
     data: {
       supportTypes: [
         {
-          title: 'Faire un don',
+          title: 'Adhérer à l\'association',
           description:
-            'Chaque contribution, quelle que soit sa taille, permet de soutenir nos concerts, nos actions de médiation et la rémunération de nos artistes. Les dons sont déductibles des impôts.',
-          ctaText: 'Faire un don',
-          ctaLink: '#',
+            "Rejoignez l'aventure en devenant membre de La Chambre Symphonique. Votre adhésion soutient directement notre fonctionnement et vous donne accès à l'actualité de l'orchestre en avant-première.",
+          ctaText: 'Adhérer sur HelloAsso',
+          ctaLink: 'https://www.helloasso.com/associations/la-chambre-symphonique/adhesions/2025-adhesion-a-la-chambre-symphonique-1',
         },
         {
-          title: 'Devenir mécène',
+          title: 'Faire un don',
           description:
-            'Entreprises et particuliers, le mécénat vous offre une visibilité privilégiée auprès de notre public tout en contribuant au rayonnement culturel. Avantages fiscaux attractifs.',
-          ctaText: 'Nous contacter',
-          ctaLink: '/contact',
+            "Chaque contribution, quelle que soit sa taille, permet de financer nos concerts, la location de salles, l'achat de partitions et nos actions de médiation. L'association fonctionne grâce au bénévolat et vos dons sont essentiels.",
+          ctaText: 'Faire un don',
+          ctaLink: 'https://www.helloasso.com/associations/la-chambre-symphonique',
         },
         {
           title: 'Devenir bénévole',
           description:
-            "Rejoignez notre équipe de bénévoles pour l'accueil du public, la logistique des concerts ou l'organisation d'événements. Une expérience humaine et culturelle unique.",
-          ctaText: "Rejoindre l'équipe",
+            "L'association qui régit La Chambre Symphonique repose sur le bénévolat. Rejoignez notre équipe pour l'accueil du public, la logistique des concerts, la communication ou l'organisation d'événements.",
+          ctaText: 'Nous contacter',
           ctaLink: '/contact',
         },
       ],
@@ -373,7 +355,7 @@ async function seed() {
         subtitle: 'Avantage fiscal',
         title: 'Votre don est déductible',
         description:
-          "L'Orchestre de la Chambre Symphonique est reconnu d'intérêt général. À ce titre, vos dons ouvrent droit à une réduction d'impôt.",
+          "La Chambre Symphonique est une association d'intérêt général. À ce titre, vos dons ouvrent droit à une réduction d'impôt.",
         individualRate: '66%',
         corporateRate: '60%',
         example:

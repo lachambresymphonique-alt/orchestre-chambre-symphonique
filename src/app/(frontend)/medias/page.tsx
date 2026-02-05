@@ -6,9 +6,9 @@ import { MediaTabs } from '@/components/MediaTabs';
 import { getPayloadClient } from '@/lib/payload';
 
 export const metadata: Metadata = {
-  title: 'Médias — Orchestre de la Chambre Symphonique',
+  title: 'Médias — La Chambre Symphonique',
   description:
-    "Vidéos, enregistrements et galerie photos de l'Orchestre de la Chambre Symphonique.",
+    "Vidéos, enregistrements et galerie photos de La Chambre Symphonique, orchestre dirigé par Loïc Emmelin.",
 };
 
 function PlayIcon() {

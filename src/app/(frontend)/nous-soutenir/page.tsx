@@ -4,9 +4,9 @@ import { FadeIn } from '@/components/FadeIn';
 import { getPayloadClient } from '@/lib/payload';
 
 export const metadata: Metadata = {
-  title: 'Nous soutenir — Orchestre de la Chambre Symphonique',
+  title: 'Nous soutenir — La Chambre Symphonique',
   description:
-    "Soutenez l'Orchestre de la Chambre Symphonique par un don, du mécénat ou du bénévolat.",
+    "Soutenez La Chambre Symphonique par une adhésion, un don ou du bénévolat. Association bénévole d'intérêt général.",
 };
 
 export default async function NousSoutenir() {

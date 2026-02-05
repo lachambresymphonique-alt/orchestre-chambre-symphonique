@@ -46,7 +46,7 @@ export function Header() {
             <LogoSvg />
           </div>
           <div className="logo-text">
-            <span className="name">Chambre Symphonique</span>
+            <span className="name">La Chambre Symphonique</span>
             <span className="subtitle">Orchestre</span>
           </div>
         </Link>

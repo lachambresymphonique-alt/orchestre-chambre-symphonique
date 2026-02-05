@@ -16,10 +16,10 @@ interface FooterProps {
 export function Footer({ settings }: FooterProps) {
   const description =
     settings?.description ||
-    "L'Orchestre de la Chambre Symphonique est un ensemble musical d'excellence dédié à la musique de chambre et symphonique.";
-  const email = settings?.contact?.email || 'contact@chambre-symphonique.fr';
-  const phone = settings?.contact?.phone || '+33 1 42 00 00 00';
-  const address = settings?.contact?.address || '12 Rue de la Musique\n75008 Paris, France';
+    "La Chambre Symphonique est un orchestre fondé en 2017 par Loïc Emmelin, rassemblant plus de 80 musiciens autour de la passion du répertoire symphonique.";
+  const email = settings?.contact?.email || 'contact@lachambresymphonique.fr';
+  const phone = settings?.contact?.phone || '';
+  const address = settings?.contact?.address || 'Bourgogne — Rhône-Alpes\nFrance';
 
   return (
     <footer className="footer">
@@ -31,7 +31,7 @@ export function Footer({ settings }: FooterProps) {
                 <LogoSvg color="#E8D48B" />
               </div>
               <div className="logo-text">
-                <span className="name">Chambre Symphonique</span>
+                <span className="name">La Chambre Symphonique</span>
                 <span className="subtitle">Orchestre</span>
               </div>
             </Link>
@@ -72,14 +72,14 @@ export function Footer({ settings }: FooterProps) {
             <h4>Contact</h4>
             <div className="footer-links">
               <a href={`mailto:${email}`}>{email}</a>
-              <a href={`tel:${phone.replace(/\s/g, '')}`}>{phone}</a>
+              {phone && <a href={`tel:${phone.replace(/\s/g, '')}`}>{phone}</a>}
               <a href="#" dangerouslySetInnerHTML={{ __html: address.replace(/\n/g, '<br />') }} />
             </div>
           </div>
         </div>
 
         <div className="footer-bottom">
-          <p>&copy; 2026 Orchestre de la Chambre Symphonique. Tous droits réservés.</p>
+          <p>&copy; 2026 La Chambre Symphonique. Tous droits réservés.</p>
           <a href="#">Mentions légales</a>
         </div>
       </div>

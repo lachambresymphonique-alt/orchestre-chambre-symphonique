@@ -5,9 +5,9 @@ import { PersonPlaceholder } from '@/components/PlaceholderIcon';
 import { getPayloadClient } from '@/lib/payload';
 
 export const metadata: Metadata = {
-  title: 'Musiciens — Orchestre de la Chambre Symphonique',
+  title: 'Musiciens — La Chambre Symphonique',
   description:
-    "Découvrez les musiciens de l'Orchestre de la Chambre Symphonique.",
+    "Découvrez les musiciens de La Chambre Symphonique, orchestre de 40 à 80 musiciens dirigé par Loïc Emmelin.",
 };
 
 function MusicianCard({ name, role, instrument }: { name: string; role: string; instrument?: string }) {
@@ -48,7 +48,8 @@ export default async function Musiciens() {
           </p>
           <h1>Nos musiciens</h1>
           <p>
-            Des artistes d&apos;exception unis par la passion de la musique de chambre.
+            De 40 à 80 musiciens issus de conservatoires français, suisses et belges,
+            réunis autour de la passion du répertoire symphonique.
           </p>
         </div>
       </div>

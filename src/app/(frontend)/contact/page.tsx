@@ -6,9 +6,9 @@ import { FacebookIcon, InstagramIcon, YouTubeIcon, LinkedInIcon } from '@/compon
 import { getPayloadClient } from '@/lib/payload';
 
 export const metadata: Metadata = {
-  title: 'Contact — Orchestre de la Chambre Symphonique',
+  title: 'Contact — La Chambre Symphonique',
   description:
-    "Contactez l'Orchestre de la Chambre Symphonique pour toute demande d'information, de réservation ou de partenariat.",
+    "Contactez La Chambre Symphonique pour toute demande d'information, de réservation ou de partenariat.",
 };
 
 export default async function Contact() {

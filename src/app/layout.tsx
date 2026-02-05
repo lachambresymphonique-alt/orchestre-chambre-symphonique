@@ -17,9 +17,9 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: 'Orchestre de la Chambre Symphonique',
+  title: 'La Chambre Symphonique — Orchestre',
   description:
-    "L'Orchestre de la Chambre Symphonique - Ensemble musical d'excellence alliant tradition classique et ouverture artistique.",
+    "La Chambre Symphonique, orchestre fondé en 2017 par Loïc Emmelin. Plus de 80 musiciens réunis par la passion du répertoire symphonique en Bourgogne et Rhône-Alpes.",
 };
 
 export default function RootLayout({
