@@ -14,9 +14,13 @@ interface HomeClientProps {
 }
 
 export function HomeClient({ initialData, concerts, partners }: HomeClientProps) {
+  const serverURL = typeof window !== 'undefined'
+    ? window.location.origin
+    : (process.env.NEXT_PUBLIC_SITE_URL || '');
+
   const { data } = useLivePreview({
     initialData,
-    serverURL: process.env.NEXT_PUBLIC_SITE_URL || '',
+    serverURL,
     depth: 2,
   });
 
