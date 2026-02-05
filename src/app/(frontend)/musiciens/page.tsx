@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { FadeIn } from '@/components/FadeIn';
 import { PersonPlaceholder } from '@/components/PlaceholderIcon';
 import { getPayloadClient } from '@/lib/payload';
@@ -11,11 +12,21 @@ export const metadata: Metadata = {
     "Découvrez les musiciens de La Chambre Symphonique, orchestre de 40 à 80 musiciens dirigé par Loïc Emmelin.",
 };
 
-function MusicianCard({ name, role, instrument }: { name: string; role: string; instrument?: string }) {
+function MusicianCard({ name, role, instrument, photo }: { name: string; role: string; instrument?: string; photo?: any }) {
   return (
     <FadeIn className="musician-card">
       <div className="musician-photo">
-        <PersonPlaceholder size={60} />
+        {photo?.url ? (
+          <Image
+            src={photo.url}
+            alt={photo.alt || name}
+            width={200}
+            height={200}
+            style={{ objectFit: 'cover', width: '100%', height: '100%', borderRadius: '50%' }}
+          />
+        ) : (
+          <PersonPlaceholder size={60} />
+        )}
       </div>
       <h3>{name}</h3>
       <p className="role">{role}</p>
@@ -31,6 +42,7 @@ export default async function Musiciens() {
     collection: 'musicians' as any,
     sort: 'order' as any,
     limit: 50,
+    depth: 1,
   });
 
   const allMusicians = musicians.docs as any[];
@@ -64,7 +76,7 @@ export default async function Musiciens() {
           </div>
           <div className="musicians-grid">
             {direction.map((m) => (
-              <MusicianCard key={m.id || m.name} name={m.name} role={m.role} instrument={m.instrument} />
+              <MusicianCard key={m.id || m.name} name={m.name} role={m.role} instrument={m.instrument} photo={m.photo} />
             ))}
           </div>
         </div>
@@ -78,7 +90,7 @@ export default async function Musiciens() {
           </div>
           <div className="musicians-grid">
             {cordes.map((m) => (
-              <MusicianCard key={m.id || m.name} name={m.name} role={m.role} instrument={m.instrument} />
+              <MusicianCard key={m.id || m.name} name={m.name} role={m.role} instrument={m.instrument} photo={m.photo} />
             ))}
           </div>
         </div>
@@ -92,7 +104,7 @@ export default async function Musiciens() {
           </div>
           <div className="musicians-grid">
             {vents.map((m) => (
-              <MusicianCard key={m.id || m.name} name={m.name} role={m.role} instrument={m.instrument} />
+              <MusicianCard key={m.id || m.name} name={m.name} role={m.role} instrument={m.instrument} photo={m.photo} />
             ))}
           </div>
         </div>
@@ -106,7 +118,7 @@ export default async function Musiciens() {
           </div>
           <div className="musicians-grid">
             {claviers.map((m) => (
-              <MusicianCard key={m.id || m.name} name={m.name} role={m.role} instrument={m.instrument} />
+              <MusicianCard key={m.id || m.name} name={m.name} role={m.role} instrument={m.instrument} photo={m.photo} />
             ))}
           </div>
         </div>

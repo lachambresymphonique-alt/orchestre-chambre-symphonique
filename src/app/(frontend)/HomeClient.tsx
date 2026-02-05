@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useLivePreview } from '@payloadcms/live-preview-react';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FadeIn } from '@/components/FadeIn';
@@ -21,7 +22,7 @@ export function HomeClient({ initialData, concerts, partners }: HomeClientProps)
   const { data } = useLivePreview({
     initialData,
     serverURL,
-    depth: 0,
+    depth: 1,
   });
 
   useLivePreviewSync(data);
@@ -102,7 +103,17 @@ export function HomeClient({ initialData, concerts, partners }: HomeClientProps)
           <div className="container">
             <div className="presentation-content">
               <div className="presentation-image">
-                <ImagePlaceholder size={80} />
+                {presentation?.image?.url ? (
+                  <Image
+                    src={presentation.image.url}
+                    alt={presentation.image.alt || 'Photo de l\'orchestre'}
+                    width={600}
+                    height={400}
+                    style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                  />
+                ) : (
+                  <ImagePlaceholder size={80} />
+                )}
               </div>
               <FadeIn className="presentation-text">
                 <p className="section-subtitle">{presentation?.subtitle}</p>

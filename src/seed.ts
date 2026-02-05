@@ -7,17 +7,30 @@ async function seed() {
   const payload = await getPayload({ config })
 
   // ──────────────────────────────────────────────
+  // 0. Clear existing data (except users)
+  // ──────────────────────────────────────────────
+  console.log('Clearing existing data...')
+  const collections = ['concerts', 'musicians', 'media-items', 'partners', 'timeline-events', 'support-tiers'] as const
+  for (const col of collections) {
+    await payload.delete({ collection: col as any, where: { id: { exists: true } } })
+  }
+
+  // ──────────────────────────────────────────────
   // 1. Admin user
   // ──────────────────────────────────────────────
   console.log('Creating admin user...')
-  await payload.create({
-    collection: 'users',
-    data: {
-      email: 'admin@lachambresymphonique.fr',
-      password: 'changeme123',
-      name: 'Admin',
-    },
-  })
+  try {
+    await payload.create({
+      collection: 'users',
+      data: {
+        email: 'admin@lachambresymphonique.fr',
+        password: 'changeme123',
+        name: 'Admin',
+      },
+    })
+  } catch {
+    console.log('Admin user already exists, skipping.')
+  }
 
   // ──────────────────────────────────────────────
   // 2. Concerts
