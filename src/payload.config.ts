@@ -35,6 +35,37 @@ export default buildConfig({
       description: 'Panneau d\'administration du site de La Chambre Symphonique',
     },
     avatar: 'default',
+    livePreview: {
+      url: ({ data, collectionConfig, globalConfig }) => {
+        const base = process.env.NEXT_PUBLIC_SITE_URL || '';
+        if (globalConfig) {
+          const map: Record<string, string> = {
+            'home-page': '/',
+            'about-page': '/a-propos',
+            'support-page': '/nous-soutenir',
+            'site-settings': '/contact',
+          };
+          return `${base}${map[globalConfig.slug] || '/'}`;
+        }
+        const collectionMap: Record<string, string> = {
+          concerts: '/',
+          musicians: '/musiciens',
+          'media-items': '/medias',
+          partners: '/',
+          'timeline-events': '/a-propos',
+          'support-tiers': '/nous-soutenir',
+        };
+        const slug = collectionConfig?.slug || '';
+        return `${base}${collectionMap[slug] || '/'}`;
+      },
+      globals: ['home-page', 'about-page', 'support-page', 'site-settings'],
+      collections: ['concerts', 'musicians', 'media-items', 'partners', 'timeline-events', 'support-tiers'],
+      breakpoints: [
+        { label: 'Mobile', name: 'mobile', width: 375, height: 667 },
+        { label: 'Tablette', name: 'tablet', width: 768, height: 1024 },
+        { label: 'Bureau', name: 'desktop', width: 1440, height: 900 },
+      ],
+    },
   },
 
   collections: [
