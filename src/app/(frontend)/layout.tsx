@@ -33,17 +33,31 @@ export default async function FrontendLayout({
   children: React.ReactNode;
 }) {
   const payload = await getPayloadClient();
-  const siteSettings = await payload.findGlobal({ slug: 'site-settings' as any });
+  const [siteSettings, navPages] = await Promise.all([
+    payload.findGlobal({ slug: 'site-settings' as any }),
+    payload.find({
+      collection: 'pages' as any,
+      where: { showInNav: { equals: true }, _status: { equals: 'published' } },
+      sort: 'navOrder',
+      limit: 20,
+    }),
+  ]);
 
   const settings = {
     description: (siteSettings as any).footerDescription,
     contact: (siteSettings as any).contact,
   };
 
+  const extraNavItems = navPages.docs.map((page: any) => ({
+    href: `/${page.slug}`,
+    label: page.navLabel || page.title,
+    order: page.navOrder ?? 99,
+  }));
+
   return (
     <html lang="fr">
       <body className={`${cormorant.variable} ${montserrat.variable}`}>
-        <Header />
+        <Header extraNavItems={extraNavItems} />
         {children}
         <Footer settings={settings} />
       </body>

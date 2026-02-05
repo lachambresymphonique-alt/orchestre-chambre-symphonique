@@ -15,6 +15,7 @@ import { MediaItems } from './collections/MediaItems';
 import { Partners } from './collections/Partners';
 import { TimelineEvents } from './collections/TimelineEvents';
 import { SupportTiers } from './collections/SupportTiers';
+import { Pages } from './collections/Pages';
 
 import { SiteSettings } from './globals/SiteSettings';
 import { HomePage } from './globals/HomePage';
@@ -54,12 +55,13 @@ export default buildConfig({
           partners: '/',
           'timeline-events': '/a-propos',
           'support-tiers': '/nous-soutenir',
+          pages: `/${data?.slug || ''}`,
         };
         const slug = collectionConfig?.slug || '';
         return `${base}${collectionMap[slug] || '/'}`;
       },
       globals: ['home-page', 'about-page', 'support-page', 'site-settings'],
-      collections: ['concerts', 'musicians', 'media-items', 'partners', 'timeline-events', 'support-tiers'],
+      collections: ['concerts', 'musicians', 'media-items', 'partners', 'timeline-events', 'support-tiers', 'pages'],
       breakpoints: [
         { label: 'Mobile', name: 'mobile', width: 375, height: 667 },
         { label: 'Tablette', name: 'tablet', width: 768, height: 1024 },
@@ -77,6 +79,7 @@ export default buildConfig({
     Partners,
     TimelineEvents,
     SupportTiers,
+    Pages,
   ],
 
   globals: [SiteSettings, HomePage, AboutPage, SupportPage],

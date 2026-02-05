@@ -5,16 +5,19 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LogoSvg } from './LogoSvg';
 
-const navItems = [
-  { href: '/', label: 'Accueil' },
-  { href: '/a-propos', label: 'À propos' },
-  { href: '/musiciens', label: 'Musiciens' },
-  { href: '/medias', label: 'Médias' },
-  { href: '/nous-soutenir', label: 'Nous soutenir' },
-  { href: '/contact', label: 'Contact' },
+const defaultNavItems = [
+  { href: '/', label: 'Accueil', order: 1 },
+  { href: '/a-propos', label: 'À propos', order: 2 },
+  { href: '/musiciens', label: 'Musiciens', order: 3 },
+  { href: '/medias', label: 'Médias', order: 4 },
+  { href: '/nous-soutenir', label: 'Nous soutenir', order: 5 },
+  { href: '/contact', label: 'Contact', order: 6 },
 ];
 
-export function Header() {
+type NavItem = { href: string; label: string; order: number };
+
+export function Header({ extraNavItems = [] }: { extraNavItems?: NavItem[] }) {
+  const navItems = [...defaultNavItems, ...extraNavItems].sort((a, b) => a.order - b.order);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();

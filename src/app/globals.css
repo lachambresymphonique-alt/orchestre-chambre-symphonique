@@ -1375,3 +1375,74 @@ section {
     grid-template-columns: 1fr;
   }
 }
+
+/* --- Rich Text Content (dynamic pages) --- */
+.rich-text-content {
+  max-width: 720px;
+  margin: 0 auto;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--color-text);
+}
+
+.rich-text-content h2 {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 2.5rem 0 1rem;
+  color: var(--color-text);
+}
+
+.rich-text-content h3 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 2rem 0 0.75rem;
+}
+
+.rich-text-content h4 {
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.rich-text-content p {
+  margin: 0 0 1.25rem;
+}
+
+.rich-text-content ul,
+.rich-text-content ol {
+  margin: 0 0 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.rich-text-content li {
+  margin-bottom: 0.4rem;
+}
+
+.rich-text-content a {
+  color: var(--color-gold-dark);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.rich-text-content a:hover {
+  color: var(--color-gold);
+}
+
+.rich-text-content blockquote {
+  border-left: 3px solid var(--color-gold);
+  margin: 1.5rem 0;
+  padding: 0.5rem 0 0.5rem 1.5rem;
+  font-style: italic;
+  color: var(--color-text-light);
+}
+
+.rich-text-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+}
