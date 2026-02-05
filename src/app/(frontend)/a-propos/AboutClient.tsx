@@ -19,7 +19,7 @@ export function AboutClient({ initialData, timelineEvents }: AboutClientProps) {
   const { data } = useLivePreview({
     initialData,
     serverURL,
-    depth: 2,
+    depth: 0,
   });
 
   useLivePreviewSync(data);

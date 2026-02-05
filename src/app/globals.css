@@ -1498,14 +1498,45 @@ section {
   pointer-events: none;
 }
 
-/* Section active (auto-scroll quand le champ change) */
-.live-preview-mode [data-live-field].live-field--active {
-  animation: liveFieldPulse 1.5s ease-out;
+/* Section en cours d'édition */
+.live-preview-mode [data-live-field].live-field--editing {
+  box-shadow: inset 0 0 0 2px rgba(201, 168, 76, 0.5);
+  background: rgba(201, 168, 76, 0.03);
 }
 
-@keyframes liveFieldPulse {
-  0% { box-shadow: inset 0 0 0 3px rgba(201, 168, 76, 0.8); }
-  100% { box-shadow: inset 0 0 0 0px rgba(201, 168, 76, 0); }
+.live-preview-mode [data-live-field].live-field--editing::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--color-gold);
+  border-radius: 4px 0 0 4px;
+  z-index: 100;
+  animation: editingPulse 2s ease-in-out infinite;
+}
+
+.live-preview-mode [data-live-field].live-field--editing::after {
+  content: 'En cours de modification';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--color-gold);
+  color: #fff;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-family: var(--font-body), system-ui, sans-serif;
+  letter-spacing: 0.05em;
+  border-radius: 3px;
+  z-index: 100;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+@keyframes editingPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
 .live-preview-mode * {

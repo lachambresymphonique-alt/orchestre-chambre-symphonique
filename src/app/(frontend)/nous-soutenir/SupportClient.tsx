@@ -18,7 +18,7 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
   const { data } = useLivePreview({
     initialData,
     serverURL,
-    depth: 2,
+    depth: 0,
   });
 
   useLivePreviewSync(data);
