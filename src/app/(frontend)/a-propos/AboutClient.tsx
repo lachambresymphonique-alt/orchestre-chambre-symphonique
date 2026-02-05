@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
 import Link from 'next/link';
 import { useLivePreview } from '@payloadcms/live-preview-react';
+import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FadeIn } from '@/components/FadeIn';
 import { ImagePlaceholder } from '@/components/PlaceholderIcon';
 
@@ -22,12 +22,7 @@ export function AboutClient({ initialData, timelineEvents }: AboutClientProps) {
     depth: 2,
   });
 
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.self !== window.top) {
-      document.body.classList.add('live-preview-mode');
-      return () => document.body.classList.remove('live-preview-mode');
-    }
-  }, []);
+  useLivePreviewSync(data);
 
   const intro = data.intro;
   const stats = data.stats || [];

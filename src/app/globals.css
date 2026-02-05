@@ -1457,24 +1457,55 @@ section {
 
 .live-preview-mode [data-live-field]:hover {
   box-shadow: inset 0 0 0 2px var(--color-gold);
-  cursor: default;
+  cursor: pointer;
 }
 
 .live-preview-mode [data-live-field]:hover::after {
+  content: 'Cliquer pour modifier : ' attr(data-live-field);
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--color-gold);
+  color: #fff;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  letter-spacing: 0.05em;
+  border-radius: 3px;
+  z-index: 100;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Section sélectionnée (cliquée) */
+.live-preview-mode [data-live-field].live-field--selected {
+  box-shadow: inset 0 0 0 3px var(--color-gold);
+}
+
+.live-preview-mode [data-live-field].live-field--selected::after {
   content: attr(data-live-field);
   position: absolute;
   top: 4px;
   right: 4px;
   background: var(--color-gold);
   color: #fff;
-  padding: 2px 10px;
+  padding: 4px 12px;
   font-size: 11px;
   font-family: var(--font-montserrat), system-ui, sans-serif;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
   border-radius: 3px;
   z-index: 100;
   pointer-events: none;
+}
+
+/* Section active (auto-scroll quand le champ change) */
+.live-preview-mode [data-live-field].live-field--active {
+  animation: liveFieldPulse 1.5s ease-out;
+}
+
+@keyframes liveFieldPulse {
+  0% { box-shadow: inset 0 0 0 3px rgba(201, 168, 76, 0.8); }
+  100% { box-shadow: inset 0 0 0 0px rgba(201, 168, 76, 0); }
 }
 
 .live-preview-mode * {
