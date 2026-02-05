@@ -9,33 +9,42 @@ type Args = {
 
 export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const { slug } = await params;
-  const payload = await getPayloadClient();
-  const result = await payload.find({
-    collection: 'pages' as any,
-    where: { slug: { equals: slug } },
-    limit: 1,
-  });
-  const page = result.docs[0] as any;
-  if (!page) return {};
-  return {
-    title: page.title,
-    description: (page.meta as any)?.description || undefined,
-  };
+  try {
+    const payload = await getPayloadClient();
+    const result = await payload.find({
+      collection: 'pages' as any,
+      where: { slug: { equals: slug } },
+      limit: 1,
+    });
+    const page = result.docs[0] as any;
+    if (!page) return {};
+    return {
+      title: page.title,
+      description: (page.meta as any)?.description || undefined,
+    };
+  } catch {
+    return {};
+  }
 }
 
 export default async function DynamicPage({ params }: Args) {
   const { slug } = await params;
-  const payload = await getPayloadClient();
-  const result = await payload.find({
-    collection: 'pages' as any,
-    where: {
-      slug: { equals: slug },
-      _status: { equals: 'published' },
-    },
-    limit: 1,
-  });
+  let page: any = null;
+  try {
+    const payload = await getPayloadClient();
+    const result = await payload.find({
+      collection: 'pages' as any,
+      where: {
+        slug: { equals: slug },
+        _status: { equals: 'published' },
+      },
+      limit: 1,
+    });
+    page = result.docs[0] as any;
+  } catch {
+    // Pages table may not exist yet
+  }
 
-  const page = result.docs[0] as any;
   if (!page) notFound();
 
   return (

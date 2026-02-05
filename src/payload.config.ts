@@ -92,6 +92,7 @@ export default buildConfig({
   editor: lexicalEditor(),
 
   db: postgresAdapter({
+    push: true,
     pool: {
       connectionString: process.env.DATABASE_URL || '',
       ssl: !!process.env.DATABASE_URL,
