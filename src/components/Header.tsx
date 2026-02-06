@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LogoSvg } from './LogoSvg';
+import { ThemeToggle } from './ThemeProvider';
 
 const defaultNavItems = [
   { href: '/', label: 'Accueil', order: 1 },
@@ -65,6 +66,8 @@ export function Header({ extraNavItems = [] }: { extraNavItems?: NavItem[] }) {
             </Link>
           ))}
         </nav>
+
+        <ThemeToggle />
 
         <button
           className={`hamburger${menuOpen ? ' active' : ''}`}

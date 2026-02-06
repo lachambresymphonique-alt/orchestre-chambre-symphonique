@@ -318,6 +318,131 @@ section {
   transform: rotate(-45deg) translate(5px, -4px);
 }
 
+/* --- Theme Toggle --- */
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text);
+  transition: all var(--transition);
+  margin-left: 1rem;
+}
+
+.theme-toggle:hover {
+  background: var(--color-gold);
+  border-color: var(--color-gold);
+  color: #fff;
+}
+
+/* ============================================
+   THEME SUPPORT
+   ============================================ */
+
+/* Dark theme overrides */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="dark"] .header {
+  background: var(--color-bg);
+  border-bottom-color: var(--color-border);
+}
+
+[data-theme="dark"] .header.scrolled {
+  background: var(--color-bg);
+}
+
+[data-theme="dark"] .hero {
+  background: var(--color-bg-dark);
+}
+
+[data-theme="dark"] .hero-bg {
+  background: linear-gradient(135deg, var(--color-bg-dark) 0%, var(--color-bg-dark-alt) 100%);
+}
+
+[data-theme="dark"] .concert-card {
+  background: var(--color-bg-alt);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .btn-outline {
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .btn-outline:hover {
+  background: var(--color-gold);
+  border-color: var(--color-gold);
+  color: #fff;
+}
+
+[data-theme="dark"] .footer {
+  background: var(--color-bg-dark);
+  color: var(--color-text-on-dark);
+}
+
+[data-theme="dark"] .footer a {
+  color: var(--color-text-on-dark);
+}
+
+[data-theme="dark"] .page-header {
+  background: linear-gradient(135deg, var(--color-bg-dark) 0%, var(--color-bg-dark-alt) 100%);
+  color: var(--color-text-on-dark);
+}
+
+[data-theme="dark"] .page-header h1,
+[data-theme="dark"] .page-header p {
+  color: var(--color-text-on-dark);
+}
+
+[data-theme="dark"] .breadcrumb a {
+  color: var(--color-gold-light);
+}
+
+[data-theme="dark"] .musician-card,
+[data-theme="dark"] .support-card,
+[data-theme="dark"] .contact-info-block {
+  background: var(--color-bg-alt);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background: var(--color-bg-alt);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--color-text-light);
+}
+
+/* Smooth transitions between themes */
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body,
+.header,
+.footer,
+.concert-card,
+.musician-card,
+.support-card,
+.contact-info-block,
+input,
+textarea,
+select {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
 /* ============================================
    HERO SECTION
    ============================================ */

@@ -21,6 +21,7 @@ import { SiteSettings } from './globals/SiteSettings';
 import { HomePage } from './globals/HomePage';
 import { AboutPage } from './globals/AboutPage';
 import { SupportPage } from './globals/SupportPage';
+import { ThemeSettings } from './globals/ThemeSettings';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -82,7 +83,7 @@ export default buildConfig({
     Pages,
   ],
 
-  globals: [SiteSettings, HomePage, AboutPage, SupportPage],
+  globals: [SiteSettings, HomePage, AboutPage, SupportPage, ThemeSettings],
 
   i18n: {
     supportedLanguages: { fr },
