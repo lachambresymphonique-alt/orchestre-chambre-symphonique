@@ -377,6 +377,42 @@ async function seed() {
     },
   })
 
+  // ──────────────────────────────────────────────
+  // 12. Globals — Theme Settings
+  // ──────────────────────────────────────────────
+  console.log('Updating theme-settings global...')
+  await payload.updateGlobal({
+    slug: 'theme-settings',
+    data: {
+      mode: 'light',
+      allowUserToggle: true,
+      colors: {
+        primary: '#C9A84C',
+        primaryLight: '#E8D48B',
+        primaryDark: '#A07D2E',
+        accent: '#8B1A1A',
+      },
+      lightTheme: {
+        background: '#FDFBF7',
+        backgroundAlt: '#F5F0E8',
+        text: '#2C2C2C',
+        textLight: '#6B6B6B',
+        border: '#E0D8CA',
+      },
+      darkTheme: {
+        background: '#1A1A2E',
+        backgroundAlt: '#16213E',
+        text: '#F0EDE6',
+        textLight: '#B8B5AE',
+        border: '#2D2D4A',
+      },
+      typography: {
+        headingFont: 'cormorant',
+        bodyFont: 'montserrat',
+      },
+    },
+  })
+
   console.log('Seed completed successfully!')
   process.exit(0)
 }
