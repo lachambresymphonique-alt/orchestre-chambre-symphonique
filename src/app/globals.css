@@ -1052,8 +1052,9 @@ select {
    ============================================ */
 .musicians-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 2.5rem;
+  max-width: 100%;
 }
 
 .musician-card {
@@ -1066,6 +1067,7 @@ select {
 }
 
 .musician-photo {
+  position: relative;
   aspect-ratio: 3/4;
   background: linear-gradient(135deg, var(--color-bg-dark) 0%, var(--color-bg-dark-alt) 100%);
   margin-bottom: 1.2rem;
@@ -1073,6 +1075,7 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: var(--radius);
 }
 
 .musician-photo .placeholder-icon {

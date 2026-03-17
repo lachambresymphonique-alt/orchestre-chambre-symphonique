@@ -20,9 +20,9 @@ function MusicianCard({ name, role, instrument, photo }: { name: string; role: s
           <Image
             src={photo.url}
             alt={photo.alt || name}
-            width={200}
-            height={200}
-            style={{ objectFit: 'cover', width: '100%', height: '100%', borderRadius: '50%' }}
+            fill
+            sizes="(max-width: 768px) 50vw, 200px"
+            style={{ objectFit: 'cover' }}
           />
         ) : (
           <PersonPlaceholder size={60} />

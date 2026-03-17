@@ -3,13 +3,42 @@
 import { useState, FormEvent } from 'react';
 
 export function ContactForm() {
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitted(true);
-    (e.target as HTMLFormElement).reset();
-    setTimeout(() => setSubmitted(false), 3000);
+    setStatus('sending');
+    setErrorMsg('');
+
+    const form = e.target as HTMLFormElement;
+    const data = {
+      name: (form.elements.namedItem('name') as HTMLInputElement).value,
+      email: (form.elements.namedItem('email') as HTMLInputElement).value,
+      subject: (form.elements.namedItem('subject') as HTMLSelectElement).value,
+      message: (form.elements.namedItem('message') as HTMLTextAreaElement).value,
+    };
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.error || 'Erreur lors de l\'envoi.');
+      }
+
+      setStatus('success');
+      form.reset();
+      setTimeout(() => setStatus('idle'), 5000);
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Une erreur est survenue.');
+      setStatus('error');
+      setTimeout(() => setStatus('idle'), 5000);
+    }
   };
 
   return (
@@ -44,9 +73,17 @@ export function ContactForm() {
         <button
           type="submit"
           className="btn btn-primary"
-          style={submitted ? { background: '#2E7D32', color: '#fff' } : undefined}
+          disabled={status === 'sending'}
+          style={
+            status === 'success' ? { background: '#2E7D32', color: '#fff' } :
+            status === 'error' ? { background: '#C62828', color: '#fff' } :
+            undefined
+          }
         >
-          {submitted ? 'Message envoyé !' : 'Envoyer le message'}
+          {status === 'sending' && 'Envoi en cours...'}
+          {status === 'success' && 'Message envoyé !'}
+          {status === 'error' && errorMsg}
+          {status === 'idle' && 'Envoyer le message'}
         </button>
       </form>
     </div>

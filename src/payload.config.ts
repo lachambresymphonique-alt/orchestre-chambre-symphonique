@@ -16,6 +16,7 @@ import { Partners } from './collections/Partners';
 import { TimelineEvents } from './collections/TimelineEvents';
 import { SupportTiers } from './collections/SupportTiers';
 import { Pages } from './collections/Pages';
+import { ContactSubmissions } from './collections/ContactSubmissions';
 
 import { SiteSettings } from './globals/SiteSettings';
 import { HomePage } from './globals/HomePage';
@@ -81,6 +82,7 @@ export default buildConfig({
     TimelineEvents,
     SupportTiers,
     Pages,
+    ContactSubmissions,
   ],
 
   globals: [SiteSettings, HomePage, AboutPage, SupportPage, ThemeSettings],
