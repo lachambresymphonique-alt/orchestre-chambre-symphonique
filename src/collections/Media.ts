@@ -15,8 +15,8 @@ export const Media: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'alt',
-    group: 'Médiathèque',
-    description: 'Images utilisées sur le site (photos, logos, illustrations).',
+    group: 'Bibliothèque d’images',
+    description: 'Toutes les photos, logos et illustrations utilisés sur le site. Vous pouvez les téléverser ici puis les sélectionner depuis n’importe quelle page.',
   },
   fields: [
     {

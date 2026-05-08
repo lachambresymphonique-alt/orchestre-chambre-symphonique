@@ -21,9 +21,15 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { MusiciansTabsNav as MusiciansTabsNav_f0bf74af169ff57631fe48d885ee464a } from '@/components/admin/MusiciansTabsNav'
+import { PromoteSubmissionButton as PromoteSubmissionButton_8d30722c0b0e7fa1a9b8a839577f9a11 } from '@/components/admin/PromoteSubmissionButton'
 import { ThemePreview as ThemePreview_241328c85efc932e9142e9a487516caf } from '@/components/admin/ThemePreview'
 import { ColorPickerField as ColorPickerField_d572ded1c017fe858839e8cdc754e090 } from '@/components/admin/ColorPickerField'
 import { FontPreviewField as FontPreviewField_58bad2c11be57550fc4300d2f844cb48 } from '@/components/admin/FontPreviewField'
+import { AdminIcon as AdminIcon_d500ae2ad98a0a33d640ae0ac1a3417c } from '@/components/admin/AdminIcon'
+import { AdminLogo as AdminLogo_b80a86fce1072afc84cd6a430a965697 } from '@/components/admin/AdminLogo'
+import { BeforeDashboard as BeforeDashboard_915324d4628771dbb8d31cdc4601c33e } from '@/components/admin/BeforeDashboard'
+import { ViewSiteLink as ViewSiteLink_4825072285f9364e3016113bb30951e2 } from '@/components/admin/ViewSiteLink'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -51,9 +57,15 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@/components/admin/MusiciansTabsNav#MusiciansTabsNav": MusiciansTabsNav_f0bf74af169ff57631fe48d885ee464a,
+  "@/components/admin/PromoteSubmissionButton#PromoteSubmissionButton": PromoteSubmissionButton_8d30722c0b0e7fa1a9b8a839577f9a11,
   "@/components/admin/ThemePreview#ThemePreview": ThemePreview_241328c85efc932e9142e9a487516caf,
   "@/components/admin/ColorPickerField#ColorPickerField": ColorPickerField_d572ded1c017fe858839e8cdc754e090,
   "@/components/admin/FontPreviewField#FontPreviewField": FontPreviewField_58bad2c11be57550fc4300d2f844cb48,
+  "@/components/admin/AdminIcon#AdminIcon": AdminIcon_d500ae2ad98a0a33d640ae0ac1a3417c,
+  "@/components/admin/AdminLogo#AdminLogo": AdminLogo_b80a86fce1072afc84cd6a430a965697,
+  "@/components/admin/BeforeDashboard#BeforeDashboard": BeforeDashboard_915324d4628771dbb8d31cdc4601c33e,
+  "@/components/admin/ViewSiteLink#ViewSiteLink": ViewSiteLink_4825072285f9364e3016113bb30951e2,
   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

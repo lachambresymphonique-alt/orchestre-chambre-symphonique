@@ -2,9 +2,9 @@ import type { GlobalConfig } from 'payload';
 
 export const ThemeSettings: GlobalConfig = {
   slug: 'theme-settings',
-  label: 'Theme & Apparence',
+  label: 'Apparence du site',
   admin: {
-    group: 'Parametres',
+    group: 'Réglages',
     description: 'Personnalisez les couleurs, polices et le mode d\'affichage du site.',
   },
   fields: [

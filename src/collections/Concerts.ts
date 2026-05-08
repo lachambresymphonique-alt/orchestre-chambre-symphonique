@@ -47,6 +47,15 @@ export const Concerts: CollectionConfig = {
       admin: { description: 'URL vers la billetterie (ex : HelloAsso). Laisser vide si pas de réservation.' },
     },
     {
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Photo du concert',
+      admin: {
+        description: 'Image illustrant le concert (affiche, photo de répétition, salle…). Visible notamment pour le concert mis en avant en page d\'accueil.',
+      },
+    },
+    {
       name: 'order',
       type: 'number',
       required: true,

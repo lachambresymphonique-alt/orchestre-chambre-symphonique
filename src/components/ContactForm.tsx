@@ -41,9 +41,29 @@ export function ContactForm() {
     }
   };
 
+  if (status === 'success') {
+    return (
+      <div className="contact-form contact-form--success">
+        <p className="eyebrow eyebrow--gold">Bien reçu</p>
+        <h2 className="contact-form__title">
+          <em>Merci.</em>
+        </h2>
+        <hr className="velvet-rule long" />
+        <p className="contact-form__success">
+          Votre message vient d'arriver. Nous vous répondrons personnellement,
+          en général sous 48 heures.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="contact-form fade-in visible">
-      <h2 style={{ marginBottom: '2rem' }}>Envoyez-nous un message</h2>
+      <p className="eyebrow eyebrow--gold">Écrivez-nous</p>
+      <h2 className="contact-form__title">
+        <em>Un mot,</em> une question
+      </h2>
+      <hr className="velvet-rule" />
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="name">Nom complet</label>
@@ -70,20 +90,19 @@ export function ContactForm() {
           <label htmlFor="message">Message</label>
           <textarea id="message" name="message" placeholder="Votre message..." required></textarea>
         </div>
+
+        {status === 'error' && (
+          <p className="contact-form__error" role="alert">
+            <em>{errorMsg || 'Une erreur est survenue.'}</em> Merci de réessayer.
+          </p>
+        )}
+
         <button
           type="submit"
-          className="btn btn-primary"
+          className="btn-filled"
           disabled={status === 'sending'}
-          style={
-            status === 'success' ? { background: '#2E7D32', color: '#fff' } :
-            status === 'error' ? { background: '#C62828', color: '#fff' } :
-            undefined
-          }
         >
-          {status === 'sending' && 'Envoi en cours...'}
-          {status === 'success' && 'Message envoyé !'}
-          {status === 'error' && errorMsg}
-          {status === 'idle' && 'Envoyer le message'}
+          {status === 'sending' ? 'Envoi…' : 'Envoyer le message →'}
         </button>
       </form>
     </div>

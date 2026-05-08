@@ -14,6 +14,11 @@ import { useEffect, useRef, useCallback } from 'react';
  *
  * 3. When the user is actively editing a field in the admin panel,
  *    the corresponding preview section gets a visual "editing" indicator.
+ *
+ * 4. Click on a [data-live-link="/admin/..."] element in the preview
+ *    → navigates the parent admin window to that URL. Used for content
+ *    coming from a different collection than the page being previewed
+ *    (e.g. clicking a concert opens the concert in the admin).
  */
 export function useLivePreviewSync(data: any) {
   const activeFieldRef = useRef<string | null>(null);
@@ -146,7 +151,30 @@ export function useLivePreviewSync(data: any) {
     if (!isInIframe) return;
 
     const handleClick = (e: MouseEvent) => {
-      const target = (e.target as HTMLElement).closest<HTMLElement>('[data-live-field]');
+      const root = e.target as HTMLElement;
+
+      // 1. data-live-link wins: open the target in a new admin tab
+      //    (we open in a new tab so the user doesn't lose the page they
+      //    were editing in the parent admin window)
+      const linkTarget = root.closest<HTMLElement>('[data-live-link]');
+      if (linkTarget) {
+        const path = linkTarget.getAttribute('data-live-link');
+        if (path) {
+          e.preventDefault();
+          e.stopPropagation();
+          try {
+            const adminOrigin = window.parent.location.origin;
+            window.open(`${adminOrigin}${path}`, '_blank', 'noopener,noreferrer');
+          } catch {
+            // Cross-origin — fall back to opening on current origin
+            window.open(path, '_blank', 'noopener,noreferrer');
+          }
+          return;
+        }
+      }
+
+      // 2. data-live-field: scroll the admin panel to the matching field group
+      const target = root.closest<HTMLElement>('[data-live-field]');
       if (!target) return;
 
       const fieldName = target.getAttribute('data-live-field');

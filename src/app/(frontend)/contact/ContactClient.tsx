@@ -42,9 +42,8 @@ export function ContactClient({ initialData }: ContactClientProps) {
         </div>
       </div>
 
-      <section style={{ background: 'var(--color-bg)' }}>
-        <div className="container">
-          <div className="contact-grid">
+      <section className="contact-section">
+        <div className="contact-grid">
             <ContactForm />
 
             <FadeIn>
@@ -179,7 +178,6 @@ export function ContactClient({ initialData }: ContactClientProps) {
               </div>
             </FadeIn>
           </div>
-        </div>
       </section>
     </>
   );

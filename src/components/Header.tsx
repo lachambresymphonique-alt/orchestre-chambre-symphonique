@@ -4,15 +4,15 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LogoSvg } from './LogoSvg';
-import { ThemeToggle } from './ThemeProvider';
 
 const defaultNavItems = [
   { href: '/', label: 'Accueil', order: 1 },
   { href: '/a-propos', label: 'À propos', order: 2 },
-  { href: '/musiciens', label: 'Musiciens', order: 3 },
-  { href: '/medias', label: 'Médias', order: 4 },
-  { href: '/nous-soutenir', label: 'Nous soutenir', order: 5 },
-  { href: '/contact', label: 'Contact', order: 6 },
+  { href: '/directeur-artistique', label: 'Direction', order: 3 },
+  { href: '/musiciens', label: 'Musiciens', order: 4 },
+  { href: '/medias', label: 'Médias', order: 5 },
+  { href: '/nous-soutenir', label: 'Nous soutenir', order: 6 },
+  { href: '/contact', label: 'Contact', order: 7 },
 ];
 
 type NavItem = { href: string; label: string; order: number };
@@ -45,14 +45,8 @@ export function Header({ extraNavItems = [] }: { extraNavItems?: NavItem[] }) {
   return (
     <header className={`header${scrolled ? ' scrolled' : ''}`}>
       <div className="container">
-        <Link href="/" className="logo">
-          <div className="logo-icon">
-            <LogoSvg />
-          </div>
-          <div className="logo-text">
-            <span className="name">La Chambre Symphonique</span>
-            <span className="subtitle">Orchestre</span>
-          </div>
+        <Link href="/" className="logo" aria-label="La Chambre Symphonique — Orchestre, accueil">
+          <LogoSvg />
         </Link>
 
         <nav className={`nav-main${menuOpen ? ' open' : ''}`}>
@@ -66,8 +60,6 @@ export function Header({ extraNavItems = [] }: { extraNavItems?: NavItem[] }) {
             </Link>
           ))}
         </nav>
-
-        <ThemeToggle />
 
         <button
           className={`hamburger${menuOpen ? ' active' : ''}`}

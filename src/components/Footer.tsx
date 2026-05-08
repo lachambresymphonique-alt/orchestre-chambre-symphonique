@@ -26,14 +26,8 @@ export function Footer({ settings }: FooterProps) {
       <div className="container">
         <div className="footer-grid">
           <div className="footer-about">
-            <Link href="/" className="logo">
-              <div className="logo-icon">
-                <LogoSvg color="#E8D48B" />
-              </div>
-              <div className="logo-text">
-                <span className="name">La Chambre Symphonique</span>
-                <span className="subtitle">Orchestre</span>
-              </div>
+            <Link href="/" className="logo" aria-label="La Chambre Symphonique — Orchestre, accueil">
+              <LogoSvg />
             </Link>
             <p>{description}</p>
             <div className="footer-social">

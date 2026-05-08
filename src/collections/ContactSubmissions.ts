@@ -4,7 +4,7 @@ export const ContactSubmissions: CollectionConfig = {
   slug: 'contact-submissions',
   labels: { singular: 'Message reçu', plural: 'Messages reçus' },
   admin: {
-    group: 'Contenu',
+    group: 'Messages reçus',
     description: 'Messages envoyés via le formulaire de contact du site.',
     useAsTitle: 'subject',
     defaultColumns: ['name', 'email', 'subject', 'createdAt'],

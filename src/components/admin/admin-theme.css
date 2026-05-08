@@ -1,0 +1,1246 @@
+/* ==========================================================================
+   Admin theme — La Chambre Symphonique
+   Personnalisation du panneau d'administration Payload pour une utilisation
+   simple et élégante par des utilisateurs non techniques.
+   ========================================================================== */
+
+/* ---------- Palette de marque ---------- */
+:root {
+  --lcs-gold: #C9A84C;
+  --lcs-gold-light: #E8D48B;
+  --lcs-gold-dark: #A07D2E;
+  --lcs-cream: #FDFBF7;
+  --lcs-cream-alt: #F5F0E8;
+  --lcs-ink: #2C2C2C;
+  --lcs-ink-soft: #6B6B6B;
+  --lcs-line: #E8E1D2;
+  --lcs-bordeaux: #8B1A1A;
+
+  --lcs-radius: 10px;
+  --lcs-radius-sm: 6px;
+  --lcs-shadow-soft: 0 1px 2px rgba(44, 36, 22, 0.04), 0 4px 16px rgba(44, 36, 22, 0.06);
+
+  --lcs-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+}
+
+/* ---------- Variables Payload (mode clair) ---------- */
+[data-theme='light'] {
+  --theme-bg: var(--lcs-cream);
+  --theme-input-bg: #ffffff;
+  --theme-elevation-0: var(--lcs-cream);
+  --theme-elevation-50: #FAF6EE;
+  --theme-elevation-100: #F5F0E5;
+  --theme-elevation-150: var(--lcs-line);
+  --theme-elevation-200: #DCD2BE;
+  --theme-elevation-400: #B8AC91;
+  --theme-elevation-500: #8E8369;
+  --theme-elevation-800: #4A4232;
+  --theme-elevation-1000: var(--lcs-ink);
+
+  --theme-text: var(--lcs-ink);
+  --theme-success-500: #2F8F60;
+  --theme-error-500: var(--lcs-bordeaux);
+  --theme-warning-500: var(--lcs-gold-dark);
+}
+
+/* ---------- Variables Payload (mode sombre) ---------- */
+[data-theme='dark'] {
+  --theme-bg: #1A1A2E;
+  --theme-input-bg: #1E1E36;
+  --theme-elevation-0: #1A1A2E;
+  --theme-elevation-50: #20203A;
+  --theme-elevation-100: #262644;
+  --theme-elevation-150: #2D2D4A;
+  --theme-elevation-200: #383857;
+  --theme-elevation-400: #5A5A78;
+  --theme-elevation-500: #7A7A95;
+  --theme-elevation-800: #C8C5BC;
+  --theme-elevation-1000: #F0EDE6;
+}
+
+/* ---------- Typographie ---------- */
+body,
+.payload__body,
+.app {
+  font-feature-settings: 'ss01', 'ss02';
+}
+
+.dashboard h1,
+.collection-list h1,
+.global-list h1,
+.collection-edit h1,
+.global-edit h1,
+.dashboard__group h2,
+.dashboard__label,
+.doc-header__title,
+.list-header h1,
+.template-default h1,
+.step-nav h1 {
+  font-family: var(--lcs-serif);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+.doc-header__title-wrapper h1,
+.list-header__title,
+.dashboard h1 {
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+.dashboard__group h2 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--theme-elevation-500);
+  font-family: inherit;
+  border-bottom: none;
+  padding-bottom: 0.25rem;
+}
+
+/* ---------- Layout général ---------- */
+.template-default {
+  background: var(--theme-bg);
+}
+
+.template-default__wrap {
+  padding-top: calc(var(--base) * 2);
+}
+
+/* ---------- Barre de navigation latérale ---------- */
+.nav {
+  background: var(--theme-elevation-50);
+  border-right: 1px solid var(--theme-elevation-150);
+}
+
+.nav-group__toggle {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--theme-elevation-500);
+  padding: 14px 18px 8px;
+}
+
+.nav__link {
+  border-radius: var(--lcs-radius-sm);
+  margin: 2px 8px;
+  padding: 9px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--theme-elevation-800);
+  transition: all 0.15s ease;
+}
+
+.nav__link:hover,
+.nav__link:focus-visible {
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-1000);
+}
+
+.nav__link.active,
+.nav__link[aria-current='page'] {
+  background: linear-gradient(0deg, rgba(201, 168, 76, 0.10), rgba(201, 168, 76, 0.16));
+  color: var(--lcs-gold-dark);
+  font-weight: 600;
+  box-shadow: inset 2px 0 0 var(--lcs-gold);
+}
+
+[data-theme='dark'] .nav__link.active,
+[data-theme='dark'] .nav__link[aria-current='page'] {
+  background: rgba(201, 168, 76, 0.14);
+  color: var(--lcs-gold-light);
+}
+
+.nav-group__indicator {
+  opacity: 0.6;
+}
+
+/* ---------- En-tête (App Header) ---------- */
+.app-header {
+  background: var(--theme-elevation-0);
+  border-bottom: 1px solid var(--theme-elevation-150);
+  backdrop-filter: blur(8px);
+}
+
+.step-nav a,
+.step-nav span {
+  color: var(--theme-elevation-500);
+  font-size: 13px;
+}
+
+.step-nav a:hover {
+  color: var(--lcs-gold-dark);
+}
+
+/* ---------- Boutons (inspirés de shadcn/ui) ----------
+   Design plus généreux, focus ring net, ombres subtiles.
+   Échelle de tailles : default (h-10) ≈ 40px, lg (h-12) ≈ 48px.
+   ---------------------------------------------------- */
+.btn,
+a.btn,
+button.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  line-height: 1;
+  min-height: 40px;
+  padding: 0 18px;
+  border: 1px solid var(--theme-elevation-200);
+  background: var(--theme-elevation-0);
+  color: var(--theme-elevation-1000);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.12s ease;
+}
+
+.btn:focus-visible,
+button.btn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--theme-bg),
+    0 0 0 4px var(--lcs-gold);
+}
+
+.btn:disabled,
+button.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Variant — primary (gold solid) */
+.btn--style-primary,
+.btn--icon-style-without-border.btn--style-primary {
+  background: var(--lcs-gold);
+  border-color: var(--lcs-gold);
+  color: #ffffff;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 1px 2px rgba(44, 36, 22, 0.10);
+}
+
+.btn--style-primary:hover {
+  background: var(--lcs-gold-dark);
+  border-color: var(--lcs-gold-dark);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 6px 18px rgba(160, 125, 46, 0.28);
+}
+
+.btn--style-primary:active {
+  transform: translateY(0);
+}
+
+/* Variant — secondary (outline) */
+.btn--style-secondary {
+  border-color: var(--theme-elevation-200);
+  color: var(--theme-elevation-1000);
+  background: var(--theme-elevation-0);
+  box-shadow: 0 1px 2px rgba(44, 36, 22, 0.04);
+}
+
+.btn--style-secondary:hover {
+  border-color: var(--lcs-gold);
+  color: var(--lcs-gold-dark);
+  background: rgba(201, 168, 76, 0.08);
+}
+
+/* Variant — error / destructive */
+.btn--style-error {
+  background: var(--lcs-bordeaux);
+  border-color: var(--lcs-bordeaux);
+  color: #ffffff;
+  box-shadow: 0 1px 2px rgba(139, 26, 26, 0.18);
+}
+
+.btn--style-error:hover {
+  background: #6F1414;
+  border-color: #6F1414;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(139, 26, 26, 0.28);
+}
+
+/* Variant — ghost / icon-only buttons (icône sans texte uniquement) */
+.btn--icon-style-without-border.btn--has-icon:not(.btn--has-label):not(.btn--style-primary):not(.btn--style-error) {
+  background: transparent;
+  border-color: transparent;
+  color: var(--theme-elevation-800);
+  min-height: 36px;
+  padding: 0 10px;
+  box-shadow: none;
+}
+
+.btn--icon-style-without-border.btn--has-icon:not(.btn--has-label):not(.btn--style-primary):not(.btn--style-error):hover {
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-1000);
+  transform: none;
+}
+
+/* En-tête des listes — titre à gauche, bouton "Créer" à droite */
+.list-header,
+.collection-list__header,
+.list-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-right: clamp(1rem, 2.5vw, 2rem);
+}
+
+.list-header h1,
+.list-header__title,
+.collection-list__header h1 {
+  margin-right: auto;
+}
+
+/* Aligne le bouton "Créer nouveau" sur la même ligne que les tabs (.lcs-mtabs)
+   en le positionnant absolument en haut à droite du conteneur de la liste. */
+.collection-list,
+.collection-list__wrap,
+.template-default__wrap {
+  position: relative;
+}
+
+.list-controls__create-new,
+.collection-list__create-new,
+.list-header__create-new,
+a.list-header__create-new-link,
+a[href$="/create"].btn,
+.list-header > a:not(.btn--style-secondary):last-child,
+.collection-list__header > a:last-child {
+  position: absolute;
+  top: -3.25rem;
+  right: 0;
+  margin: 0;
+  z-index: 5;
+}
+
+/* Icône "+" devant le label */
+.list-controls__create-new::before,
+.collection-list__create-new::before,
+.list-header__create-new::before,
+a.list-header__create-new-link::before,
+a[href$="/create"].btn::before,
+.list-header > a:not(.btn--style-secondary):last-child::before,
+.collection-list__header > a:last-child::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 8px;
+  background-color: currentColor;
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M12 5v14M5 12h14'/></svg>");
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M12 5v14M5 12h14'/></svg>");
+  -webkit-mask-size: contain;
+          mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+          mask-position: center;
+}
+
+/* Bouton "Créer nouveau" / liens d'action en haut des listes
+   (Payload utilise des classes variées selon l'élément) */
+.list-controls__create-new,
+.collection-list__create-new,
+.list-header__create-new,
+a.list-header__create-new-link,
+a[href$="/create"].btn,
+.list-header .btn:not(.btn--style-primary):not(.btn--style-error):not(.btn--style-secondary) {
+  background: var(--lcs-gold);
+  border-color: var(--lcs-gold);
+  color: #ffffff;
+  text-decoration: none;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 1px 2px rgba(44, 36, 22, 0.10);
+}
+
+.list-controls__create-new:hover,
+.collection-list__create-new:hover,
+.list-header__create-new:hover,
+a.list-header__create-new-link:hover,
+a[href$="/create"].btn:hover {
+  background: var(--lcs-gold-dark);
+  border-color: var(--lcs-gold-dark);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(160, 125, 46, 0.28);
+}
+
+/* Variant — pill / link-like (small text buttons) */
+.btn--size-small {
+  min-height: 32px;
+  padding: 0 12px;
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+/* Bouton "Sauvegarder" sticky en haut — taille augmentée (lg) */
+.doc-controls__controls .btn--style-primary,
+.doc-controls .btn--style-primary {
+  min-height: 44px;
+  padding: 0 24px;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* Bouton "Ajouter une entrée" sous les listes array */
+.array-field__add-row,
+.array-field__add-row .btn,
+.btn.array-field__add-button {
+  min-height: 40px;
+}
+
+/* ---------- Champs de formulaire ---------- */
+.field-type {
+  margin-bottom: 1.25rem;
+}
+
+.field-label,
+.field-type__label,
+label.field-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--theme-elevation-1000);
+  letter-spacing: 0.005em;
+  margin-bottom: 6px;
+}
+
+.field-label .required,
+.required {
+  color: var(--lcs-bordeaux);
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.field-description {
+  font-size: 12.5px;
+  color: var(--theme-elevation-500);
+  margin-top: 4px;
+  margin-bottom: 8px;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='number'],
+input[type='url'],
+input[type='date'],
+textarea,
+.rs__control,
+.rich-text-lexical {
+  border: 1px solid var(--theme-elevation-150) !important;
+  border-radius: var(--lcs-radius-sm) !important;
+  background: var(--theme-input-bg) !important;
+  color: var(--theme-elevation-1000) !important;
+  font-size: 14px !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+input[type='text']:focus,
+input[type='email']:focus,
+input[type='password']:focus,
+input[type='number']:focus,
+input[type='url']:focus,
+input[type='date']:focus,
+textarea:focus,
+.rs__control--is-focused {
+  border-color: var(--lcs-gold) !important;
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.18) !important;
+  outline: none !important;
+}
+
+/* Sélecteurs (react-select) */
+.rs__menu {
+  border-radius: var(--lcs-radius-sm) !important;
+  border: 1px solid var(--theme-elevation-150) !important;
+  box-shadow: var(--lcs-shadow-soft) !important;
+  overflow: hidden;
+}
+
+.rs__option--is-focused {
+  background: var(--theme-elevation-100) !important;
+  color: var(--theme-elevation-1000) !important;
+}
+
+.rs__option--is-selected {
+  background: var(--lcs-gold) !important;
+  color: #fff !important;
+}
+
+/* ---------- Cartes (Dashboard, listes) ---------- */
+.dashboard__card,
+.dashboard__group .card,
+.list-cards__card,
+.collection-cards__card {
+  background: var(--theme-elevation-0);
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--lcs-radius);
+  box-shadow: var(--lcs-shadow-soft);
+  transition: all 0.18s ease;
+  overflow: hidden;
+}
+
+.dashboard__card:hover,
+.list-cards__card:hover,
+.collection-cards__card:hover {
+  border-color: var(--lcs-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(201, 168, 76, 0.12);
+}
+
+.dashboard__card-title,
+.card__title {
+  font-family: var(--lcs-serif);
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--theme-elevation-1000);
+}
+
+/* ---------- Tableaux ---------- */
+.table thead th {
+  background: var(--theme-elevation-50);
+  border-bottom: 1px solid var(--theme-elevation-150);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--theme-elevation-500);
+}
+
+.table tbody tr {
+  transition: background 0.12s ease;
+}
+
+.table tbody tr:hover {
+  background: var(--theme-elevation-50);
+}
+
+.table tbody td {
+  border-bottom: 1px solid var(--theme-elevation-150);
+  padding: 14px 16px;
+}
+
+/* Vignettes (uploads) dans les colonnes des listes */
+.table .thumbnail,
+.table .upload-cell,
+.table .cell-thumbnail,
+.table .cell-photo,
+.table .cell-logo,
+.table .cell-image {
+  width: 64px;
+}
+
+.table .thumbnail img,
+.table .upload-cell img,
+.table .cell-thumbnail img,
+.table .cell-photo img,
+.table .cell-logo img,
+.table .cell-image img {
+  width: 56px !important;
+  height: 56px !important;
+  object-fit: cover;
+  border-radius: var(--lcs-radius-sm);
+  border: 1px solid var(--theme-elevation-150);
+  background: var(--theme-elevation-50);
+  display: block;
+}
+
+/* Cas où la cellule n'a pas d'image (placeholder discret) */
+.table td .file--has-no-image,
+.table td .upload__no-thumb {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--lcs-radius-sm);
+  background: var(--theme-elevation-50);
+  border: 1px dashed var(--theme-elevation-200);
+  color: var(--theme-elevation-400);
+  font-size: 11px;
+}
+
+/* ---------- Document edit (page d'édition) ---------- */
+.doc-header {
+  background: var(--theme-elevation-0);
+  border-bottom: 1px solid var(--theme-elevation-150);
+  padding-block: 1.25rem;
+}
+
+.doc-controls {
+  background: var(--theme-elevation-50);
+  border-bottom: 1px solid var(--theme-elevation-150);
+}
+
+.doc-tabs {
+  border-bottom: 1px solid var(--theme-elevation-150);
+}
+
+.doc-tab__link {
+  font-weight: 500;
+  color: var(--theme-elevation-500);
+  border-bottom: 2px solid transparent;
+  padding: 10px 16px;
+  transition: all 0.15s ease;
+}
+
+.doc-tab__link:hover {
+  color: var(--theme-elevation-1000);
+}
+
+.doc-tab--active .doc-tab__link,
+.doc-tab__link[aria-selected='true'] {
+  color: var(--lcs-gold-dark);
+  border-bottom-color: var(--lcs-gold);
+  font-weight: 600;
+}
+
+/* Cadre principal du formulaire */
+.collection-edit__main,
+.global-edit__main,
+.doc-fields {
+  background: var(--theme-elevation-0);
+  border-radius: var(--lcs-radius);
+  border: 1px solid var(--theme-elevation-150);
+  padding: 1.75rem;
+  box-shadow: var(--lcs-shadow-soft);
+}
+
+.collection-edit__sidebar,
+.global-edit__sidebar,
+.doc-sidebar {
+  background: var(--theme-elevation-50);
+  border-radius: var(--lcs-radius);
+  border: 1px solid var(--theme-elevation-150);
+  padding: 1.25rem;
+}
+
+/* ---------- Groupes de champs (cadres) ---------- */
+.field-type.group .group__header,
+.collapsible__toggle-wrap {
+  background: var(--theme-elevation-50);
+  border-radius: var(--lcs-radius-sm) var(--lcs-radius-sm) 0 0;
+  padding: 10px 14px;
+}
+
+.collapsible {
+  border: 1px solid var(--theme-elevation-150) !important;
+  border-radius: var(--lcs-radius-sm) !important;
+  overflow: hidden;
+  margin-bottom: 1rem !important;
+}
+
+.collapsible__content {
+  padding: 1.25rem !important;
+  background: var(--theme-elevation-0);
+}
+
+/* ---------- Tabs de champs ---------- */
+.tabs-field__tabs {
+  border-bottom: 1px solid var(--theme-elevation-150);
+  gap: 4px;
+}
+
+.tabs-field__tab-button {
+  padding: 10px 14px;
+  font-weight: 500;
+  color: var(--theme-elevation-500);
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.tabs-field__tab-button--active {
+  color: var(--lcs-gold-dark);
+  border-bottom-color: var(--lcs-gold);
+}
+
+/* ---------- Formulaire array (lignes répétables) ---------- */
+.array-field__draggable-rows .array-field__row,
+.array-field__row {
+  border: 1px solid var(--theme-elevation-150) !important;
+  border-radius: var(--lcs-radius-sm);
+  background: var(--theme-elevation-50);
+  margin-bottom: 0.75rem;
+}
+
+.array-field__row-header {
+  background: var(--theme-elevation-50);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--theme-elevation-150);
+}
+
+.array-field__add-row {
+  margin-top: 0.5rem;
+}
+
+/* ---------- Bandeau "Live preview" ---------- */
+.live-preview-window {
+  border-radius: var(--lcs-radius);
+  border: 1px solid var(--theme-elevation-150);
+  overflow: hidden;
+}
+
+/* ---------- Toasts (messages de confirmation) ---------- */
+.payload-toast-container .toast-success {
+  background: #EAF5EE;
+  color: #1F5E3A;
+  border-left: 4px solid #2F8F60;
+}
+
+.payload-toast-container .toast-error {
+  background: #FBECEC;
+  color: var(--lcs-bordeaux);
+  border-left: 4px solid var(--lcs-bordeaux);
+}
+
+/* ---------- Page de connexion ---------- */
+.login,
+.create-first-user {
+  background: var(--lcs-cream) !important;
+  background-image:
+    radial-gradient(ellipse at top, rgba(201, 168, 76, 0.08), transparent 60%),
+    radial-gradient(ellipse at bottom, rgba(139, 26, 26, 0.04), transparent 50%) !important;
+}
+
+[data-theme='dark'] .login,
+[data-theme='dark'] .create-first-user {
+  background: var(--theme-bg) !important;
+  background-image:
+    radial-gradient(ellipse at top, rgba(201, 168, 76, 0.12), transparent 60%) !important;
+}
+
+.login__wrap,
+.create-first-user__wrap {
+  background: var(--theme-elevation-0);
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--lcs-radius);
+  box-shadow: 0 24px 60px rgba(44, 36, 22, 0.08);
+  padding: 2.5rem;
+}
+
+.login__brand,
+.create-first-user__wrap h1 {
+  text-align: center;
+}
+
+/* ---------- Tableau de bord (dashboard) ---------- */
+.dashboard {
+  padding-top: 0;
+}
+
+.dashboard__group {
+  margin-bottom: 2.5rem;
+}
+
+.dashboard__card-list {
+  gap: 1rem;
+}
+
+/* ---------- Bandeau de bienvenue (custom) ---------- */
+.lcs-welcome {
+  background: linear-gradient(135deg, var(--lcs-cream-alt) 0%, var(--lcs-cream) 100%);
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--lcs-radius);
+  padding: 2rem 2.25rem;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme='dark'] .lcs-welcome {
+  background: linear-gradient(135deg, var(--theme-elevation-50) 0%, var(--theme-elevation-100) 100%);
+}
+
+.lcs-welcome::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(201, 168, 76, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.lcs-welcome__eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--lcs-gold-dark);
+  margin-bottom: 0.5rem;
+}
+
+.lcs-welcome__title {
+  font-family: var(--lcs-serif);
+  font-size: 2.25rem;
+  line-height: 1.15;
+  color: var(--theme-elevation-1000);
+  margin: 0 0 0.5rem;
+  font-weight: 500;
+}
+
+.lcs-welcome__title em {
+  color: var(--lcs-gold-dark);
+  font-style: italic;
+}
+
+.lcs-welcome__subtitle {
+  color: var(--theme-elevation-500);
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 60ch;
+}
+
+/* ---------- Cartes raccourcis ---------- */
+.lcs-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.lcs-shortcut {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem 1.25rem 1.1rem;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--lcs-radius);
+  background: var(--theme-elevation-0);
+  color: var(--theme-elevation-1000);
+  text-decoration: none;
+  transition: all 0.18s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.lcs-shortcut::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px transparent;
+  transition: box-shadow 0.18s ease;
+}
+
+.lcs-shortcut:hover {
+  transform: translateY(-2px);
+  border-color: var(--lcs-gold);
+  box-shadow: 0 10px 28px rgba(201, 168, 76, 0.14);
+  color: var(--theme-elevation-1000);
+}
+
+.lcs-shortcut:hover::after {
+  box-shadow: inset 0 0 0 1px var(--lcs-gold);
+}
+
+.lcs-shortcut__icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.18), rgba(201, 168, 76, 0.06));
+  color: var(--lcs-gold-dark);
+  font-size: 18px;
+  margin-bottom: 0.25rem;
+}
+
+.lcs-shortcut__title {
+  font-family: var(--lcs-serif);
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--theme-elevation-1000);
+}
+
+.lcs-shortcut__desc {
+  font-size: 12.5px;
+  color: var(--theme-elevation-500);
+  line-height: 1.45;
+}
+
+.lcs-shortcut__hint {
+  font-size: 11px;
+  color: var(--lcs-gold-dark);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ---------- Section "À propos" sur le dashboard ---------- */
+.lcs-tip {
+  background: var(--theme-elevation-50);
+  border: 1px dashed var(--theme-elevation-200);
+  border-radius: var(--lcs-radius-sm);
+  padding: 1rem 1.25rem;
+  font-size: 13.5px;
+  color: var(--theme-elevation-800);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+
+.lcs-tip__icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.lcs-tip strong {
+  color: var(--theme-elevation-1000);
+  font-weight: 600;
+}
+
+/* ---------- Cacher le bandeau Payload par défaut sur le dashboard ---------- */
+.dashboard > .gutter--left.gutter--right > h1:first-child,
+.dashboard__welcome {
+  display: none;
+}
+
+/* ---------- Améliorations diverses ---------- */
+hr,
+.field-type__hr {
+  border-color: var(--theme-elevation-150);
+}
+
+::selection {
+  background: rgba(201, 168, 76, 0.35);
+  color: var(--theme-elevation-1000);
+}
+
+/* Scrollbar discrète */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--theme-elevation-200);
+  border-radius: 10px;
+  border: 2px solid var(--theme-bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--lcs-gold);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .lcs-welcome {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .lcs-welcome__title {
+    font-size: 1.6rem;
+  }
+
+  .lcs-shortcuts {
+    grid-template-columns: 1fr;
+  }
+
+  .collection-edit__main,
+  .global-edit__main,
+  .doc-fields {
+    padding: 1.25rem;
+  }
+}
+
+/* ==========================================================================
+   Musicians tabs (beforeList nav) — shadcn TabsList aesthetic
+   Horizontal segmented control. Active tab has a raised "background" pill,
+   inactive tabs are flat ghost buttons with muted text.
+   ========================================================================== */
+.lcs-mtabs {
+  margin: clamp(1rem, 2vw, 1.5rem) 0 1.5rem clamp(1rem, 2.5vw, 2rem);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+
+.lcs-mtabs__eyebrow {
+  margin: 0;
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--theme-elevation-500);
+}
+
+.lcs-mtabs__row {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  background: var(--theme-elevation-100);
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 9px;
+}
+
+.lcs-mtab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 6px 14px;
+  height: 32px;
+  border-radius: 6px;
+  background: transparent;
+  text-decoration: none;
+  color: var(--theme-elevation-500);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0;
+  white-space: nowrap;
+  transition: background 140ms ease, color 140ms ease, box-shadow 140ms ease;
+}
+
+.lcs-mtab:hover {
+  color: var(--theme-elevation-1000);
+  text-decoration: none;
+}
+
+.lcs-mtab:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--theme-bg), 0 0 0 4px var(--lcs-gold);
+}
+
+.lcs-mtab.is-active {
+  background: var(--theme-elevation-0);
+  color: var(--theme-elevation-1000);
+  font-weight: 600;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 1px 2px rgba(44, 36, 22, 0.08),
+    0 0 0 1px var(--theme-elevation-150);
+}
+
+[data-theme='dark'] .lcs-mtab.is-active {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 1px 4px rgba(0, 0, 0, 0.25),
+    0 0 0 1px var(--theme-elevation-200);
+}
+
+.lcs-mtab__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lcs-mtab__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--lcs-bordeaux);
+  color: #fff;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.lcs-mtab__hint {
+  font-size: 12px;
+  color: var(--theme-elevation-400);
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+.lcs-mtab.is-active .lcs-mtab__hint {
+  color: var(--theme-elevation-500);
+}
+
+[data-theme='dark'] .lcs-mtab.is-active {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--lcs-gold) 18%, transparent) 0%,
+    var(--theme-elevation-100) 100%
+  );
+}
+
+/* ==========================================================================
+   Promote button — header slot (beforeDocumentControls) on MusicianSubmissions
+   ========================================================================== */
+.lcs-promote {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.lcs-promote--inline {
+  margin-right: 0.5rem;
+}
+
+.lcs-promote__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--lcs-gold);
+  border-radius: var(--lcs-radius-sm);
+  background: var(--lcs-gold);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 160ms ease, border-color 160ms ease, transform 120ms ease,
+    box-shadow 160ms ease;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.18) inset, 0 1px 2px rgba(44, 36, 22, 0.12);
+}
+
+.lcs-promote__btn:hover:not(:disabled) {
+  background: var(--lcs-gold-dark);
+  border-color: var(--lcs-gold-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 6px 18px rgba(160, 125, 46, 0.32);
+}
+
+.lcs-promote__btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.lcs-promote__btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.lcs-promote__btn.is-done {
+  background: var(--theme-elevation-100);
+  border-color: var(--theme-elevation-200);
+  color: var(--theme-elevation-800);
+  box-shadow: none;
+}
+
+.lcs-promote__btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.lcs-promote__hint {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--theme-elevation-500);
+}
+
+.lcs-promote__error,
+.lcs-promote__info {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.7rem;
+  border-radius: var(--lcs-radius-sm);
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+
+.lcs-promote__error {
+  background: color-mix(in srgb, var(--lcs-bordeaux) 12%, transparent);
+  color: var(--lcs-bordeaux);
+}
+
+.lcs-promote__info {
+  background: color-mix(in srgb, var(--lcs-gold) 14%, transparent);
+  color: var(--lcs-gold-dark);
+}
+
+/* Modale de confirmation — corps */
+.lcs-promote-modal-body p {
+  margin: 0 0 0.85rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--theme-elevation-800);
+}
+
+.lcs-promote-modal-body p strong {
+  color: var(--theme-elevation-1000);
+  font-weight: 600;
+}
+
+.lcs-promote-modal-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.lcs-promote-modal-list li {
+  position: relative;
+  padding-left: 1.3rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--theme-elevation-800);
+}
+
+.lcs-promote-modal-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 0.7rem;
+  height: 1px;
+  background: var(--lcs-gold);
+  opacity: 0.85;
+}
+
+.lcs-promote-modal-list em {
+  font-family: var(--lcs-serif);
+  font-style: italic;
+  color: var(--lcs-gold-dark);
+  font-size: 1.02em;
+}
+

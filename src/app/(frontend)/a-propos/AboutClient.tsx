@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useLivePreview } from '@payloadcms/live-preview-react';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FadeIn } from '@/components/FadeIn';
-import { ImagePlaceholder } from '@/components/PlaceholderIcon';
+import { stockImages } from '@/lib/unsplash';
 
 interface AboutClientProps {
   initialData: any;
@@ -28,90 +28,94 @@ export function AboutClient({ initialData, timelineEvents }: AboutClientProps) {
   const intro = data.intro;
   const stats = data.stats || [];
 
+  const introParas = (intro?.content || '').split('\n\n').filter(Boolean);
+
   return (
-    <>
+    <div className="about-page">
       {/* PAGE HEADER */}
       <div className="page-header">
         <div className="container">
           <p className="breadcrumb">
-            <Link href="/">Accueil</Link> / À propos
+            <Link href="/">Accueil</Link> &nbsp;/&nbsp; À propos
           </p>
-          <h1>À propos de l&apos;orchestre</h1>
+          <h1>L'orchestre</h1>
           <p>
-            Un orchestre fondé en 2017 par Loïc Emmelin, porté par la passion
-            et l&apos;ambition du répertoire symphonique.
+            Un orchestre fondé en 2017 par Loïc Emmelin, porté par
+            l'ambition du répertoire symphonique en effectif resserré.
           </p>
         </div>
       </div>
 
-      {/* ABOUT INTRO */}
+      {/* INTRO — editorial split */}
       <div data-live-field="intro">
         <section className="about-intro">
-          <div className="container">
-            <div className="about-content">
-              <FadeIn>
-                <p className="section-subtitle">{intro?.subtitle}</p>
-                <h2>{intro?.title}</h2>
-                {intro?.content
-                  ?.split('\n\n')
-                  .map((p: string, i: number) => <p key={i}>{p}</p>)}
-              </FadeIn>
-              <div className="about-image">
-                {intro?.image?.url ? (
-                  <Image
-                    src={intro.image.url}
-                    alt={intro.image.alt || 'Photo de l\'orchestre'}
-                    width={600}
-                    height={400}
-                    style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                  />
-                ) : (
-                  <ImagePlaceholder size={80} />
-                )}
+          <div className="about-intro__inner">
+            <FadeIn className="about-intro__media">
+              <Image
+                src={intro?.image?.url || stockImages.conductor}
+                alt={intro?.image?.alt || "Photo de l'orchestre"}
+                width={900}
+                height={1100}
+                sizes="(max-width: 900px) 100vw, 45vw"
+                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+              />
+            </FadeIn>
+
+            <FadeIn className="about-intro__text">
+              <p className="eyebrow eyebrow--gold">{intro?.subtitle || 'Notre histoire'}</p>
+              <h2 className="about-intro__title">{intro?.title}</h2>
+              <hr className="velvet-rule" />
+              <div className="about-intro__prose">
+                {introParas.map((p: string, i: number) => (
+                  <p key={i} data-lead={i === 0 ? 'true' : undefined}>{p}</p>
+                ))}
               </div>
-            </div>
+            </FadeIn>
           </div>
         </section>
       </div>
 
-      {/* CHIFFRES CLÉS */}
-      <div data-live-field="stats">
-        <section style={{ background: 'var(--color-bg-alt)' }}>
-          <div className="container">
-            <p className="section-subtitle" style={{ textAlign: 'center' }}>
-              En quelques chiffres
-            </p>
-            <h2 className="section-title">L&apos;orchestre en chiffres</h2>
-            <div className="stats-grid">
+      {/* STATS — simplified inline ribbon */}
+      {stats.length > 0 && (
+        <div data-live-field="stats">
+          <section className="about-stats">
+            <ul className="about-stats__list">
               {stats.map((stat: any, i: number) => (
-                <FadeIn className="stat-item" key={i}>
-                  <span className="number">{stat.number}</span>
-                  <span className="label">{stat.label}</span>
+                <FadeIn key={i}>
+                  <li>
+                    <span className="about-stats__number">{stat.number}</span>
+                    <span className="about-stats__label">{stat.label}</span>
+                  </li>
                 </FadeIn>
               ))}
-            </div>
-          </div>
-        </section>
-      </div>
+            </ul>
+          </section>
+        </div>
+      )}
 
-      {/* HISTORIQUE */}
-      <section className="history-section">
-        <div className="container">
-          <p className="section-subtitle" style={{ textAlign: 'center' }}>
-            Notre parcours
-          </p>
-          <h2 className="section-title">Les grandes dates</h2>
+      {/* TIMELINE — editorial */}
+      {timelineEvents.length > 0 && (
+        <section className="about-timeline">
+          <header className="about-timeline__head">
+            <p className="eyebrow eyebrow--gold">Le parcours</p>
+            <h2 className="about-timeline__title">
+              <em>Les grandes dates</em>
+            </h2>
+            <hr className="velvet-rule" />
+          </header>
 
-          <div className="timeline">
+          <ol className="timeline-editorial">
             {timelineEvents.map((item: any) => (
-              <FadeIn className="timeline-item" key={item.id || item.year}>
-                <div className="year">{item.year}</div>
-                <p>{item.description}</p>
+              <FadeIn key={item.id || item.year}>
+                <li className="timeline-editorial__item">
+                  <span className="timeline-editorial__year">{item.year}</span>
+                  <p className="timeline-editorial__desc">{item.description}</p>
+                </li>
               </FadeIn>
             ))}
-          </div>
-        </div>
-      </section>
-    </>
+          </ol>
+        </section>
+      )}
+    </div>
   );
 }

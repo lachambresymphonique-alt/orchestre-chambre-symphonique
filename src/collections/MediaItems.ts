@@ -5,9 +5,9 @@ export const MediaItems: CollectionConfig = {
   labels: { singular: 'Média', plural: 'Médias' },
   admin: {
     useAsTitle: 'title',
-    group: 'Médiathèque',
+    group: 'Contenu',
     description: 'Vidéos, extraits audio et photos affichés sur la page Médias.',
-    defaultColumns: ['title', 'type', 'date'],
+    defaultColumns: ['thumbnail', 'title', 'type', 'date'],
   },
   defaultSort: 'order',
   fields: [

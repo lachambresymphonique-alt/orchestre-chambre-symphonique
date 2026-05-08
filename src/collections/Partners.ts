@@ -7,7 +7,7 @@ export const Partners: CollectionConfig = {
     useAsTitle: 'name',
     group: 'Contenu',
     description: 'Logos et liens des partenaires affichés en bas de la page d\'accueil.',
-    defaultColumns: ['name', 'url'],
+    defaultColumns: ['logo', 'name', 'url'],
   },
   defaultSort: 'order',
   fields: [

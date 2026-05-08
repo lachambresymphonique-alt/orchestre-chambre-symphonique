@@ -4,7 +4,7 @@ export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
   label: 'Paramètres du site',
   admin: {
-    group: 'Configuration',
+    group: 'Réglages',
     description: 'Informations générales du site : coordonnées, réseaux sociaux, horaires.',
   },
   fields: [

@@ -18,6 +18,23 @@ export const HomePage: GlobalConfig = {
         { name: 'titleLine1', type: 'text', label: 'Titre — ligne 1' },
         { name: 'titleLine2Italic', type: 'text', label: 'Titre — ligne 2 (italique)' },
         { name: 'description', type: 'textarea', label: 'Description', admin: { description: 'Texte d\'accroche sous le titre.' } },
+        {
+          name: 'portraitImage',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Photo de la bannière',
+          admin: {
+            description: 'Image principale (portrait) à droite du titre. Si laissée vide, la photo du directeur artistique est utilisée à défaut.',
+          },
+        },
+        {
+          name: 'portraitCaption',
+          type: 'text',
+          label: 'Légende de la photo',
+          admin: {
+            description: 'Petit texte affiché en bas de la photo. Ex : « Loïc Emmelin, direction ».',
+          },
+        },
         { name: 'ctaPrimaryText', type: 'text', label: 'Bouton principal — texte', admin: { description: 'Ex : « Découvrir nos concerts »' } },
         { name: 'ctaPrimaryLink', type: 'text', label: 'Bouton principal — lien', admin: { description: 'Page vers laquelle le bouton redirige (ex : /nous-soutenir).' } },
         { name: 'ctaSecondaryText', type: 'text', label: 'Bouton secondaire — texte' },

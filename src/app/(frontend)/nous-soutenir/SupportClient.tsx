@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useLivePreview } from '@payloadcms/live-preview-react';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FadeIn } from '@/components/FadeIn';
+import { DonationSimulator } from '@/components/DonationSimulator';
 
 interface SupportClientProps {
   initialData: any;
@@ -109,6 +110,8 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
           </FadeIn>
         </section>
       )}
+
+      <DonationSimulator />
 
       <section style={{ background: 'var(--color-bg)' }}>
         <div className="container">
