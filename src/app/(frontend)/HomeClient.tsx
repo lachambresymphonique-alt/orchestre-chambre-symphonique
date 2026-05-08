@@ -51,6 +51,14 @@ export function HomeClient({
 
   const directorSlug = director?.slug || director?.id;
 
+  const featuredCfg = data?.featured || {};
+  const directorLabel: string = featuredCfg.directorLabel || 'Le chef';
+  const directorLinkLabel: string = featuredCfg.directorLinkLabel || 'Sa vision';
+  const soloistsTitle: string = featuredCfg.soloistsTitle || 'Solistes invités';
+  const soloistsIntro: string = featuredCfg.soloistsIntro || '';
+  const featuredSoloists: Array<{ soloist: any; contextOverride?: string }> =
+    Array.isArray(featuredCfg.soloists) ? featuredCfg.soloists : [];
+
   return (
     <>
       {/* HERO — type cathedral with portrait */}
@@ -290,7 +298,7 @@ export function HomeClient({
               />
             </div>
             <div className="bento-card__text">
-              <p className="eyebrow eyebrow--on-dark eyebrow--accent">Le chef</p>
+              <p className="eyebrow eyebrow--on-dark eyebrow--accent">{directorLabel}</p>
               <h3 className="bento-card__title">
                 <em>{director?.name || 'Loïc Emmelin'}</em>
               </h3>
@@ -298,7 +306,7 @@ export function HomeClient({
                 {director?.tagline ||
                   'Violoniste de formation, directeur artistique de l\'orchestre depuis sa fondation en 2017.'}
               </p>
-              <span className="link-arrow link-arrow--on-dark">Sa vision →</span>
+              <span className="link-arrow link-arrow--on-dark">{directorLinkLabel} →</span>
             </div>
           </Link>
 
@@ -346,6 +354,73 @@ export function HomeClient({
           </Link>
         </div>
       </section>
+
+      {/* SOLOISTES — guest spotlight, editorial row */}
+      {featuredSoloists.length > 0 && (
+        <section
+          className="home-soloists"
+          data-live-field="featured.soloists"
+        >
+          <header className="home-soloists__head">
+            <p className="eyebrow eyebrow--accent">Avec nous</p>
+            <h2 className="home-soloists__title">
+              <em>{soloistsTitle}</em>
+            </h2>
+            <hr className="velvet-rule long" />
+            {soloistsIntro && (
+              <p className="home-soloists__intro">{soloistsIntro}</p>
+            )}
+          </header>
+
+          <ul className="home-soloists__list" role="list">
+            {featuredSoloists.map((entry, i) => {
+              const s = entry?.soloist;
+              if (!s || typeof s !== 'object') return null;
+              const ctx = entry?.contextOverride?.trim() || s?.context || '';
+              const photoUrl = s?.photo?.url;
+              return (
+                <FadeIn key={s.id || i} className="home-soloist">
+                  <div className="home-soloist__portrait">
+                    {photoUrl ? (
+                      <Image
+                        src={photoUrl}
+                        alt={s.photo?.alt || s.name}
+                        fill
+                        sizes="(max-width: 700px) 80vw, 360px"
+                        style={{ objectFit: 'cover', objectPosition: 'center' }}
+                      />
+                    ) : (
+                      <div className="home-soloist__portrait-fallback" aria-hidden>
+                        <span>{(s.name || '?').charAt(0)}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="home-soloist__text">
+                    <p className="home-soloist__instrument">{s.instrument}</p>
+                    <h3 className="home-soloist__name">
+                      <em>{s.name}</em>
+                    </h3>
+                    {ctx && <p className="home-soloist__context">{ctx}</p>}
+                    {s.tagline && (
+                      <p className="home-soloist__tagline">{s.tagline}</p>
+                    )}
+                    {s.website && (
+                      <a
+                        href={s.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="link-arrow link-arrow--mute"
+                      >
+                        Son univers →
+                      </a>
+                    )}
+                  </div>
+                </FadeIn>
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
       {/* PRESENTATION — long-form (kept) */}
       <div data-live-field="presentation">

@@ -1463,6 +1463,160 @@ p {
 }
 
 /* ============================================================
+   HOME SOLOISTS — guest spotlight, editorial row
+   ============================================================ */
+.home-soloists {
+  padding: clamp(5rem, 9vw, 8rem) var(--gutter) clamp(4rem, 7vw, 6rem);
+  background: var(--paper);
+  color: var(--bordeaux-deep);
+  position: relative;
+  overflow: hidden;
+}
+
+.home-soloists__head {
+  max-width: 56rem;
+  margin: 0 auto clamp(3rem, 5vw, 4.5rem);
+  text-align: left;
+}
+
+.home-soloists__title {
+  font-family: var(--font-display);
+  font-variation-settings: var(--fraunces-display);
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: -0.022em;
+  color: var(--bordeaux);
+  margin: 1rem 0 1.5rem;
+}
+
+.home-soloists__title em {
+  font-style: italic;
+  color: var(--velvet);
+}
+
+.home-soloists__head .velvet-rule.long {
+  margin: 0 0 1.5rem;
+}
+
+.home-soloists__intro {
+  font-family: var(--font-body-serif);
+  font-variation-settings: "opsz" 28, "SOFT" 90;
+  font-style: italic;
+  font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+  line-height: 1.55;
+  color: var(--bordeaux-deep);
+  max-width: 56ch;
+}
+
+.home-soloists__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
+  gap: clamp(2.5rem, 4vw, 3.75rem);
+  max-width: var(--max-width-wide);
+  margin: 0 auto;
+}
+
+.home-soloist {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  break-inside: avoid;
+}
+
+.home-soloist__portrait {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: var(--paper-soft);
+  overflow: hidden;
+}
+
+.home-soloist__portrait-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 6rem;
+  color: var(--velvet);
+  opacity: 0.55;
+  background: radial-gradient(
+    circle at 50% 35%,
+    color-mix(in oklch, var(--velvet) 18%, transparent) 0%,
+    transparent 60%
+  );
+}
+
+.home-soloist__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-right: 0.5rem;
+}
+
+.home-soloist__instrument {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+  margin: 0;
+}
+
+.home-soloist__name {
+  font-family: var(--font-display);
+  font-variation-settings: var(--fraunces-display);
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  line-height: 1.05;
+  font-weight: 400;
+  letter-spacing: -0.018em;
+  color: var(--bordeaux);
+  margin: 0.15rem 0 0.4rem;
+}
+
+.home-soloist__name em {
+  font-style: italic;
+}
+
+.home-soloist__context {
+  font-family: var(--font-body-serif);
+  font-variation-settings: "opsz" 18, "SOFT" 90;
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: var(--velvet);
+  margin: 0;
+}
+
+.home-soloist__tagline {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--bordeaux-deep);
+  margin: 0;
+  max-width: 32ch;
+}
+
+.home-soloist .link-arrow {
+  margin-top: 0.4rem;
+  align-self: flex-start;
+}
+
+@media (max-width: 700px) {
+  .home-soloists__list {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+}
+
+/* ============================================================
    HOME PRESENTATION — editorial split
    ============================================================ */
 .home-presentation {

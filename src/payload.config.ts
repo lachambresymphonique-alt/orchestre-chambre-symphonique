@@ -18,6 +18,7 @@ import { SupportTiers } from './collections/SupportTiers';
 import { Pages } from './collections/Pages';
 import { ContactSubmissions } from './collections/ContactSubmissions';
 import { MusicianSubmissions } from './collections/MusicianSubmissions';
+import { Soloists } from './collections/Soloists';
 
 import { SiteSettings } from './globals/SiteSettings';
 import { HomePage } from './globals/HomePage';
@@ -91,6 +92,7 @@ export default buildConfig({
     // Contenu
     Concerts,
     Musicians,
+    Soloists,
     MediaItems,
     Partners,
     TimelineEvents,
