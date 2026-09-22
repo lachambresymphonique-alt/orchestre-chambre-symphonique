@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getPayloadClient } from '@/lib/payload';
 import nodemailer from 'nodemailer';
 import {
+  FORM_TOKEN_ERRORS,
   checkFormToken,
   getFormSecret,
   isHoneypotFilled,
   turnstileConfigured,
   verifyTurnstile,
-  type FormTokenStatus,
 } from '@/lib/antispam';
 
 const SUBJECT_LABELS: Record<string, string> = {
@@ -24,13 +24,6 @@ const MAX_NAME_LENGTH = 200;
 const MAX_EMAIL_LENGTH = 254;
 const MAX_MESSAGE_LENGTH = 5_000;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-const TOKEN_ERRORS: Record<Exclude<FormTokenStatus, 'ok'>, string> = {
-  'too-fast': 'Le message a été envoyé trop vite. Prenez un instant, puis réessayez.',
-  expired: 'Le formulaire a expiré. Merci de recharger la page.',
-  missing: 'Le formulaire a expiré. Merci de recharger la page.',
-  invalid: 'Le formulaire a expiré. Merci de recharger la page.',
-};
 
 function clientIp(req: NextRequest): string | null {
   const forwarded = req.headers.get('x-forwarded-for');
@@ -75,7 +68,7 @@ export async function POST(req: NextRequest) {
     //    rempli en moins de 3 secondes.
     const tokenStatus = checkFormToken(formToken, getFormSecret());
     if (tokenStatus !== 'ok') {
-      return badRequest(TOKEN_ERRORS[tokenStatus]);
+      return badRequest(FORM_TOKEN_ERRORS[tokenStatus]);
     }
 
     // 4. Captcha Cloudflare Turnstile, si configuré.
@@ -92,7 +85,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 5. Enregistrement. La collection refuse les créations anonymes via l'API
-    //    REST publique ; ici on passe par l'API locale, hors contrôle d'accès.
+    //    publique (REST/GraphQL) ; ici on passe par l'API locale, hors contrôle d'accès.
     const payload = await getPayloadClient();
     await payload.create({
       collection: 'contact-submissions' as any,

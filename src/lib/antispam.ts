@@ -38,6 +38,14 @@ export function issueFormToken(secret: string, now: number = Date.now()): string
 
 export type FormTokenStatus = 'ok' | 'missing' | 'invalid' | 'too-fast' | 'expired';
 
+/** Message affiché à l'internaute pour chaque refus du jeton (partagé par les formulaires). */
+export const FORM_TOKEN_ERRORS: Record<Exclude<FormTokenStatus, 'ok'>, string> = {
+  'too-fast': 'Envoi trop rapide. Prenez un instant, puis réessayez.',
+  expired: 'Le formulaire a expiré. Merci de recharger la page.',
+  missing: 'Le formulaire a expiré. Merci de recharger la page.',
+  invalid: 'Le formulaire a expiré. Merci de recharger la page.',
+};
+
 export function checkFormToken(
   token: unknown,
   secret: string,

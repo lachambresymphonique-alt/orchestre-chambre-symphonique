@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent, useRef, ChangeEvent } from 'react';
+import { useState, FormEvent, useRef, ChangeEvent, CSSProperties } from 'react';
 
 const SECTIONS = [
   { value: 'cordes', label: 'Cordes' },
@@ -10,7 +10,23 @@ const SECTIONS = [
   { value: '', label: 'Je laisse l’équipe décider' },
 ] as const;
 
-export function MusicianSubmissionForm() {
+// Pot de miel : hors écran (pas `display: none`, que certains robots détectent),
+// inaccessible au clavier et aux lecteurs d'écran.
+const HONEYPOT_STYLE: CSSProperties = {
+  position: 'absolute',
+  left: '-10000px',
+  top: 'auto',
+  width: 1,
+  height: 1,
+  overflow: 'hidden',
+};
+
+type MusicianSubmissionFormProps = {
+  /** Jeton signé côté serveur : prouve que la page a été chargée et mesure le temps de remplissage. */
+  formToken: string;
+};
+
+export function MusicianSubmissionForm({ formToken }: MusicianSubmissionFormProps) {
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
   const [section, setSection] = useState<string>('');
@@ -71,6 +87,13 @@ export function MusicianSubmissionForm() {
 
   return (
     <form className="contribute-form" onSubmit={handleSubmit} noValidate>
+      {/* Anti-robots : jeton signé (vérifié par l'API) et pot de miel. */}
+      <input type="hidden" name="formToken" value={formToken} />
+      <div style={HONEYPOT_STYLE} aria-hidden="true">
+        <label htmlFor="website">Site web</label>
+        <input type="text" id="website" name="website" tabIndex={-1} autoComplete="off" />
+      </div>
+
       {/* ============ ACT 1 — L’essentiel ============ */}
       <fieldset className="contribute-act">
         <legend className="contribute-act__legend">

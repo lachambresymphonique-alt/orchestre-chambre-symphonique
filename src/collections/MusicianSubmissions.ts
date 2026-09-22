@@ -19,7 +19,10 @@ export const MusicianSubmissions: CollectionConfig = {
     },
   },
   access: {
-    create: () => true,
+    // Les fiches n'arrivent que par la route /api/musician-submissions (API
+    // locale, hors contrôle d'accès), qui applique pot de miel et jeton signé.
+    // Sans cela, un robot contournerait le formulaire via GraphQL ou REST.
+    create: ({ req }) => !!req.user,
     read: ({ req }) => !!req.user,
     update: ({ req }) => !!req.user,
     delete: ({ req }) => !!req.user,

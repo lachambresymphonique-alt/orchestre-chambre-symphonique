@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { MusicianSubmissionForm } from '@/components/MusicianSubmissionForm';
+import { getFormSecret, issueFormToken } from '@/lib/antispam';
 
 export const metadata: Metadata = {
   title: 'Compléter ma fiche musicien — La Chambre Symphonique',
@@ -9,6 +10,9 @@ export const metadata: Metadata = {
 };
 
 export default function MusicianContributePage() {
+  // Jeton anti-robot : émis à chaque rendu (page dynamique), vérifié par /api/musician-submissions.
+  const formToken = issueFormToken(getFormSecret());
+
   return (
     <div className="contribute-page">
       <span className="contribute-halo" aria-hidden />
@@ -23,7 +27,7 @@ export default function MusicianContributePage() {
       </header>
 
       <section className="contribute-form-wrap">
-        <MusicianSubmissionForm />
+        <MusicianSubmissionForm formToken={formToken} />
       </section>
     </div>
   );

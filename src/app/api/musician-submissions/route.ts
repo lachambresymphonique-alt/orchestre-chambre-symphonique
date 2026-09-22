@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPayloadClient } from '@/lib/payload';
 import nodemailer from 'nodemailer';
+import {
+  FORM_TOKEN_ERRORS,
+  checkFormToken,
+  getFormSecret,
+  isHoneypotFilled,
+} from '@/lib/antispam';
 
 const ALLOWED_SECTIONS = new Set(['direction', 'cordes', 'vents', 'claviers']);
 const ALLOWED_PHOTO_MIMETYPES = new Set([
@@ -9,25 +15,55 @@ const ALLOWED_PHOTO_MIMETYPES = new Set([
   'image/webp',
 ]);
 const MAX_PHOTO_BYTES = 10 * 1024 * 1024; // 10 MB
+/** Garde-fou contre les envois massifs ; largement au-dessus d'une fiche normale. */
+const MAX_FIELD_LENGTH = 10_000;
+
+function badRequest(error: string) {
+  return NextResponse.json({ error }, { status: 400 });
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const formData = await req.formData();
+    let formData: FormData;
+    try {
+      formData = await req.formData();
+    } catch {
+      return badRequest('Requête invalide.');
+    }
 
     const get = (key: string): string => {
       const value = formData.get(key);
       return typeof value === 'string' ? value.trim() : '';
     };
 
+    // 1. Pot de miel : un humain ne voit pas ce champ. On répond « succès » sans
+    //    rien enregistrer, pour ne pas renseigner le robot.
+    if (isHoneypotFilled(formData.get('website'))) {
+      return NextResponse.json({ success: true });
+    }
+
+    // 2. Jeton signé au rendu de la page : formulaire réellement chargé, et pas
+    //    rempli en moins de 3 secondes.
+    const tokenStatus = checkFormToken(get('formToken'), getFormSecret());
+    if (tokenStatus !== 'ok') {
+      return badRequest(FORM_TOKEN_ERRORS[tokenStatus]);
+    }
+
     const firstName = get('firstName');
     const lastName = get('lastName');
     const email = get('email');
     const role = get('role');
     if (!firstName || !lastName || !email || !role) {
-      return NextResponse.json(
-        { error: 'Le prénom, le nom, l\'e-mail et le rôle sont obligatoires.' },
-        { status: 400 },
-      );
+      return badRequest('Le prénom, le nom, l\'e-mail et le rôle sont obligatoires.');
+    }
+
+    const textFields = [
+      'firstName', 'lastName', 'email', 'phone', 'instagram', 'role', 'instrument',
+      'bio', 'inspiringSymphony', 'favoriteWork', 'favoriteComposer', 'formation',
+      'concours', 'videoUrl',
+    ];
+    if (textFields.some((key) => get(key).length > MAX_FIELD_LENGTH)) {
+      return badRequest('Un des champs est trop long.');
     }
 
     const fullName = `${firstName} ${lastName}`.trim();
@@ -59,22 +95,18 @@ export async function POST(req: NextRequest) {
       submissionData.section = section;
     }
 
+    // La collection refuse les créations anonymes via l'API publique (REST/GraphQL) ;
+    // ici on passe par l'API locale, hors contrôle d'accès.
     const payload = await getPayloadClient();
 
     // Optional photo upload
     const photoFile = formData.get('photo');
     if (photoFile && photoFile instanceof File && photoFile.size > 0) {
       if (!ALLOWED_PHOTO_MIMETYPES.has(photoFile.type)) {
-        return NextResponse.json(
-          { error: 'Format de photo non accepté. Utilisez JPG, PNG ou WebP.' },
-          { status: 400 },
-        );
+        return badRequest('Format de photo non accepté. Utilisez JPG, PNG ou WebP.');
       }
       if (photoFile.size > MAX_PHOTO_BYTES) {
-        return NextResponse.json(
-          { error: 'Photo trop volumineuse (max 10 Mo).' },
-          { status: 400 },
-        );
+        return badRequest('Photo trop volumineuse (max 10 Mo).');
       }
 
       const buffer = Buffer.from(await photoFile.arrayBuffer());
@@ -87,6 +119,7 @@ export async function POST(req: NextRequest) {
           mimetype: photoFile.type,
           size: photoFile.size,
         },
+        overrideAccess: true,
       });
       submissionData.photo = (media as any).id;
     }
@@ -94,6 +127,7 @@ export async function POST(req: NextRequest) {
     await payload.create({
       collection: 'musician-submissions' as any,
       data: submissionData,
+      overrideAccess: true,
     });
 
     if (process.env.SMTP_HOST) {
