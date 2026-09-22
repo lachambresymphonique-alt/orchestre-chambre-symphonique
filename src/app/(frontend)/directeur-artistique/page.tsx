@@ -1,29 +1,28 @@
 import type { Metadata } from 'next';
+import { cache } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getPayloadClient } from '@/lib/payload';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { directorPlaceholder } from '@/lib/unsplash';
-
-export const metadata: Metadata = {
-  alternates: { canonical: '/directeur-artistique' },
-  title: 'Directeur artistique — La Chambre Symphonique',
-  description:
-    "Loïc Emmelin, directeur artistique de l'Orchestre de la Chambre Symphonique. Vision, parcours, citation.",
-};
+import { toEmbedUrl } from '@/lib/videoEmbed';
+import { DIRECTOR_FALLBACK } from '@/lib/directorDefaults';
 
 type Director = {
-  id?: string;
+  id?: string | number;
   name: string;
   role: string;
   instrument?: string;
-  photo?: { url?: string; alt?: string } | null;
+  photo?: { url?: string; alt?: string; width?: number; height?: number } | null;
   tagline?: string;
   bio?: string;
   quote?: string;
+  formation?: { item: string }[];
+  concours?: { item: string }[];
+  videoUrl?: string;
 };
 
-async function getDirector(): Promise<Director | null> {
+const getDirector = cache(async (): Promise<Director | null> => {
   const payload = await getPayloadClient();
   const result = await payload.find({
     collection: 'musicians' as any,
@@ -33,6 +32,21 @@ async function getDirector(): Promise<Director | null> {
     depth: 1,
   });
   return ((result.docs?.[0] as Director) || null) ?? null;
+});
+
+export async function generateMetadata(): Promise<Metadata> {
+  const director = await getDirector();
+  const name = director?.name || 'Direction artistique';
+  const role = director?.role || 'Chef d\'orchestre';
+  const photoUrl = director?.photo?.url;
+  return {
+    alternates: { canonical: '/directeur-artistique' },
+    title: `${name}, ${role.charAt(0).toLowerCase() + role.slice(1)} — La Chambre Symphonique`,
+    description:
+      director?.tagline ||
+      `${name}, ${role.charAt(0).toLowerCase() + role.slice(1)} et fondateur de La Chambre Symphonique. ${DIRECTOR_FALLBACK.lede}`,
+    ...(photoUrl ? { openGraph: { images: [{ url: photoUrl }] } } : {}),
+  };
 }
 
 const StaffLine = ({ className = '' }: { className?: string }) => (
@@ -130,119 +144,166 @@ export default async function DirectorPage() {
     );
   }
 
-  const firstName = director.name.split(' ')[0];
-  const lastName = director.name.split(' ').slice(1).join(' ');
-  const bioParagraphs = (director.bio || '').split(/\n\n+/).filter(Boolean);
+  const [firstName, ...restName] = director.name.trim().split(/\s+/);
+  const lastName = restName.join(' ');
+
+  const bioParagraphs = (director.bio || '')
+    .split(/\n\n+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  // Biographie de secours tant que la fiche n'est pas remplie (voir lib/directorDefaults.ts).
+  const paragraphs = bioParagraphs.length > 0 ? bioParagraphs : DIRECTOR_FALLBACK.bio;
+  const lede = director.tagline?.trim() || DIRECTOR_FALLBACK.lede;
+
+  const photo = director.photo?.url ? director.photo : null;
+  const photoRatio =
+    photo?.width && photo?.height ? `${photo.width} / ${photo.height}` : '3 / 4';
+
+  const formation = director.formation?.filter((f) => f?.item?.trim()) || [];
+  const concours = director.concours?.filter((c) => c?.item?.trim()) || [];
+  const embedUrl = toEmbedUrl(director.videoUrl);
+  const hasPath = formation.length > 0 || concours.length > 0 || !!embedUrl;
 
   return (
     <div className="director-page">
       <RefreshOnSave />
 
-      {/* === I. PROLOGUE === */}
-      <header className="director-stage">
-        <div className="director-stage__halo" aria-hidden />
-        <StaffLine className="director-staff--top" />
-
-        <div className="director-stage__inner">
-          <p className="eyebrow eyebrow--gold eyebrow--centered">
-            Direction artistique &nbsp;·&nbsp; Fondateur
-          </p>
-
-          <h1 className="director-stage__name">
-            <span>{firstName}</span>
-            <em>{lastName}</em>
-          </h1>
-
-          {director.tagline && (
-            <p className="director-stage__tagline">« {director.tagline} »</p>
-          )}
-
-          <a href="#portrait" aria-label="Faire défiler" className="director-stage__cue">
-            <span className="director-stage__cue-line" aria-hidden />
-            <span className="director-stage__cue-label">Découvrir le portrait</span>
-          </a>
-        </div>
-
-        <StaffLine className="director-staff--bottom" />
-      </header>
-
-      {/* === II. PORTRAIT === */}
-      <section id="portrait" className="director-portrait">
-        <div className="director-portrait__frame">
-          <div className="director-portrait__media">
+      {/* === I. PORTRAIT HERO — the conductor first === */}
+      <header className="director-hero">
+        <div className="director-hero__halo" aria-hidden />
+        <div className="director-hero__inner">
+          <figure
+            className="director-hero__media"
+            style={{ ['--ratio' as string]: photoRatio } as React.CSSProperties}
+          >
             <Image
-              src={director.photo?.url || directorPlaceholder}
-              alt={director.photo?.alt || director.name}
+              src={photo?.url || directorPlaceholder}
+              alt={photo?.alt || `${director.name}, ${director.role}`}
               fill
               priority
-              sizes="(max-width: 900px) 100vw, 80vw"
-              style={{ objectFit: 'cover', objectPosition: 'center' }}
+              sizes="(max-width: 900px) 100vw, 45vw"
+              style={{ objectFit: 'cover', objectPosition: '50% 20%' }}
             />
-          </div>
+            <figcaption className="director-hero__caption">
+              <span className="velvet-mark on-dark" aria-hidden />
+              <span>{director.name}</span>
+              <span className="director-hero__caption-role">{director.role}</span>
+            </figcaption>
+          </figure>
 
-          <figcaption className="director-portrait__caption">
-            <span className="velvet-mark on-dark" aria-hidden />
-            <span>{director.name}</span>
-            <span className="director-portrait__caption-sep" aria-hidden>—</span>
-            <span className="director-portrait__caption-role">{director.role}</span>
-          </figcaption>
-        </div>
+          <div className="director-hero__text">
+            <p className="eyebrow eyebrow--gold">Direction artistique &nbsp;·&nbsp; Fondateur</p>
+            <h1 className="director-hero__name">
+              <span>{firstName}</span>
+              {lastName && <em>{lastName}</em>}
+            </h1>
+            <p className="director-hero__role">
+              {director.role}
+              {director.instrument ? ` · ${director.instrument}` : ''}
+            </p>
+            <p className="director-hero__lede">{lede}</p>
 
-        {/* Metadata strip */}
-        <dl className="director-credits">
-          <div>
-            <dt>Fonction</dt>
-            <dd>{director.role}</dd>
-          </div>
-          {director.instrument && (
-            <div>
-              <dt>Instrument</dt>
-              <dd>{director.instrument}</dd>
+            <dl className="director-facts">
+              <div>
+                <dt>Fonction</dt>
+                <dd>{director.role}</dd>
+              </div>
+              <div>
+                <dt>Fondateur</dt>
+                <dd>La Chambre Symphonique, 2017</dd>
+              </div>
+              <div>
+                <dt>{director.instrument ? 'Instrument' : 'Parcours'}</dt>
+                <dd>{director.instrument || DIRECTOR_FALLBACK.background}</dd>
+              </div>
+            </dl>
+
+            <div className="director-hero__cta">
+              <Link href="/#concerts" className="btn-filled">
+                Prochains concerts →
+              </Link>
+              <Link href="/contact" className="link-arrow link-arrow--mute">
+                Contacter l'orchestre
+              </Link>
             </div>
-          )}
-          <div>
-            <dt>L'orchestre</dt>
-            <dd>Fondé en 2017</dd>
           </div>
-        </dl>
-      </section>
+        </div>
+      </header>
 
-      {/* === III. MANIFESTO === */}
-      {director.tagline && (
-        <section className="director-manifesto">
-          <StaffLine className="director-staff--inline" />
-          <p className="eyebrow eyebrow--gold eyebrow--centered">Manifeste</p>
-          <p className="director-manifesto__text">{director.tagline}</p>
-          <StaffLine className="director-staff--inline" />
-        </section>
-      )}
-
-      {/* === IV. BIO — long-form editorial === */}
-      <section className="director-vision">
-        <header className="director-vision__head">
-          <p className="eyebrow eyebrow--gold">La vision</p>
-          <h2 className="director-vision__title">
+      {/* === II. LE CHEF — long-form bio === */}
+      <section id="portrait" className="director-story">
+        <header className="director-story__head">
+          <p className="eyebrow eyebrow--gold">Le chef</p>
+          <h2 className="director-story__title">
             Une lecture <em>vivante</em> du grand répertoire
           </h2>
           <hr className="velvet-rule" />
         </header>
 
-        {bioParagraphs.length > 0 ? (
-          <div className="director-vision__bio">
-            {bioParagraphs.map((p, i) => (
-              <p key={i} data-lead={i === 0 ? 'true' : undefined}>
-                {p}
-              </p>
-            ))}
-          </div>
-        ) : (
-          <p className="director-vision__bio-empty">
-            <em>La biographie sera publiée prochainement.</em>
-          </p>
-        )}
+        <div className="director-story__body">
+          {paragraphs.map((p, i) => (
+            <p key={i} data-lead={i === 0 ? 'true' : undefined}>
+              {p}
+            </p>
+          ))}
+        </div>
       </section>
 
-      {/* === V. SIGNATURE QUOTE === */}
+      {/* === III. PARCOURS — formation, distinctions, vidéo (si renseignés) === */}
+      {hasPath && (
+        <section className="director-path">
+          <div className="director-path__inner">
+            <header className="director-path__head">
+              <p className="eyebrow eyebrow--gold">Parcours</p>
+              <h2 className="director-path__title">
+                Formation <em>&amp; distinctions</em>
+              </h2>
+            </header>
+
+            {(formation.length > 0 || concours.length > 0) && (
+              <div className="director-path__grid">
+                {formation.length > 0 && (
+                  <section className="musician-feature__credits-block">
+                    <h3 className="musician-feature__credits-title">Formation</h3>
+                    <ul className="musician-feature__credits-list">
+                      {formation.map((f, i) => (
+                        <li key={i}>{f.item}</li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
+                {concours.length > 0 && (
+                  <section className="musician-feature__credits-block">
+                    <h3 className="musician-feature__credits-title">Concours et distinctions</h3>
+                    <ul className="musician-feature__credits-list">
+                      {concours.map((c, i) => (
+                        <li key={i}>{c.item}</li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
+              </div>
+            )}
+
+            {embedUrl && (
+              <div className="director-path__video">
+                <h3 className="musician-feature__credits-title">En vidéo</h3>
+                <div className="musician-feature__video-frame">
+                  <iframe
+                    src={embedUrl}
+                    title={`Vidéo — ${director.name}`}
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* === IV. SIGNATURE QUOTE === */}
       {director.quote && (
         <section className="director-signature">
           <figure>
@@ -257,7 +318,7 @@ export default async function DirectorPage() {
         </section>
       )}
 
-      {/* === VI. ENCORE — outro === */}
+      {/* === V. ENCORE — outro === */}
       <section className="director-encore">
         <p className="eyebrow eyebrow--gold eyebrow--centered">Et après</p>
         <h2 className="director-encore__title">
@@ -272,7 +333,7 @@ export default async function DirectorPage() {
             </span>
             <span className="link-arrow">Voir l'effectif →</span>
           </Link>
-          <Link href="/" className="director-encore__card">
+          <Link href="/#concerts" className="director-encore__card">
             <span className="director-encore__card-eyebrow">La saison</span>
             <span className="director-encore__card-title">
               Les <em>prochains concerts</em>
