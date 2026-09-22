@@ -5,6 +5,7 @@ import '../globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { getPayloadClient } from '@/lib/payload';
+import { legacyNavItems, resolveNavItems, type NavLink } from '@/lib/navigation';
 
 const fraunces = Fraunces({
   variable: '--font-fraunces',
@@ -55,30 +56,50 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default async function FrontendLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const payload = await getPayloadClient();
-  const siteSettings = await payload.findGlobal({ slug: 'site-settings' as any });
+/** Menu principal : composé dans l'admin (Réglages → Menu du site), sinon menu historique. */
+async function getNavItems(
+  payload: Awaited<ReturnType<typeof getPayloadClient>>,
+): Promise<NavLink[]> {
+  try {
+    const navigation = await payload.findGlobal({
+      slug: 'navigation' as any,
+      depth: 1,
+      // Seuls ces champs de la page liée sont nécessaires (pas son contenu).
+      populate: { pages: { slug: true, title: true, _status: true } } as any,
+    });
+    const items = resolveNavItems(navigation as any);
+    if (items.length > 0) return items;
+  } catch {
+    // Table du menu absente (schéma pas encore poussé) : menu historique ci-dessous.
+  }
 
-  let extraNavItems: { href: string; label: string; order: number }[] = [];
+  // Menu historique tant que « Réglages → Menu du site » n'est pas configuré :
+  // pages fixes + pages de l'admin cochées « Afficher dans la navigation ».
   try {
     const navPages = await payload.find({
       collection: 'pages' as any,
       where: { showInNav: { equals: true }, _status: { equals: 'published' } },
       sort: 'navOrder',
       limit: 20,
+      depth: 0,
     });
-    extraNavItems = navPages.docs.map((page: any) => ({
-      href: `/${page.slug}`,
-      label: page.navLabel || page.title,
-      order: page.navOrder ?? 99,
-    }));
+    return legacyNavItems(navPages.docs as any[]);
   } catch {
     // Pages table may not exist yet — skip gracefully
+    return legacyNavItems([]);
   }
+}
+
+export default async function FrontendLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const payload = await getPayloadClient();
+  const [siteSettings, navItems] = await Promise.all([
+    payload.findGlobal({ slug: 'site-settings' as any }),
+    getNavItems(payload),
+  ]);
 
   const settings = {
     description: (siteSettings as any).footerDescription,
@@ -108,7 +129,7 @@ export default async function FrontendLayout({
             gtag('config', 'G-PEYDBZWKSP');
           `}
         </Script>
-        <Header extraNavItems={extraNavItems} />
+        <Header items={navItems} />
         {children}
         <Footer settings={settings} />
       </body>

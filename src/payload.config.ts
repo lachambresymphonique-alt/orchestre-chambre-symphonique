@@ -25,6 +25,7 @@ import { HomePage } from './globals/HomePage';
 import { AboutPage } from './globals/AboutPage';
 import { SupportPage } from './globals/SupportPage';
 import { ThemeSettings } from './globals/ThemeSettings';
+import { Navigation } from './globals/Navigation';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -57,6 +58,7 @@ export default buildConfig({
             'about-page': '/a-propos',
             'support-page': '/nous-soutenir',
             'site-settings': '/contact',
+            navigation: '/',
           };
           return `${base}${map[globalConfig.slug] || '/'}`;
         }
@@ -76,7 +78,7 @@ export default buildConfig({
         }
         return `${base}${collectionMap[slug] || '/'}`;
       },
-      globals: ['home-page', 'about-page', 'support-page', 'site-settings'],
+      globals: ['home-page', 'about-page', 'support-page', 'site-settings', 'navigation'],
       collections: ['concerts', 'musicians', 'media-items', 'partners', 'timeline-events', 'support-tiers', 'pages', 'musician-submissions'],
       breakpoints: [
         { label: 'Mobile', name: 'mobile', width: 375, height: 667 },
@@ -114,6 +116,7 @@ export default buildConfig({
     // Réglages
     SiteSettings,
     ThemeSettings,
+    Navigation,
   ],
 
   i18n: {

@@ -6,7 +6,8 @@ export const Pages: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     group: 'Pages',
-    description: 'Pages libres du site. Créez une page et elle sera accessible à l\'URL choisie.',
+    description:
+      'Pages libres du site. Créez une page et elle sera accessible à l\'URL choisie. Pour l\'afficher dans le menu : Réglages → Menu du site.',
     defaultColumns: ['title', 'slug', 'status', 'updatedAt'],
     livePreview: {
       url: ({ data }) => {
@@ -40,7 +41,7 @@ export const Pages: CollectionConfig = {
         if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
           return 'Utilisez uniquement des lettres minuscules, chiffres et tirets (ex : ma-nouvelle-page).';
         }
-        const reserved = ['admin', 'api', 'a-propos', 'musiciens', 'medias', 'nous-soutenir', 'contact'];
+        const reserved = ['admin', 'api', 'a-propos', 'directeur-artistique', 'musiciens', 'medias', 'journal', 'blog', 'nous-soutenir', 'contact'];
         if (reserved.includes(value)) {
           return `« ${value} » est déjà utilisé par une page du site. Choisissez un autre slug.`;
         }
@@ -75,36 +76,28 @@ export const Pages: CollectionConfig = {
         },
       ],
     },
+    // Anciens réglages de navigation, remplacés par le global « Menu du site »
+    // (Réglages → Menu du site). Conservés en base et masqués dans l'admin :
+    // ils servent encore de menu de repli tant que le menu n'est pas configuré.
     {
       name: 'showInNav',
       type: 'checkbox',
       label: 'Afficher dans la navigation',
       defaultValue: false,
-      admin: {
-        position: 'sidebar',
-        description: 'Cocher pour ajouter un lien vers cette page dans le menu du site.',
-      },
+      admin: { hidden: true },
     },
     {
       name: 'navOrder',
       type: 'number',
       label: 'Ordre dans le menu',
       defaultValue: 99,
-      admin: {
-        position: 'sidebar',
-        description: 'Position dans le menu (les pages existantes vont de 1 à 6).',
-        condition: (data) => data?.showInNav,
-      },
+      admin: { hidden: true },
     },
     {
       name: 'navLabel',
       type: 'text',
       label: 'Libellé du menu',
-      admin: {
-        position: 'sidebar',
-        description: 'Texte affiché dans le menu. Si vide, le titre sera utilisé.',
-        condition: (data) => data?.showInNav,
-      },
+      admin: { hidden: true },
     },
   ],
 };

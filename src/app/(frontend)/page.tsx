@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getPayloadClient } from '@/lib/payload';
 import { findUpcomingConcerts } from '@/lib/concerts';
+import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { HomeClient } from './HomeClient';
 
 const SITE_URL = 'https://www.lachambresymphonique.fr';
@@ -65,6 +66,8 @@ export default async function Home() {
 
   return (
     <>
+      {/* Aperçu en direct depuis l'admin (menu, concerts, partenaires) : recharge à l'enregistrement. */}
+      <RefreshOnSave />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

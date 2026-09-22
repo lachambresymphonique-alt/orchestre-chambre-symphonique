@@ -4,24 +4,17 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LogoSvg } from './LogoSvg';
+import { DEFAULT_NAV_ITEMS, type NavLink } from '@/lib/navigation';
 
-const defaultNavItems = [
-  { href: '/', label: 'Accueil', order: 1 },
-  { href: '/a-propos', label: 'À propos', order: 2 },
-  { href: '/directeur-artistique', label: 'Direction', order: 3 },
-  { href: '/musiciens', label: 'Musiciens', order: 4 },
-  { href: '/medias', label: 'Médias', order: 5 },
-  { href: '/nous-soutenir', label: 'Nous soutenir', order: 6 },
-  { href: '/contact', label: 'Contact', order: 7 },
-];
-
-type NavItem = { href: string; label: string; order: number };
-
-export function Header({ extraNavItems = [] }: { extraNavItems?: NavItem[] }) {
-  const navItems = [...defaultNavItems, ...extraNavItems].sort((a, b) => a.order - b.order);
+export function Header({ items }: { items?: NavLink[] }) {
+  // Menu composé dans l'admin (Réglages → Menu du site), sinon menu historique.
+  const navItems = items && items.length > 0 ? items : DEFAULT_NAV_ITEMS;
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  // Actif sur la page et sur ses sous-pages (/journal/mon-article, /musiciens/…).
+  const isActive = (href: string) =>
+    pathname === href || (href !== '/' && pathname.startsWith(`${href}/`));
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -50,15 +43,28 @@ export function Header({ extraNavItems = [] }: { extraNavItems?: NavItem[] }) {
         </Link>
 
         <nav className={`nav-main${menuOpen ? ' open' : ''}`}>
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={pathname === item.href ? 'active' : ''}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item, i) => {
+            const key = `${item.href}-${i}`;
+            const className = isActive(item.href) ? 'active' : '';
+            if (item.external || item.newTab) {
+              return (
+                <a
+                  key={key}
+                  href={item.href}
+                  className={className}
+                  target={item.newTab ? '_blank' : undefined}
+                  rel={item.newTab ? 'noopener noreferrer' : undefined}
+                >
+                  {item.label}
+                </a>
+              );
+            }
+            return (
+              <Link key={key} href={item.href} className={className}>
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <button

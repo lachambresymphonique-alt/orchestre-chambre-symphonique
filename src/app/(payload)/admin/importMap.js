@@ -34,8 +34,10 @@ import { BeforeDashboard as BeforeDashboard_915324d4628771dbb8d31cdc4601c33e } f
 import { ViewSiteLink as ViewSiteLink_4825072285f9364e3016113bb30951e2 } from '@/components/admin/ViewSiteLink'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
+import { NavItemRowLabel as NavItemRowLabel_204443de73f46b3225ba40b2bba5389e } from '@/components/admin/NavItemRowLabel'
 
 export const importMap = {
+  "@/components/admin/NavItemRowLabel#NavItemRowLabel": NavItemRowLabel_204443de73f46b3225ba40b2bba5389e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
