@@ -50,8 +50,23 @@ export default buildConfig({
         Icon: '@/components/admin/AdminIcon#AdminIcon',
         Logo: '@/components/admin/AdminLogo#AdminLogo',
       },
-      beforeNavLinks: ['@/components/admin/ViewSiteLink#ViewSiteLink'],
+      beforeNavLinks: [
+        '@/components/admin/ViewSiteLink#ViewSiteLink',
+        '@/components/admin/AnalyticsNavLink#AnalyticsNavLink',
+      ],
       beforeDashboard: ['@/components/admin/BeforeDashboard#BeforeDashboard'],
+      views: {
+        // Google Analytics : /admin/google-analytics (voir src/lib/googleAnalytics.ts)
+        googleAnalytics: {
+          Component: '@/components/admin/AnalyticsView#AnalyticsView',
+          path: '/google-analytics',
+          exact: true,
+          meta: {
+            title: 'Google Analytics',
+            description: 'Fréquentation du site mesurée par Google Analytics.',
+          },
+        },
+      },
     },
     livePreview: {
       url: ({ data, collectionConfig, globalConfig }) => {

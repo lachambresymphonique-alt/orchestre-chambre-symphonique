@@ -32,6 +32,8 @@ import { AdminIcon as AdminIcon_d500ae2ad98a0a33d640ae0ac1a3417c } from '@/compo
 import { AdminLogo as AdminLogo_b80a86fce1072afc84cd6a430a965697 } from '@/components/admin/AdminLogo'
 import { BeforeDashboard as BeforeDashboard_915324d4628771dbb8d31cdc4601c33e } from '@/components/admin/BeforeDashboard'
 import { ViewSiteLink as ViewSiteLink_4825072285f9364e3016113bb30951e2 } from '@/components/admin/ViewSiteLink'
+import { AnalyticsNavLink as AnalyticsNavLink_fb17e397022e83cc802d5c55b8837bc2 } from '@/components/admin/AnalyticsNavLink'
+import { AnalyticsView as AnalyticsView_db43129b90862b042c8e58805b1c34d3 } from '@/components/admin/AnalyticsView'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { NavItemRowLabel as NavItemRowLabel_204443de73f46b3225ba40b2bba5389e } from '@/components/admin/NavItemRowLabel'
@@ -72,6 +74,8 @@ export const importMap = {
   "@/components/admin/AdminLogo#AdminLogo": AdminLogo_b80a86fce1072afc84cd6a430a965697,
   "@/components/admin/BeforeDashboard#BeforeDashboard": BeforeDashboard_915324d4628771dbb8d31cdc4601c33e,
   "@/components/admin/ViewSiteLink#ViewSiteLink": ViewSiteLink_4825072285f9364e3016113bb30951e2,
+  "@/components/admin/AnalyticsNavLink#AnalyticsNavLink": AnalyticsNavLink_fb17e397022e83cc802d5c55b8837bc2,
+  "@/components/admin/AnalyticsView#AnalyticsView": AnalyticsView_db43129b90862b042c8e58805b1c34d3,
   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

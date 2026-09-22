@@ -1,0 +1,206 @@
+/* ==========================================================================
+   Vue « Google Analytics » (/admin/google-analytics)
+   Compléments au thème admin : la mise en page (tuiles, panneaux, classements,
+   histogramme) vient de admin-theme.css ; ici seulement ce qui est propre à
+   cette vue (bouton vers Google Analytics, pastille « en direct », guide de
+   configuration).
+   ========================================================================== */
+
+.lcs-ga__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  flex-wrap: wrap;
+}
+
+.lcs-ga__open {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.95rem;
+  margin-top: 0.35rem;
+  border: 1px solid var(--theme-elevation-200);
+  border-radius: var(--lcs-radius-sm);
+  background: var(--theme-elevation-0);
+  color: var(--theme-elevation-1000);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.lcs-ga__open:hover,
+.lcs-ga__open:focus-visible {
+  border-color: var(--lcs-gold);
+  color: var(--lcs-gold-dark);
+}
+
+/* Grille des panneaux : deux colonnes (pages | provenances, appareils | villes) */
+.lcs-ga__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.lcs-ga__grid .lcs-panel {
+  margin-bottom: 0;
+}
+
+/* Pastille « en direct » de la tuile temps réel */
+.lcs-live {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 0.45rem;
+  border-radius: 50%;
+  background: var(--theme-success-500, #2f8f60);
+  vertical-align: 2px;
+  animation: lcs-live-pulse 2.2s ease-out infinite;
+}
+
+@keyframes lcs-live-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(47, 143, 96, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(47, 143, 96, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(47, 143, 96, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lcs-live {
+    animation: none;
+  }
+}
+
+/* Guide de configuration (affiché tant que les variables GA_* manquent) */
+.lcs-ga-setup__intro {
+  margin: 0 0 1.25rem;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--theme-elevation-800);
+  max-width: 70ch;
+}
+
+.lcs-ga-steps {
+  margin: 0;
+  padding: 0 0 0 1.5rem;
+  display: grid;
+  gap: 0.85rem;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--theme-elevation-800);
+  max-width: 75ch;
+}
+
+.lcs-ga-steps li::marker {
+  color: var(--lcs-gold-dark);
+  font-weight: 600;
+}
+
+.lcs-ga-steps strong,
+.lcs-ga-setup__intro strong {
+  color: var(--theme-elevation-1000);
+  font-weight: 600;
+}
+
+.lcs-ga-steps em {
+  font-style: normal;
+  color: var(--theme-elevation-1000);
+}
+
+.lcs-ga-steps a {
+  color: var(--lcs-gold-dark);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.lcs-ga-steps code,
+.lcs-ga-status code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-1000);
+}
+
+.lcs-ga-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--theme-elevation-150);
+  font-size: 12.5px;
+  color: var(--theme-elevation-500);
+}
+
+.lcs-ga-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--theme-elevation-150);
+  background: var(--theme-elevation-50);
+  color: var(--theme-elevation-800);
+}
+
+.lcs-ga-chip strong {
+  font-weight: 600;
+}
+
+.lcs-ga-chip.is-ok {
+  border-color: color-mix(in srgb, var(--theme-success-500, #2f8f60) 45%, transparent);
+  color: var(--theme-success-500, #2f8f60);
+}
+
+.lcs-ga-chip.is-missing {
+  border-color: color-mix(in srgb, var(--lcs-bordeaux) 40%, transparent);
+  color: var(--lcs-bordeaux);
+}
+
+.lcs-ga-status__problem {
+  flex-basis: 100%;
+  color: var(--lcs-bordeaux);
+  line-height: 1.5;
+}
+
+/* Erreur d'interrogation : détail technique replié */
+.lcs-ga__details {
+  margin-top: 0.6rem;
+  font-size: 12px;
+}
+
+.lcs-ga__details summary {
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.85;
+}
+
+.lcs-ga__details pre {
+  margin: 0.5rem 0 0;
+  padding: 0.6rem 0.8rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 11.5px;
+  line-height: 1.5;
+  border-radius: var(--lcs-radius-sm);
+  border: 1px solid var(--theme-elevation-150);
+  background: var(--theme-elevation-50);
+  color: var(--theme-elevation-800);
+}
+
+@media (max-width: 900px) {
+  .lcs-ga__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
