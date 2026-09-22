@@ -21,6 +21,8 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { ConcertDateCell as ConcertDateCell_a4bec657baa40be44d47c8f1a300ac27 } from '@/components/admin/ConcertDateCell'
+import { ConcertsListNav as ConcertsListNav_2b5e84c20ff024dced76640216aaefa0 } from '@/components/admin/ConcertsListNav'
 import { MusiciansTabsNav as MusiciansTabsNav_f0bf74af169ff57631fe48d885ee464a } from '@/components/admin/MusiciansTabsNav'
 import { PromoteSubmissionButton as PromoteSubmissionButton_8d30722c0b0e7fa1a9b8a839577f9a11 } from '@/components/admin/PromoteSubmissionButton'
 import { ThemePreview as ThemePreview_241328c85efc932e9142e9a487516caf } from '@/components/admin/ThemePreview'
@@ -57,6 +59,8 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@/components/admin/ConcertDateCell#ConcertDateCell": ConcertDateCell_a4bec657baa40be44d47c8f1a300ac27,
+  "@/components/admin/ConcertsListNav#ConcertsListNav": ConcertsListNav_2b5e84c20ff024dced76640216aaefa0,
   "@/components/admin/MusiciansTabsNav#MusiciansTabsNav": MusiciansTabsNav_f0bf74af169ff57631fe48d885ee464a,
   "@/components/admin/PromoteSubmissionButton#PromoteSubmissionButton": PromoteSubmissionButton_8d30722c0b0e7fa1a9b8a839577f9a11,
   "@/components/admin/ThemePreview#ThemePreview": ThemePreview_241328c85efc932e9142e9a487516caf,

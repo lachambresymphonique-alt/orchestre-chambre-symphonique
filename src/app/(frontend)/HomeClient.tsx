@@ -6,11 +6,13 @@ import { useLivePreview } from '@payloadcms/live-preview-react';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FadeIn } from '@/components/FadeIn';
 import { NewsletterForm } from '@/components/NewsletterForm';
+import { ExpandableText } from '@/components/ExpandableText';
 import { stockImages, placeholderForMusician, directorPlaceholder } from '@/lib/unsplash';
+import type { ConcertCard } from '@/lib/concerts';
 
 interface HomeClientProps {
   initialData: any;
-  concerts: any[];
+  concerts: ConcertCard[];
   partners: any[];
   director: any | null;
   musiciansSample: any[];
@@ -39,15 +41,10 @@ export function HomeClient({
   const presentation = data.presentation;
   const newsletter = data.newsletter;
 
-  const featured = concerts[0];
-  const restConcerts = concerts.slice(1);
-
-  // Build a marquee string from the upcoming concerts' programme
-  const programmeStrip = concerts
-    .map((c: any) => c.program?.split('\n')[0] || c.title)
-    .filter(Boolean)
-    .slice(0, 8)
-    .join('   ·   ');
+  // `concerts` only contains upcoming concerts (see lib/concerts.ts), soonest
+  // first: the first one is the next date, summarised in the hero.
+  const featured: ConcertCard | undefined = concerts[0];
+  const hasConcerts = concerts.length > 0;
 
   const directorSlug = director?.slug || director?.id;
 
@@ -114,10 +111,21 @@ export function HomeClient({
 
           {featured && (
             <div className="hero-modern__next-concert">
-              <p className="eyebrow eyebrow--accent">Prochain concert</p>
+              <p className="eyebrow eyebrow--accent">
+                {featured.status === 'cancelled'
+                  ? 'Concert annulé'
+                  : featured.date.isToday
+                    ? 'Aujourd\'hui'
+                    : 'Prochain concert'}
+              </p>
               <p className="hero-modern__next-date">
-                <span className="hero-modern__next-day">{featured.day}</span>
-                <span className="hero-modern__next-month">{featured.monthYear}</span>
+                <time dateTime={featured.date.iso} className="hero-modern__next-day">
+                  {featured.date.day}
+                </time>
+                <span className="hero-modern__next-month">
+                  {featured.date.monthYear}
+                  {featured.date.time && <> · {featured.date.time}</>}
+                </span>
               </p>
               <p className="hero-modern__next-title">{featured.title}</p>
               <p className="hero-modern__next-venue">{featured.venue}</p>
@@ -133,19 +141,6 @@ export function HomeClient({
           </div>
         </section>
       </div>
-
-      {/* MARQUEE */}
-      {programmeStrip && (
-        <section
-          className="programme-marquee"
-          aria-label="Au programme cette saison"
-          data-live-link="/admin/collections/concerts"
-        >
-          <div className="programme-marquee__track">
-            <span>{programmeStrip}   ·   {programmeStrip}   ·   </span>
-          </div>
-        </section>
-      )}
 
       {/* STATEMENT — manifesto with atmospheric counterpoint */}
       <section className="home-statement">
@@ -182,95 +177,116 @@ export function HomeClient({
         </div>
       </section>
 
-      {/* FEATURED CONCERT spread */}
-      {featured && (
-        <section
-          className="home-featured"
-          id="concerts"
-          data-live-link={featured.id ? `/admin/collections/concerts/${featured.id}` : '/admin/collections/concerts'}
-        >
-          <div className="home-featured__media">
-            <Image
-              src={featured.image?.url || stockImages.concertHall}
-              alt={featured.image?.alt || featured.title}
-              fill
-              sizes="(max-width: 900px) 100vw, 55vw"
-              style={{ objectFit: 'cover' }}
-            />
-          </div>
-          <div className="home-featured__text">
-            <p className="eyebrow eyebrow--accent">À l'affiche</p>
-            <div className="home-featured__date">
-              <span className="home-featured__day">{featured.day}</span>
-              <span className="home-featured__month">{featured.monthYear}</span>
-            </div>
-            <h2 className="home-featured__title">{featured.title}</h2>
-            <p className="home-featured__venue">{featured.venue}</p>
-            {featured.program && (
-              <p className="home-featured__program">{featured.program}</p>
-            )}
-            <div className="home-featured__cta">
-              {featured.bookingLink ? (
-                <a
-                  href={featured.bookingLink}
-                  className="btn-filled"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Réserver une place →
-                </a>
-              ) : (
-                <span className="concert-row__pending">Sur invitation</span>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
+      {/* CONCERTS — one simple list; the next concert leads with its photo */}
+      <section className="home-concerts" id="concerts" data-live-link="/admin/collections/concerts">
+        <header className="home-concerts__head">
+          <p className="eyebrow">La saison</p>
+          <h2 className="home-concerts__title">
+            <em>Prochains</em> concerts
+          </h2>
+          <hr className="velvet-rule" />
+        </header>
 
-      {/* OTHER CONCERTS list */}
-      {restConcerts.length > 0 && (
-        <section className="home-concerts">
-          <header className="home-concerts__head">
-            <p className="eyebrow">La saison</p>
-            <h2 className="home-concerts__title">
-              <em>Autres</em> dates
-            </h2>
-            <hr className="velvet-rule" />
-          </header>
-
+        {hasConcerts ? (
+          <FadeIn>
           <ol className="concerts-list">
-            {restConcerts.map((concert: any, index: number) => (
-              <FadeIn key={concert.id || index}>
-                <li
-                  className="concert-row"
-                  data-live-link={concert.id ? `/admin/collections/concerts/${concert.id}` : undefined}
-                >
-                  <div className="concert-row__date">
-                    <span className="concert-row__day">{concert.day}</span>
-                    <span className="concert-row__month">{concert.monthYear}</span>
-                  </div>
-                  <div className="concert-row__body">
-                    <h3 className="concert-row__title">{concert.title}</h3>
-                    <p className="concert-row__venue">{concert.venue}</p>
-                    {concert.program && (
-                      <p className="concert-row__program">{concert.program}</p>
+            {concerts.map((concert, index) => {
+              const isLead = index === 0;
+              const cancelled = concert.status === 'cancelled';
+              const rowClass = [
+                'concert-row',
+                isLead ? 'concert-row--lead' : '',
+                cancelled ? 'is-cancelled' : '',
+              ]
+                .filter(Boolean)
+                .join(' ');
+              return (
+                  <li
+                    key={concert.id || index}
+                    className={rowClass}
+                    data-live-link={concert.id ? `/admin/collections/concerts/${concert.id}` : undefined}
+                  >
+                    {isLead && (
+                      <div
+                        className="concert-row__media"
+                        // Posters are portrait, photos landscape: keep the image's own ratio so nothing is cropped.
+                        style={
+                          concert.image?.width && concert.image?.height
+                            ? ({ ['--ratio' as string]: `${concert.image.width} / ${concert.image.height}` } as React.CSSProperties)
+                            : undefined
+                        }
+                      >
+                        <Image
+                          src={concert.image?.url || stockImages.concertHall}
+                          alt={concert.image?.alt || concert.title}
+                          fill
+                          sizes="(max-width: 900px) 100vw, 45vw"
+                          style={{ objectFit: 'cover' }}
+                        />
+                      </div>
                     )}
-                  </div>
-                  <div className="concert-row__action">
-                    {concert.bookingLink ? (
-                      <a href={concert.bookingLink} className="link-arrow" target="_blank" rel="noopener noreferrer">
-                        Réserver →
-                      </a>
-                    ) : (
-                      <span className="concert-row__pending">Sur invitation</span>
-                    )}
-                  </div>
-                </li>
-              </FadeIn>
-            ))}
+                    <div className="concert-row__details">
+                      <div className="concert-row__date">
+                        {isLead && (
+                          <span className="concert-row__tag">
+                            {cancelled ? 'Annulé' : concert.date.isToday ? 'Aujourd\'hui' : 'Prochain concert'}
+                          </span>
+                        )}
+                        <time dateTime={concert.date.iso} className="concert-row__day">
+                          {concert.date.day}
+                        </time>
+                        <span className="concert-row__month">{concert.date.monthYear}</span>
+                        <span className="concert-row__when">
+                          {concert.date.weekday}
+                          {concert.date.time && <> · {concert.date.time}</>}
+                        </span>
+                      </div>
+                      <div className="concert-row__body">
+                        <h3 className="concert-row__title">{concert.title}</h3>
+                        <p className="concert-row__venue">{concert.venue}</p>
+                        {concert.program && (
+                          <ExpandableText
+                            text={concert.program}
+                            lines={isLead ? 7 : 4}
+                            className="concert-row__program"
+                          />
+                        )}
+                      </div>
+                      <div className="concert-row__action">
+                        {cancelled ? (
+                          <span className="concert-badge concert-badge--cancelled">
+                            {isLead ? 'Concert annulé' : 'Annulé'}
+                          </span>
+                        ) : concert.bookingLink ? (
+                          <a
+                            href={concert.bookingLink}
+                            className={isLead ? 'btn-filled' : 'link-arrow'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {isLead ? 'Réserver une place' : 'Réserver'} →
+                          </a>
+                        ) : null}
+                      </div>
+                    </div>
+                  </li>
+              );
+            })}
           </ol>
-        </section>
-      )}
+          </FadeIn>
+        ) : (
+          <div className="home-concerts__empty">
+            <p>La prochaine saison se prépare.</p>
+            <p>
+              Les dates seront annoncées ici dès qu&rsquo;elles seront fixées. Inscrivez-vous à la
+              lettre d&rsquo;information pour être prévenu·e en avant-première.
+            </p>
+            <a href="#newsletter" className="link-arrow">
+              Recevoir les prochaines dates →
+            </a>
+          </div>
+        )}
+      </section>
 
       {/* BENTO — meet the orchestra */}
       <section className="home-bento">
@@ -483,7 +499,7 @@ export function HomeClient({
 
       {/* NEWSLETTER */}
       <div data-live-field="newsletter">
-        <section className="home-newsletter">
+        <section className="home-newsletter" id="newsletter">
           <div className="home-newsletter__halo" aria-hidden />
           <div className="home-newsletter__inner">
             <p className="eyebrow eyebrow--accent eyebrow--on-dark">{newsletter?.subtitle || 'Restez en contact'}</p>

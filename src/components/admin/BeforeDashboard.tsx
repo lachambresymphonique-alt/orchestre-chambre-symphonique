@@ -83,7 +83,7 @@ const shortcuts: Shortcut[] = [
   {
     href: '/admin/collections/concerts/create',
     title: 'Nouveau concert',
-    description: 'Annoncer un concert à venir avec date, lieu et programme.',
+    description: 'Annoncer une date : jour, heure, lieu, programme et billetterie.',
     icon: <NoteIcon />,
     hint: 'Ajouter',
   },

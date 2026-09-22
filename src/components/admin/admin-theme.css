@@ -1244,3 +1244,110 @@ hr,
   font-size: 1.02em;
 }
 
+
+/* ==========================================================================
+   Concerts — filtres de liste (beforeList) et cellule « Date »
+   ========================================================================== */
+
+.lcs-ctabs {
+  row-gap: 0.5rem;
+}
+
+.lcs-mtab__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-600);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.lcs-mtab.is-active .lcs-mtab__count {
+  background: var(--lcs-bordeaux);
+  color: #fff;
+}
+
+.lcs-mtabs__note {
+  flex-basis: 100%;
+  margin: 0;
+  font-family: inherit;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--theme-elevation-500);
+}
+
+.lcs-mtabs__note--warn {
+  color: var(--lcs-bordeaux);
+  font-weight: 500;
+}
+
+.lcs-mtabs__note--warn a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.lcs-datecell {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lcs-datecell__date {
+  white-space: nowrap;
+}
+
+.lcs-datecell--empty {
+  color: var(--theme-error-500);
+  font-style: italic;
+}
+
+.lcs-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.lcs-badge--upcoming {
+  background: color-mix(in srgb, var(--lcs-gold) 22%, transparent);
+  color: var(--theme-elevation-800);
+}
+
+.lcs-badge--today {
+  background: var(--lcs-bordeaux);
+  color: #fff;
+}
+
+.lcs-badge--past {
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-500);
+}
+
+.lcs-badge--draft {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--theme-elevation-250);
+  color: var(--theme-elevation-500);
+}
+
+.lcs-badge--cancelled {
+  background: var(--theme-error-100);
+  color: var(--theme-error-600);
+}

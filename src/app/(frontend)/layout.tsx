@@ -88,8 +88,12 @@ export default async function FrontendLayout({
   const fontClasses = [fraunces.variable, inter.variable, sourceSerif.variable].join(' ');
 
   return (
-    <html lang="fr">
-      <body className={fontClasses}>
+    // The font variables must live on <html>: the design tokens in globals.css
+    // (--font-display, --font-body…) are declared on :root and reference them.
+    // Declared on <body> they were undefined at :root, which invalidated the
+    // tokens and made the whole site fall back to Times.
+    <html lang="fr" className={fontClasses}>
+      <body>
         {/* Google tag (gtag.js) */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-PEYDBZWKSP"
