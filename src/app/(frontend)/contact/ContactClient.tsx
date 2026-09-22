@@ -9,9 +9,13 @@ import { FacebookIcon, InstagramIcon, YouTubeIcon, LinkedInIcon } from '@/compon
 
 interface ContactClientProps {
   initialData: any;
+  /** Jeton anti-robot signé côté serveur, transmis au formulaire. */
+  formToken: string;
+  /** Clé publique Cloudflare Turnstile, ou `null` si le captcha n'est pas configuré. */
+  turnstileSiteKey: string | null;
 }
 
-export function ContactClient({ initialData }: ContactClientProps) {
+export function ContactClient({ initialData, formToken, turnstileSiteKey }: ContactClientProps) {
   const serverURL = typeof window !== 'undefined'
     ? window.location.origin
     : (process.env.NEXT_PUBLIC_SITE_URL || '');
@@ -44,7 +48,7 @@ export function ContactClient({ initialData }: ContactClientProps) {
 
       <section className="contact-section">
         <div className="contact-grid">
-            <ContactForm />
+            <ContactForm formToken={formToken} turnstileSiteKey={turnstileSiteKey} />
 
             <FadeIn>
               <div className="contact-info-block" data-live-field="contact">

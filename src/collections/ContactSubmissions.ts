@@ -10,7 +10,11 @@ export const ContactSubmissions: CollectionConfig = {
     defaultColumns: ['name', 'email', 'subject', 'createdAt'],
   },
   access: {
-    create: () => true,
+    // Les messages n'arrivent que par la route /api/contact (API locale, hors
+    // contrôle d'accès), qui applique pot de miel, délai minimal et captcha.
+    // L'API REST publique refuse donc les créations anonymes : sans cela, un
+    // robot contournerait le formulaire en postant sur /api/contact-submissions.
+    create: ({ req }) => !!req.user,
     read: ({ req }) => !!req.user,
     update: ({ req }) => !!req.user,
     delete: ({ req }) => !!req.user,

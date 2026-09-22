@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPayloadClient } from '@/lib/payload';
 import nodemailer from 'nodemailer';
+import {
+  checkFormToken,
+  getFormSecret,
+  isHoneypotFilled,
+  turnstileConfigured,
+  verifyTurnstile,
+  type FormTokenStatus,
+} from '@/lib/antispam';
 
 const SUBJECT_LABELS: Record<string, string> = {
   info: "Demande d'information",
@@ -12,26 +20,87 @@ const SUBJECT_LABELS: Record<string, string> = {
   autre: 'Autre',
 };
 
+const MAX_NAME_LENGTH = 200;
+const MAX_EMAIL_LENGTH = 254;
+const MAX_MESSAGE_LENGTH = 5_000;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const TOKEN_ERRORS: Record<Exclude<FormTokenStatus, 'ok'>, string> = {
+  'too-fast': 'Le message a été envoyé trop vite. Prenez un instant, puis réessayez.',
+  expired: 'Le formulaire a expiré. Merci de recharger la page.',
+  missing: 'Le formulaire a expiré. Merci de recharger la page.',
+  invalid: 'Le formulaire a expiré. Merci de recharger la page.',
+};
+
+function clientIp(req: NextRequest): string | null {
+  const forwarded = req.headers.get('x-forwarded-for');
+  return forwarded?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || null;
+}
+
+function badRequest(error: string) {
+  return NextResponse.json({ error }, { status: 400 });
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, email, subject, message } = body;
+    const { website, formToken, turnstileToken } = body ?? {};
 
-    if (!name || !email || !subject || !message) {
-      return NextResponse.json(
-        { error: 'Tous les champs sont requis.' },
-        { status: 400 },
-      );
+    // 1. Pot de miel : un humain ne voit pas ce champ. On répond « succès » sans
+    //    rien enregistrer, pour ne pas renseigner le robot.
+    if (isHoneypotFilled(website)) {
+      return NextResponse.json({ success: true });
     }
 
-    // Save to database via Payload
+    // 2. Champs
+    const name = typeof body?.name === 'string' ? body.name.trim() : '';
+    const email = typeof body?.email === 'string' ? body.email.trim() : '';
+    const subject = typeof body?.subject === 'string' ? body.subject : '';
+    const message = typeof body?.message === 'string' ? body.message.trim() : '';
+
+    if (!name || !email || !subject || !message) {
+      return badRequest('Tous les champs sont requis.');
+    }
+    if (!Object.prototype.hasOwnProperty.call(SUBJECT_LABELS, subject)) {
+      return badRequest('Objet invalide.');
+    }
+    if (!EMAIL_PATTERN.test(email) || email.length > MAX_EMAIL_LENGTH) {
+      return badRequest('Adresse e-mail invalide.');
+    }
+    if (name.length > MAX_NAME_LENGTH || message.length > MAX_MESSAGE_LENGTH) {
+      return badRequest('Message trop long.');
+    }
+
+    // 3. Jeton signé au rendu de la page : formulaire réellement chargé, et pas
+    //    rempli en moins de 3 secondes.
+    const tokenStatus = checkFormToken(formToken, getFormSecret());
+    if (tokenStatus !== 'ok') {
+      return badRequest(TOKEN_ERRORS[tokenStatus]);
+    }
+
+    // 4. Captcha Cloudflare Turnstile, si configuré.
+    if (turnstileConfigured()) {
+      const result = await verifyTurnstile(
+        turnstileToken,
+        process.env.TURNSTILE_SECRET_KEY as string,
+        clientIp(req),
+      );
+      if (!result.success) {
+        console.warn('Contact form: Turnstile refusé', result.errorCodes);
+        return badRequest('La vérification anti-robot a échoué. Merci de réessayer.');
+      }
+    }
+
+    // 5. Enregistrement. La collection refuse les créations anonymes via l'API
+    //    REST publique ; ici on passe par l'API locale, hors contrôle d'accès.
     const payload = await getPayloadClient();
     await payload.create({
       collection: 'contact-submissions' as any,
       data: { name, email, subject, message },
+      overrideAccess: true,
     });
 
-    // Send email notification if SMTP is configured
+    // 6. Notification e-mail si SMTP est configuré
     if (process.env.SMTP_HOST) {
       const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
