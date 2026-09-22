@@ -29,10 +29,28 @@ const sourceSerif = Source_Serif_4({
   display: 'swap',
 });
 
+const SITE_URL = 'https://www.lachambresymphonique.fr';
+const SITE_DESCRIPTION =
+  'La Chambre Symphonique, orchestre fondé en 2017 par Loïc Emmelin. Plus de 80 musiciens réunis par la passion du répertoire symphonique en Bourgogne et Rhône-Alpes.';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: 'La Chambre Symphonique — Orchestre',
-  description:
-    "La Chambre Symphonique, orchestre fondé en 2017 par Loïc Emmelin. Plus de 80 musiciens réunis par la passion du répertoire symphonique en Bourgogne et Rhône-Alpes.",
+  description: SITE_DESCRIPTION,
+  applicationName: 'La Chambre Symphonique',
+  openGraph: {
+    type: 'website',
+    locale: 'fr_FR',
+    siteName: 'La Chambre Symphonique',
+    title: 'La Chambre Symphonique — Orchestre',
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'La Chambre Symphonique — Orchestre',
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export const dynamic = 'force-dynamic';

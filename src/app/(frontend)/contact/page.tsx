@@ -3,6 +3,7 @@ import { getPayloadClient } from '@/lib/payload';
 import { ContactClient } from './ContactClient';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/contact' },
   title: 'Contact — La Chambre Symphonique',
   description:
     "Contactez La Chambre Symphonique pour toute demande d'information, de réservation ou de partenariat.",

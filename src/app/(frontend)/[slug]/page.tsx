@@ -18,9 +18,14 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
     });
     const page = result.docs[0] as any;
     if (!page) return {};
+    const ogImage = (page.meta as any)?.image;
+    const ogImageUrl =
+      ogImage && typeof ogImage === 'object' && ogImage.url ? (ogImage.url as string) : undefined;
     return {
       title: page.title,
       description: (page.meta as any)?.description || undefined,
+      alternates: { canonical: `/${slug}` },
+      ...(ogImageUrl ? { openGraph: { images: [{ url: ogImageUrl }] } } : {}),
     };
   } catch {
     return {};

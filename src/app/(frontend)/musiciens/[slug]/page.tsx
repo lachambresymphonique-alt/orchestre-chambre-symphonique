@@ -32,10 +32,14 @@ async function getMusician(handle: string): Promise<Musician | null> {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const m = await getMusician(slug);
-  if (!m) return { title: 'Musicien introuvable' };
+  if (!m) return { title: 'Musicien introuvable', robots: { index: false } };
+  const canonicalHandle = (m as any).slug || slug;
+  const photoUrl = (m as any).photo?.url as string | undefined;
   return {
     title: `${m.name} — La Chambre Symphonique`,
     description: m.tagline || `${m.role}${m.instrument ? ` — ${m.instrument}` : ''}`,
+    alternates: { canonical: `/musiciens/${canonicalHandle}` },
+    ...(photoUrl ? { openGraph: { images: [{ url: photoUrl }] } } : {}),
   };
 }
 

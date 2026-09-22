@@ -6,6 +6,7 @@ import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { directorPlaceholder } from '@/lib/unsplash';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/directeur-artistique' },
   title: 'Directeur artistique — La Chambre Symphonique',
   description:
     "Loïc Emmelin, directeur artistique de l'Orchestre de la Chambre Symphonique. Vision, parcours, citation.",

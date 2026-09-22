@@ -3,6 +3,7 @@ import { getPayloadClient } from '@/lib/payload';
 import { SupportClient } from './SupportClient';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/nous-soutenir' },
   title: 'Nous soutenir — La Chambre Symphonique',
   description:
     "Soutenez La Chambre Symphonique par une adhésion, un don ou du bénévolat. Association bénévole d'intérêt général.",

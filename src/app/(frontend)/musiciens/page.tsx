@@ -7,6 +7,7 @@ import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { placeholderForMusician } from '@/lib/unsplash';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/musiciens' },
   title: 'Musiciens — La Chambre Symphonique',
   description:
     "Les musiciens de l'Orchestre de la Chambre Symphonique, dirigé par Loïc Emmelin.",

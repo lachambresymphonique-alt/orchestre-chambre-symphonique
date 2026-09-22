@@ -7,6 +7,7 @@ import { getPayloadClient } from '@/lib/payload';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/medias' },
   title: 'Médias — La Chambre Symphonique',
   description:
     "Vidéos, enregistrements et galerie photos de La Chambre Symphonique, orchestre dirigé par Loïc Emmelin.",

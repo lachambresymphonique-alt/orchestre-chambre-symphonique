@@ -3,6 +3,7 @@ import { getPayloadClient } from '@/lib/payload';
 import { AboutClient } from './AboutClient';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/a-propos' },
   title: 'À propos — La Chambre Symphonique',
   description:
     "Découvrez l'histoire de La Chambre Symphonique, orchestre fondé en 2017 par Loïc Emmelin, et son parcours de violoniste et chef d'orchestre.",
