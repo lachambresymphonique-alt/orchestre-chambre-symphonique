@@ -5,17 +5,29 @@ import { useLivePreview } from '@payloadcms/live-preview-react';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FadeIn } from '@/components/FadeIn';
 import { ContactForm } from '@/components/ContactForm';
-import { FacebookIcon, InstagramIcon, YouTubeIcon, LinkedInIcon } from '@/components/SocialIcons';
+import { RefreshOnSave } from '@/components/RefreshOnSave';
+import { FacebookIcon, InstagramIcon, YouTubeIcon, LinkedInIcon, TikTokIcon } from '@/components/SocialIcons';
 
 interface ContactClientProps {
+  /** Réglages du site (coordonnées, horaires, réseaux) — aperçu en direct. */
   initialData: any;
+  /** Textes de la page (Pages → Page Contact). */
+  pageContent?: any;
   /** Jeton anti-robot signé côté serveur, transmis au formulaire. */
   formToken: string;
   /** Clé publique Cloudflare Turnstile, ou `null` si le captcha n'est pas configuré. */
   turnstileSiteKey: string | null;
 }
 
-export function ContactClient({ initialData, formToken, turnstileSiteKey }: ContactClientProps) {
+const SOCIAL_NETWORKS = [
+  { key: 'facebook', label: 'Facebook', Icon: FacebookIcon },
+  { key: 'instagram', label: 'Instagram', Icon: InstagramIcon },
+  { key: 'youtube', label: 'YouTube', Icon: YouTubeIcon },
+  { key: 'linkedin', label: 'LinkedIn', Icon: LinkedInIcon },
+  { key: 'tiktok', label: 'TikTok', Icon: TikTokIcon },
+] as const;
+
+export function ContactClient({ initialData, pageContent, formToken, turnstileSiteKey }: ContactClientProps) {
   const serverURL = typeof window !== 'undefined'
     ? window.location.origin
     : (process.env.NEXT_PUBLIC_SITE_URL || '');
@@ -30,29 +42,35 @@ export function ContactClient({ initialData, formToken, turnstileSiteKey }: Cont
 
   const contact = data.contact || {};
   const hours = data.hours || [];
+  const social = data.social || {};
+  const socialLinks = SOCIAL_NETWORKS.filter((n) => typeof social[n.key] === 'string' && social[n.key].trim());
+  // Page texts are editable in Pages → Page Contact; strings are defaults.
+  const header = pageContent?.header || {};
+  const info = pageContent?.info || {};
 
   return (
     <>
+      <RefreshOnSave />
       <div className="page-header">
         <div className="container">
           <p className="breadcrumb">
             <Link href="/">Accueil</Link> / Contact
           </p>
-          <h1>Contactez-nous</h1>
+          <h1>{header.title || 'Contactez-nous'}</h1>
           <p>
-            Une question, une demande de partenariat ou de réservation ?
-            N&apos;hésitez pas à nous écrire.
+            {header.lede ||
+              'Une question, une demande de partenariat ou de réservation ? N\u2019hésitez pas à nous écrire.'}
           </p>
         </div>
       </div>
 
       <section className="contact-section">
         <div className="contact-grid">
-            <ContactForm formToken={formToken} turnstileSiteKey={turnstileSiteKey} />
+            <ContactForm formToken={formToken} turnstileSiteKey={turnstileSiteKey} copy={pageContent?.form} />
 
             <FadeIn>
               <div className="contact-info-block" data-live-field="contact">
-                <h3>Coordonnées</h3>
+                <h3>{info.coordinatesTitle || 'Coordonnées'}</h3>
                 <div className="contact-detail">
                   <div className="icon">
                     <svg
@@ -109,7 +127,7 @@ export function ContactClient({ initialData, formToken, turnstileSiteKey }: Cont
               </div>
 
               <div className="contact-info-block" data-live-field="hours">
-                <h3>Horaires d&apos;ouverture</h3>
+                <h3>{info.hoursTitle || 'Horaires d\u2019ouverture'}</h3>
                 <div className="contact-detail">
                   <div className="icon">
                     <svg
@@ -132,54 +150,28 @@ export function ContactClient({ initialData, formToken, turnstileSiteKey }: Cont
                 </div>
               </div>
 
-              <div className="contact-info-block">
-                <h3>Suivez-nous</h3>
-                <div
-                  className="footer-social"
-                  style={{ marginTop: 0 }}
-                >
-                  <a
-                    href="#"
-                    aria-label="Facebook"
-                    style={{
-                      borderColor: 'var(--color-border)',
-                      color: 'var(--color-gold-dark)',
-                    }}
-                  >
-                    <FacebookIcon />
-                  </a>
-                  <a
-                    href="#"
-                    aria-label="Instagram"
-                    style={{
-                      borderColor: 'var(--color-border)',
-                      color: 'var(--color-gold-dark)',
-                    }}
-                  >
-                    <InstagramIcon />
-                  </a>
-                  <a
-                    href="#"
-                    aria-label="YouTube"
-                    style={{
-                      borderColor: 'var(--color-border)',
-                      color: 'var(--color-gold-dark)',
-                    }}
-                  >
-                    <YouTubeIcon />
-                  </a>
-                  <a
-                    href="#"
-                    aria-label="LinkedIn"
-                    style={{
-                      borderColor: 'var(--color-border)',
-                      color: 'var(--color-gold-dark)',
-                    }}
-                  >
-                    <LinkedInIcon />
-                  </a>
+              {socialLinks.length > 0 && (
+                <div className="contact-info-block" data-live-field="social">
+                  <h3>{info.socialTitle || 'Suivez-nous'}</h3>
+                  <div className="footer-social" style={{ marginTop: 0 }}>
+                    {socialLinks.map(({ key, label, Icon }) => (
+                      <a
+                        key={key}
+                        href={social[key]}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={label}
+                        style={{
+                          borderColor: 'var(--color-border)',
+                          color: 'var(--color-gold-dark)',
+                        }}
+                      >
+                        <Icon />
+                      </a>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </FadeIn>
           </div>
       </section>

@@ -26,6 +26,12 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
 
   const supportTypes = data.supportTypes || [];
   const taxInfo = data.taxInfo;
+  // Every title below is editable in Pages → Page Nous soutenir; strings are defaults.
+  const header = data.header || {};
+  const typesHeading = data.supportTypesHeading || {};
+  const tiersHeading = data.tiersHeading || {};
+  const simulator = data.simulator || {};
+  const amountTemplate: string = tiersHeading.amountTemplate || 'À partir de {montant} € par an';
 
   return (
     <>
@@ -34,10 +40,10 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
           <p className="breadcrumb">
             <Link href="/">Accueil</Link> / Nous soutenir
           </p>
-          <h1>Nous soutenir</h1>
+          <h1>{header.title || 'Nous soutenir'}</h1>
           <p>
-            Votre soutien est essentiel pour faire vivre la musique et la rendre
-            accessible à tous.
+            {header.lede ||
+              'Votre soutien est essentiel pour faire vivre la musique et la rendre accessible à tous.'}
           </p>
         </div>
       </div>
@@ -45,9 +51,9 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
       <section style={{ background: 'var(--color-bg)' }} data-live-field="supportTypes">
         <div className="container">
           <p className="section-subtitle" style={{ textAlign: 'center' }}>
-            Comment nous aider
+            {typesHeading.subtitle || 'Comment nous aider'}
           </p>
-          <h2 className="section-title">Les formes de soutien</h2>
+          <h2 className="section-title">{typesHeading.title || 'Les formes de soutien'}</h2>
 
           <div className="support-options">
             {supportTypes.map((st: any, i: number) => (
@@ -84,13 +90,13 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
               {taxInfo.individualRate && (
                 <div className="stat-item">
                   <span className="highlight">{taxInfo.individualRate}</span>
-                  <span className="label">Particuliers</span>
+                  <span className="label">{taxInfo.individualLabel || 'Particuliers'}</span>
                 </div>
               )}
               {taxInfo.corporateRate && (
                 <div className="stat-item">
                   <span className="highlight">{taxInfo.corporateRate}</span>
-                  <span className="label">Entreprises</span>
+                  <span className="label">{taxInfo.corporateLabel || 'Entreprises'}</span>
                 </div>
               )}
             </div>
@@ -111,14 +117,14 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
         </section>
       )}
 
-      <DonationSimulator />
+      {simulator.enabled !== false && <DonationSimulator config={simulator} />}
 
       <section style={{ background: 'var(--color-bg)' }}>
         <div className="container">
           <p className="section-subtitle" style={{ textAlign: 'center' }}>
-            Cercle des mécènes
+            {tiersHeading.subtitle || 'Cercle des mécènes'}
           </p>
-          <h2 className="section-title">Nos cercles de soutien</h2>
+          <h2 className="section-title">{tiersHeading.title || 'Nos cercles de soutien'}</h2>
 
           <div className="support-options">
             {tiers.map((tier: any, i: number) => (
@@ -130,7 +136,7 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
                 <h3>{tier.name}</h3>
                 {tier.minAmount && (
                   <p style={{ fontWeight: 500, marginBottom: '0.5rem' }}>
-                    À partir de {tier.minAmount} € par an
+                    {amountTemplate.replace('{montant}', String(tier.minAmount))}
                   </p>
                 )}
                 <p>{tier.description}</p>

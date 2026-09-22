@@ -2,12 +2,43 @@
 
 import { useState, FormEvent, CSSProperties } from 'react';
 import { Turnstile } from '@/components/Turnstile';
+import { renderEmphasis } from '@/lib/emphasis';
+
+/** Textes du formulaire, modifiables dans Pages → Page Contact → Formulaire. */
+export type ContactFormCopy = {
+  eyebrow?: string | null;
+  title?: string | null;
+  nameLabel?: string | null;
+  namePlaceholder?: string | null;
+  emailLabel?: string | null;
+  emailPlaceholder?: string | null;
+  subjectLabel?: string | null;
+  subjectPlaceholder?: string | null;
+  subjects?: { value?: string | null; label?: string | null }[] | null;
+  messageLabel?: string | null;
+  messagePlaceholder?: string | null;
+  submitLabel?: string | null;
+  successEyebrow?: string | null;
+  successTitle?: string | null;
+  successText?: string | null;
+};
+
+const DEFAULT_SUBJECTS = [
+  { value: 'info', label: 'Demande d\'information' },
+  { value: 'reservation', label: 'Réservation / Billetterie' },
+  { value: 'mecenat', label: 'Mécénat / Partenariat' },
+  { value: 'presse', label: 'Presse / Médias' },
+  { value: 'programmation', label: 'Programmation / Booking' },
+  { value: 'benevolat', label: 'Bénévolat' },
+  { value: 'autre', label: 'Autre' },
+];
 
 type ContactFormProps = {
   /** Jeton signé côté serveur : prouve que la page a été chargée et mesure le temps de remplissage. */
   formToken: string;
   /** Clé publique Cloudflare Turnstile ; `null` quand le captcha n'est pas configuré. */
   turnstileSiteKey: string | null;
+  copy?: ContactFormCopy | null;
 };
 
 // Pot de miel : hors écran (pas `display: none`, que certains robots détectent),
@@ -21,7 +52,12 @@ const HONEYPOT_STYLE: CSSProperties = {
   overflow: 'hidden',
 };
 
-export function ContactForm({ formToken, turnstileSiteKey }: ContactFormProps) {
+export function ContactForm({ formToken, turnstileSiteKey, copy }: ContactFormProps) {
+  const c = copy || {};
+  const subjects = (Array.isArray(c.subjects) ? c.subjects : [])
+    .map((s) => ({ value: (s?.value || '').trim(), label: (s?.label || '').trim() }))
+    .filter((s) => s.value && s.label);
+  const subjectOptions = subjects.length > 0 ? subjects : DEFAULT_SUBJECTS;
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
@@ -81,14 +117,12 @@ export function ContactForm({ formToken, turnstileSiteKey }: ContactFormProps) {
   if (status === 'success') {
     return (
       <div className="contact-form contact-form--success">
-        <p className="eyebrow eyebrow--gold">Bien reçu</p>
-        <h2 className="contact-form__title">
-          <em>Merci.</em>
-        </h2>
+        <p className="eyebrow eyebrow--gold">{c.successEyebrow || 'Bien reçu'}</p>
+        <h2 className="contact-form__title">{renderEmphasis(c.successTitle || '*Merci.*')}</h2>
         <hr className="velvet-rule long" />
         <p className="contact-form__success">
-          Votre message vient d'arriver. Nous vous répondrons personnellement,
-          en général sous 48 heures.
+          {c.successText ||
+            'Votre message vient d\'arriver. Nous vous répondrons personnellement, en général sous 48 heures.'}
         </p>
       </div>
     );
@@ -96,10 +130,8 @@ export function ContactForm({ formToken, turnstileSiteKey }: ContactFormProps) {
 
   return (
     <div className="contact-form fade-in visible">
-      <p className="eyebrow eyebrow--gold">Écrivez-nous</p>
-      <h2 className="contact-form__title">
-        <em>Un mot,</em> une question
-      </h2>
+      <p className="eyebrow eyebrow--gold">{c.eyebrow || 'Écrivez-nous'}</p>
+      <h2 className="contact-form__title">{renderEmphasis(c.title || '*Un mot,* une question')}</h2>
       <hr className="velvet-rule" />
       <form onSubmit={handleSubmit}>
         {/* Pot de miel : invisible pour un humain, rempli par les robots. */}
@@ -109,29 +141,29 @@ export function ContactForm({ formToken, turnstileSiteKey }: ContactFormProps) {
         </div>
 
         <div className="form-group">
-          <label htmlFor="name">Nom complet</label>
-          <input type="text" id="name" name="name" placeholder="Votre nom et prénom" required />
+          <label htmlFor="name">{c.nameLabel || 'Nom complet'}</label>
+          <input type="text" id="name" name="name" placeholder={c.namePlaceholder || 'Votre nom et prénom'} required />
         </div>
         <div className="form-group">
-          <label htmlFor="email">Adresse e-mail</label>
-          <input type="email" id="email" name="email" placeholder="votre@email.fr" required />
+          <label htmlFor="email">{c.emailLabel || 'Adresse e-mail'}</label>
+          <input type="email" id="email" name="email" placeholder={c.emailPlaceholder || 'votre@email.fr'} required />
         </div>
         <div className="form-group">
-          <label htmlFor="subject">Objet</label>
+          <label htmlFor="subject">{c.subjectLabel || 'Objet'}</label>
           <select id="subject" name="subject" required defaultValue="">
-            <option value="" disabled>Choisissez un sujet</option>
-            <option value="info">Demande d&apos;information</option>
-            <option value="reservation">Réservation / Billetterie</option>
-            <option value="mecenat">Mécénat / Partenariat</option>
-            <option value="presse">Presse / Médias</option>
-            <option value="programmation">Programmation / Booking</option>
-            <option value="benevolat">Bénévolat</option>
-            <option value="autre">Autre</option>
+            <option value="" disabled>
+              {c.subjectPlaceholder || 'Choisissez un sujet'}
+            </option>
+            {subjectOptions.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
+              </option>
+            ))}
           </select>
         </div>
         <div className="form-group">
-          <label htmlFor="message">Message</label>
-          <textarea id="message" name="message" placeholder="Votre message..." required></textarea>
+          <label htmlFor="message">{c.messageLabel || 'Message'}</label>
+          <textarea id="message" name="message" placeholder={c.messagePlaceholder || 'Votre message...'} required></textarea>
         </div>
 
         {turnstileSiteKey && (
@@ -173,7 +205,7 @@ export function ContactForm({ formToken, turnstileSiteKey }: ContactFormProps) {
             ? 'Envoi…'
             : waitingForCaptcha
               ? 'Vérification…'
-              : 'Envoyer le message →'}
+              : `${c.submitLabel || 'Envoyer le message'} →`}
         </button>
       </form>
     </div>

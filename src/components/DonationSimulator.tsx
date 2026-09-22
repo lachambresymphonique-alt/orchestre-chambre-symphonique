@@ -1,15 +1,43 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { renderEmphasis } from '@/lib/emphasis';
+
+type IconKey = 'score' | 'meal' | 'rehearsal' | 'transport' | 'piano' | 'soloist' | 'venue' | 'recording' | 'tour';
 
 type Impact = {
   threshold: number;
   title: string;
   description: string;
-  icon: 'score' | 'meal' | 'rehearsal' | 'transport' | 'piano' | 'soloist' | 'venue' | 'recording' | 'tour';
+  icon: IconKey;
 };
 
-const IMPACTS: Impact[] = [
+/**
+ * All copy, rates, presets and impact tiers are editable in the admin
+ * (Pages → Page Nous soutenir → Simulateur de don). The constants below are
+ * the defaults used until the fields are filled in.
+ */
+type SimulatorConfig = {
+  eyebrow: string;
+  title: string;
+  lede: string;
+  individualLabel: string;
+  corporateLabel: string;
+  individualRate: number;
+  corporateRate: number;
+  individualLimit: string;
+  corporateLimit: string;
+  amountLabel: string;
+  realCostLabel: string;
+  savingLabel: string;
+  impactIntro: string;
+  ctaText: string;
+  ctaLink: string;
+  presets: number[];
+  impacts: Impact[];
+};
+
+const DEFAULT_IMPACTS: Impact[] = [
   {
     threshold: 30,
     icon: 'score',
@@ -66,7 +94,69 @@ const IMPACTS: Impact[] = [
   },
 ];
 
-const PRESETS = [50, 150, 500, 1500, 3000, 6000];
+const DEFAULT_PRESETS = [50, 150, 500, 1500, 3000, 6000];
+
+const DEFAULTS: SimulatorConfig = {
+  eyebrow: 'Simulateur de don',
+  title: 'Que *permet* votre don ?',
+  lede: 'Choisissez un montant et découvrez son impact concret pour l\'orchestre, ainsi que son coût réel après déduction fiscale.',
+  individualLabel: 'Particulier',
+  corporateLabel: 'Entreprise',
+  individualRate: 66,
+  corporateRate: 60,
+  individualLimit: '20 % du revenu imposable',
+  corporateLimit: '5 ‰ du chiffre d\'affaires',
+  amountLabel: 'Votre don',
+  realCostLabel: 'Coût réel pour vous',
+  savingLabel: 'Économie d\'impôt',
+  impactIntro: 'Avec {montant}, vous offrez à l\'orchestre',
+  ctaText: 'Faire ce don de {montant}',
+  ctaLink: 'https://www.helloasso.com/associations/la-chambre-symphonique',
+  presets: DEFAULT_PRESETS,
+  impacts: DEFAULT_IMPACTS,
+};
+
+const ICON_KEYS: IconKey[] = ['score', 'meal', 'rehearsal', 'transport', 'piano', 'soloist', 'venue', 'recording', 'tour'];
+
+const str = (v: unknown, d: string) => (typeof v === 'string' && v.trim() ? v : d);
+const num = (v: unknown, d: number) => (typeof v === 'number' && Number.isFinite(v) ? v : d);
+
+function resolveConfig(raw: any): SimulatorConfig {
+  const g = raw && typeof raw === 'object' ? raw : {};
+  const presets = Array.isArray(g.presets)
+    ? g.presets.map((p: any) => num(p?.amount, NaN)).filter((n: number) => Number.isFinite(n) && n > 0)
+    : [];
+  const impacts: Impact[] = Array.isArray(g.impacts)
+    ? g.impacts
+        .map((i: any) => ({
+          threshold: num(i?.threshold, NaN),
+          title: str(i?.title, ''),
+          description: str(i?.description, ''),
+          icon: (ICON_KEYS.includes(i?.icon) ? i.icon : 'score') as IconKey,
+        }))
+        .filter((i: Impact) => Number.isFinite(i.threshold) && i.threshold > 0 && i.title)
+        .sort((a: Impact, b: Impact) => a.threshold - b.threshold)
+    : [];
+  return {
+    eyebrow: str(g.eyebrow, DEFAULTS.eyebrow),
+    title: str(g.title, DEFAULTS.title),
+    lede: str(g.lede, DEFAULTS.lede),
+    individualLabel: str(g.individualLabel, DEFAULTS.individualLabel),
+    corporateLabel: str(g.corporateLabel, DEFAULTS.corporateLabel),
+    individualRate: num(g.individualRate, DEFAULTS.individualRate),
+    corporateRate: num(g.corporateRate, DEFAULTS.corporateRate),
+    individualLimit: str(g.individualLimit, DEFAULTS.individualLimit),
+    corporateLimit: str(g.corporateLimit, DEFAULTS.corporateLimit),
+    amountLabel: str(g.amountLabel, DEFAULTS.amountLabel),
+    realCostLabel: str(g.realCostLabel, DEFAULTS.realCostLabel),
+    savingLabel: str(g.savingLabel, DEFAULTS.savingLabel),
+    impactIntro: str(g.impactIntro, DEFAULTS.impactIntro),
+    ctaText: str(g.ctaText, DEFAULTS.ctaText),
+    ctaLink: str(g.ctaLink, DEFAULTS.ctaLink),
+    presets: presets.length ? presets : DEFAULTS.presets,
+    impacts: impacts.length ? impacts : DEFAULTS.impacts,
+  };
+}
 
 const ICONS: Record<Impact['icon'], React.ReactNode> = {
   score: (
@@ -169,17 +259,17 @@ const ICONS: Record<Impact['icon'], React.ReactNode> = {
   ),
 };
 
-function findImpact(amount: number): Impact {
-  let chosen = IMPACTS[0];
-  for (const i of IMPACTS) {
+function findImpact(impacts: Impact[], amount: number): Impact {
+  let chosen = impacts[0];
+  for (const i of impacts) {
     if (amount >= i.threshold) chosen = i;
   }
   return chosen;
 }
 
-function findCombination(amount: number): { impact: Impact; quantity: number }[] {
+function findCombination(impacts: Impact[], amount: number): { impact: Impact; quantity: number }[] {
   // Highest single impact you fully cover, plus how many we can offer
-  const main = findImpact(amount);
+  const main = findImpact(impacts, amount);
   const items: { impact: Impact; quantity: number }[] = [];
   if (main) {
     const qty = Math.max(1, Math.floor(amount / main.threshold));
@@ -188,7 +278,7 @@ function findCombination(amount: number): { impact: Impact; quantity: number }[]
   // Add a smaller secondary impact if there's leftover
   const leftover = amount - main.threshold * Math.floor(amount / main.threshold);
   if (leftover >= 30) {
-    const second = findImpact(leftover);
+    const second = findImpact(impacts, leftover);
     if (second && second.threshold !== main.threshold) {
       items.push({ impact: second, quantity: Math.max(1, Math.floor(leftover / second.threshold)) });
     }
@@ -199,27 +289,28 @@ function findCombination(amount: number): { impact: Impact; quantity: number }[]
 const formatEur = (n: number) =>
   new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
 
-export function DonationSimulator() {
+export function DonationSimulator({ config }: { config?: any } = {}) {
+  const cfg = useMemo(() => resolveConfig(config), [config]);
   const [amount, setAmount] = useState<number>(500);
   const [audience, setAudience] = useState<'individual' | 'corporate'>('individual');
 
-  const rate = audience === 'individual' ? 0.66 : 0.6;
+  const ratePct = audience === 'individual' ? cfg.individualRate : cfg.corporateRate;
+  const rate = ratePct / 100;
   const realCost = useMemo(() => Math.round(amount * (1 - rate)), [amount, rate]);
   const saving = useMemo(() => Math.round(amount * rate), [amount, rate]);
-  const combinations = useMemo(() => findCombination(amount), [amount]);
+  const combinations = useMemo(() => findCombination(cfg.impacts, amount), [cfg.impacts, amount]);
   const main = combinations[0]?.impact;
+  const withAmount = (template: string) => template.replace('{montant}', formatEur(amount));
+  const sliderMax = cfg.impacts[cfg.impacts.length - 2]?.threshold || 12000;
 
   return (
-    <section className="donation-sim" aria-labelledby="donation-sim-title">
+    <section className="donation-sim" aria-labelledby="donation-sim-title" data-live-field="simulator">
       <div className="donation-sim__head">
-        <p className="eyebrow eyebrow--gold eyebrow--centered">Simulateur de don</p>
+        <p className="eyebrow eyebrow--gold eyebrow--centered">{cfg.eyebrow}</p>
         <h2 id="donation-sim-title" className="donation-sim__title">
-          Que <em>permet</em> votre don&nbsp;?
+          {renderEmphasis(cfg.title.replace(/ \?$/, '\u00a0?'))}
         </h2>
-        <p className="donation-sim__lede">
-          Choisissez un montant et découvrez son impact concret pour l'orchestre,
-          ainsi que son coût réel après déduction fiscale.
-        </p>
+        <p className="donation-sim__lede">{cfg.lede}</p>
       </div>
 
       <div className="donation-sim__panel">
@@ -233,8 +324,8 @@ export function DonationSimulator() {
               className={`donation-sim__audience-btn ${audience === 'individual' ? 'is-active' : ''}`}
               onClick={() => setAudience('individual')}
             >
-              Particulier
-              <span>−66 %</span>
+              {cfg.individualLabel}
+              <span>−{cfg.individualRate} %</span>
             </button>
             <button
               type="button"
@@ -243,13 +334,13 @@ export function DonationSimulator() {
               className={`donation-sim__audience-btn ${audience === 'corporate' ? 'is-active' : ''}`}
               onClick={() => setAudience('corporate')}
             >
-              Entreprise
-              <span>−60 %</span>
+              {cfg.corporateLabel}
+              <span>−{cfg.corporateRate} %</span>
             </button>
           </div>
 
           <label htmlFor="donation-amount" className="donation-sim__amount-label">
-            Votre don
+            {cfg.amountLabel}
           </label>
           <div className="donation-sim__amount-wrap">
             <input
@@ -272,16 +363,16 @@ export function DonationSimulator() {
           <input
             type="range"
             min={30}
-            max={12000}
+            max={sliderMax}
             step={10}
-            value={Math.min(amount, 12000)}
+            value={Math.min(amount, sliderMax)}
             onChange={(e) => setAmount(parseInt(e.target.value, 10))}
             className="donation-sim__slider"
             aria-label="Ajuster le montant du don"
           />
 
           <div className="donation-sim__presets">
-            {PRESETS.map((p) => (
+            {cfg.presets.map((p) => (
               <button
                 key={p}
                 type="button"
@@ -295,24 +386,24 @@ export function DonationSimulator() {
 
           <dl className="donation-sim__costs">
             <div>
-              <dt>Coût réel pour vous</dt>
+              <dt>{cfg.realCostLabel}</dt>
               <dd className="donation-sim__cost">{formatEur(realCost)}</dd>
             </div>
             <div>
-              <dt>Économie d'impôt</dt>
+              <dt>{cfg.savingLabel}</dt>
               <dd className="donation-sim__saving">−{formatEur(saving)}</dd>
             </div>
           </dl>
 
           <p className="donation-sim__fineprint">
-            Réduction fiscale de {audience === 'individual' ? '66 %' : '60 %'} dans la
-            limite de {audience === 'individual' ? '20 % du revenu imposable' : '5 ‰ du chiffre d\'affaires'}.
+            Réduction fiscale de {ratePct}&nbsp;% dans la limite de{' '}
+            {audience === 'individual' ? cfg.individualLimit : cfg.corporateLimit}.
           </p>
         </div>
 
         {/* === Right : impact === */}
         <div className="donation-sim__impact">
-          <p className="eyebrow">Avec {formatEur(amount)}, vous offrez à l'orchestre</p>
+          <p className="eyebrow">{withAmount(cfg.impactIntro)}</p>
 
           {main ? (
             <div className="donation-sim__impact-main" key={main.threshold}>
@@ -341,7 +432,7 @@ export function DonationSimulator() {
           )}
 
           <ul className="donation-sim__ladder">
-            {IMPACTS.map((i) => {
+            {cfg.impacts.map((i) => {
               const reached = amount >= i.threshold;
               return (
                 <li
@@ -356,12 +447,12 @@ export function DonationSimulator() {
           </ul>
 
           <a
-            href="https://www.helloasso.com"
+            href={cfg.ctaLink}
             target="_blank"
             rel="noopener noreferrer"
             className="donation-sim__cta"
           >
-            Faire ce don de {formatEur(amount)} →
+            {withAmount(cfg.ctaText)} →
           </a>
         </div>
       </div>

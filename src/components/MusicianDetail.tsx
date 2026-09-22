@@ -22,23 +22,49 @@ export type Musician = {
   favoriteComposer?: string;
 };
 
-const sectionLabels: Record<Musician['section'], string> = {
+const defaultSectionLabels: Record<Musician['section'], string> = {
   direction: 'Direction artistique',
   cordes: 'Les Cordes',
   vents: 'Les Vents',
   claviers: 'Claviers & Percussions',
 };
 
+/** Labels editable in Pages → Page Musiciens (groups « sections » and « detail »). */
+export type MusicianDetailLabels = {
+  sections?: Partial<Record<Musician['section'], string | null>> | null;
+  detail?: {
+    inspiringLabel?: string | null;
+    favoriteWorkLabel?: string | null;
+    favoriteComposerLabel?: string | null;
+    formationTitle?: string | null;
+    concoursTitle?: string | null;
+    videoTitle?: string | null;
+    backLabel?: string | null;
+  } | null;
+};
+
 type Props = {
   musician: Musician;
   /** Renders a discreet banner explaining this is a preview, hides the back link. */
   previewMode?: boolean;
+  labels?: MusicianDetailLabels | null;
 };
 
-export function MusicianDetail({ musician: m, previewMode = false }: Props) {
+export function MusicianDetail({ musician: m, previewMode = false, labels }: Props) {
   const bioParagraphs = (m.bio || '').split(/\n\n+/).filter(Boolean);
   const embedUrl = toEmbedUrl(m.videoUrl);
-  const sectionLabel = m.section ? sectionLabels[m.section] : '—';
+  const sectionLabel = m.section
+    ? labels?.sections?.[m.section] || defaultSectionLabels[m.section]
+    : '—';
+  const t = {
+    inspiring: labels?.detail?.inspiringLabel || 'La symphonie qui lui a donné envie de faire de la musique',
+    favoriteWork: labels?.detail?.favoriteWorkLabel || 'Œuvre préférée',
+    favoriteComposer: labels?.detail?.favoriteComposerLabel || 'Compositeur préféré',
+    formation: labels?.detail?.formationTitle || 'Formation',
+    concours: labels?.detail?.concoursTitle || 'Concours et distinctions',
+    video: labels?.detail?.videoTitle || 'En écoute',
+    back: labels?.detail?.backLabel || 'Retour aux musiciens',
+  };
 
   return (
     <div className="musician-detail">
@@ -95,19 +121,19 @@ export function MusicianDetail({ musician: m, previewMode = false }: Props) {
             <dl className="musician-feature__qa">
               {m.inspiringSymphony && (
                 <div className="musician-feature__qa-item">
-                  <dt>La symphonie qui lui a donné envie de faire de la musique</dt>
+                  <dt>{t.inspiring}</dt>
                   <dd>{m.inspiringSymphony}</dd>
                 </div>
               )}
               {m.favoriteWork && (
                 <div className="musician-feature__qa-item">
-                  <dt>Œuvre préférée</dt>
+                  <dt>{t.favoriteWork}</dt>
                   <dd>{m.favoriteWork}</dd>
                 </div>
               )}
               {m.favoriteComposer && (
                 <div className="musician-feature__qa-item">
-                  <dt>Compositeur préféré</dt>
+                  <dt>{t.favoriteComposer}</dt>
                   <dd>{m.favoriteComposer}</dd>
                 </div>
               )}
@@ -118,7 +144,7 @@ export function MusicianDetail({ musician: m, previewMode = false }: Props) {
             <div className="musician-feature__credits">
               {m.formation && m.formation.length > 0 && (
                 <section className="musician-feature__credits-block">
-                  <h2 className="musician-feature__credits-title">Formation</h2>
+                  <h2 className="musician-feature__credits-title">{t.formation}</h2>
                   <ul className="musician-feature__credits-list">
                     {m.formation.map((f, i) => (
                       <li key={i}>{f.item}</li>
@@ -128,7 +154,7 @@ export function MusicianDetail({ musician: m, previewMode = false }: Props) {
               )}
               {m.concours && m.concours.length > 0 && (
                 <section className="musician-feature__credits-block">
-                  <h2 className="musician-feature__credits-title">Concours et distinctions</h2>
+                  <h2 className="musician-feature__credits-title">{t.concours}</h2>
                   <ul className="musician-feature__credits-list">
                     {m.concours.map((c, i) => (
                       <li key={i}>{c.item}</li>
@@ -141,7 +167,7 @@ export function MusicianDetail({ musician: m, previewMode = false }: Props) {
 
           {embedUrl && (
             <div className="musician-feature__video">
-              <h2 className="musician-feature__credits-title">En écoute</h2>
+              <h2 className="musician-feature__credits-title">{t.video}</h2>
               <div className="musician-feature__video-frame">
                 <iframe
                   src={embedUrl}
@@ -166,7 +192,7 @@ export function MusicianDetail({ musician: m, previewMode = false }: Props) {
           {!previewMode && (
             <div className="musician-feature__back">
               <Link href="/musiciens" className="link-arrow">
-                ← Retour aux musiciens
+                ← {t.back}
               </Link>
             </div>
           )}

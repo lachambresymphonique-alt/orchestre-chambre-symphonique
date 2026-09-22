@@ -9,6 +9,7 @@ import { NewsletterForm } from '@/components/NewsletterForm';
 import { ExpandableText } from '@/components/ExpandableText';
 import { stockImages, placeholderForMusician, directorPlaceholder } from '@/lib/unsplash';
 import type { ConcertCard } from '@/lib/concerts';
+import { renderEmphasis } from '@/lib/emphasis';
 
 interface HomeClientProps {
   initialData: any;
@@ -55,6 +56,37 @@ export function HomeClient({
   const soloistsIntro: string = featuredCfg.soloistsIntro || '';
   const featuredSoloists: Array<{ soloist: any; contextOverride?: string }> =
     Array.isArray(featuredCfg.soloists) ? featuredCfg.soloists : [];
+  const directorTaglineFallback: string =
+    featuredCfg.directorTaglineFallback ||
+    'Violoniste de formation, directeur artistique de l\'orchestre depuis sa fondation en 2017.';
+  const soloistsEyebrow: string = featuredCfg.soloistsEyebrow || 'Avec nous';
+  const soloistLinkLabel: string = featuredCfg.soloistLinkLabel || 'Son univers';
+
+  // Every section title/label below is editable in Pages → Page d'accueil;
+  // the strings here are only the defaults shown until the field is filled.
+  const credits: string[] =
+    Array.isArray(hero?.credits) && hero.credits.length > 0
+      ? hero.credits.map((c: any) => c?.text).filter(Boolean)
+      : ['Fondé en 2017', '40 à 80 musiciens', 'Direction Loïc Emmelin'];
+
+  const statement = data?.statement || {};
+  const statementLines: string[] = (
+    statement.lines ||
+    'Une *chambre* de musiciens\nqui jouent le répertoire *symphonique*\nsans rien perdre : ni la précision,\nni la chaleur, ni l\'*émotion*\ndu premier accord.'
+  )
+    .split('\n')
+    .map((l: string) => l.trim())
+    .filter(Boolean);
+
+  const concertsCfg = data?.concerts || {};
+  const nextLabel: string = concertsCfg.nextLabel || 'Prochain concert';
+  const todayLabel: string = concertsCfg.todayLabel || 'Aujourd\'hui';
+  const cancelledLabel: string = concertsCfg.cancelledLabel || 'Annulé';
+  const bookingLabel: string = concertsCfg.bookingLabel || 'Réserver une place';
+  const bookingLabelShort: string = concertsCfg.bookingLabelShort || 'Réserver';
+
+  const bento = data?.bento || {};
+  const partnersCfg = data?.partners || {};
 
   return (
     <>
@@ -113,10 +145,10 @@ export function HomeClient({
             <div className="hero-modern__next-concert">
               <p className="eyebrow eyebrow--accent">
                 {featured.status === 'cancelled'
-                  ? 'Concert annulé'
+                  ? cancelledLabel
                   : featured.date.isToday
-                    ? 'Aujourd\'hui'
-                    : 'Prochain concert'}
+                    ? todayLabel
+                    : nextLabel}
               </p>
               <p className="hero-modern__next-date">
                 <time dateTime={featured.date.iso} className="hero-modern__next-day">
@@ -132,23 +164,30 @@ export function HomeClient({
             </div>
           )}
 
-          <div className="hero-modern__credit">
-            <span>Fondé en 2017</span>
-            <span className="dot" aria-hidden>·</span>
-            <span>40 à 80 musiciens</span>
-            <span className="dot" aria-hidden>·</span>
-            <span>Direction Loïc Emmelin</span>
-          </div>
+          {credits.length > 0 && (
+            <div className="hero-modern__credit">
+              {credits.map((text, i) => (
+                <span key={i} className="hero-modern__credit-item">
+                  {i > 0 && (
+                    <span className="dot" aria-hidden>
+                      ·
+                    </span>
+                  )}
+                  <span>{text}</span>
+                </span>
+              ))}
+            </div>
+          )}
         </section>
       </div>
 
       {/* STATEMENT — manifesto with atmospheric counterpoint */}
-      <section className="home-statement">
+      <section className="home-statement" data-live-field="statement">
         <div className="home-statement__inner">
           <figure className="home-statement__media">
             <Image
-              src={stockImages.violin}
-              alt=""
+              src={statement.image?.url || stockImages.violin}
+              alt={statement.image?.alt || ''}
               fill
               sizes="(max-width: 900px) 100vw, 38vw"
               style={{ objectFit: 'cover' }}
@@ -157,22 +196,21 @@ export function HomeClient({
           </figure>
 
           <div className="home-statement__text">
-            <p className="eyebrow eyebrow--on-dark">Notre conviction</p>
+            <p className="eyebrow eyebrow--on-dark">{statement.eyebrow || 'Notre conviction'}</p>
             <p className="home-statement__line">
-              Une <em>chambre</em> de musiciens
-              <br />
-              qui jouent le répertoire <em>symphonique</em>
-              <br />
-              sans rien perdre&#8239;: ni la précision,
-              <br />
-              ni la chaleur, ni l'<em>émotion</em>
-              <br />
-              du premier accord.
+              {statementLines.map((line, i) => (
+                <span key={i} className="home-statement__line-part">
+                  {i > 0 && <br />}
+                  {renderEmphasis(line.replace(/ :/g, '\u202f:'))}
+                </span>
+              ))}
             </p>
             <hr className="velvet-rule long" />
-            <Link href="/a-propos" className="link-arrow link-arrow--on-dark">
-              Notre histoire →
-            </Link>
+            {(statement.ctaText || statement.ctaLink) !== '' && (
+              <Link href={statement.ctaLink || '/a-propos'} className="link-arrow link-arrow--on-dark">
+                {statement.ctaText || 'Notre histoire'} →
+              </Link>
+            )}
           </div>
         </div>
       </section>
@@ -180,9 +218,9 @@ export function HomeClient({
       {/* CONCERTS — one simple list; the next concert leads with its photo */}
       <section className="home-concerts" id="concerts" data-live-link="/admin/collections/concerts">
         <header className="home-concerts__head">
-          <p className="eyebrow">La saison</p>
+          <p className="eyebrow">{concertsCfg.eyebrow || 'La saison'}</p>
           <h2 className="home-concerts__title">
-            <em>Prochains</em> concerts
+            {renderEmphasis(concertsCfg.title || '*Prochains* concerts')}
           </h2>
           <hr className="velvet-rule" />
         </header>
@@ -229,7 +267,7 @@ export function HomeClient({
                       <div className="concert-row__date">
                         {isLead && (
                           <span className="concert-row__tag">
-                            {cancelled ? 'Annulé' : concert.date.isToday ? 'Aujourd\'hui' : 'Prochain concert'}
+                            {cancelled ? cancelledLabel : concert.date.isToday ? todayLabel : nextLabel}
                           </span>
                         )}
                         <time dateTime={concert.date.iso} className="concert-row__day">
@@ -254,9 +292,7 @@ export function HomeClient({
                       </div>
                       <div className="concert-row__action">
                         {cancelled ? (
-                          <span className="concert-badge concert-badge--cancelled">
-                            {isLead ? 'Concert annulé' : 'Annulé'}
-                          </span>
+                          <span className="concert-badge concert-badge--cancelled">{cancelledLabel}</span>
                         ) : concert.bookingLink ? (
                           <a
                             href={concert.bookingLink}
@@ -264,7 +300,7 @@ export function HomeClient({
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            {isLead ? 'Réserver une place' : 'Réserver'} →
+                            {isLead ? bookingLabel : bookingLabelShort} →
                           </a>
                         ) : null}
                       </div>
@@ -276,24 +312,24 @@ export function HomeClient({
           </FadeIn>
         ) : (
           <div className="home-concerts__empty">
-            <p>La prochaine saison se prépare.</p>
+            <p>{concertsCfg.emptyTitle || 'La prochaine saison se prépare.'}</p>
             <p>
-              Les dates seront annoncées ici dès qu&rsquo;elles seront fixées. Inscrivez-vous à la
-              lettre d&rsquo;information pour être prévenu·e en avant-première.
+              {concertsCfg.emptyText ||
+                'Les dates seront annoncées ici dès qu\u2019elles seront fixées. Inscrivez-vous à la lettre d\u2019information pour être prévenu·e en avant-première.'}
             </p>
             <a href="#newsletter" className="link-arrow">
-              Recevoir les prochaines dates →
+              {concertsCfg.emptyCtaText || 'Recevoir les prochaines dates'} →
             </a>
           </div>
         )}
       </section>
 
       {/* BENTO — meet the orchestra */}
-      <section className="home-bento">
+      <section className="home-bento" data-live-field="bento">
         <header className="home-bento__head">
-          <p className="eyebrow eyebrow--accent">Rencontre</p>
+          <p className="eyebrow eyebrow--accent">{bento.eyebrow || 'Rencontre'}</p>
           <h2 className="home-bento__title">
-            <em>Les visages</em> de l'orchestre
+            {renderEmphasis(bento.title || '*Les visages* de l\'orchestre')}
           </h2>
         </header>
 
@@ -318,10 +354,7 @@ export function HomeClient({
               <h3 className="bento-card__title">
                 <em>{director?.name || 'Loïc Emmelin'}</em>
               </h3>
-              <p className="bento-card__lede">
-                {director?.tagline ||
-                  'Violoniste de formation, directeur artistique de l\'orchestre depuis sa fondation en 2017.'}
-              </p>
+              <p className="bento-card__lede">{director?.tagline || directorTaglineFallback}</p>
               <span className="link-arrow link-arrow--on-dark">{directorLinkLabel} →</span>
             </div>
           </Link>
@@ -346,27 +379,27 @@ export function HomeClient({
               ))}
             </div>
             <div className="bento-card__text">
-              <p className="eyebrow eyebrow--accent">L'ensemble</p>
+              <p className="eyebrow eyebrow--accent">{bento.musiciansEyebrow || 'L\'ensemble'}</p>
               <h3 className="bento-card__title">
-                <em>Les musiciens</em>
+                {renderEmphasis(bento.musiciansTitle || '*Les musiciens*')}
               </h3>
               <p className="bento-card__lede">
-                Issus de conservatoires français, suisses et belges. Étudiants, amateurs éclairés,
-                jeunes professionnels.
+                {bento.musiciansText ||
+                  'Issus de conservatoires français, suisses et belges. Étudiants, amateurs éclairés, jeunes professionnels.'}
               </p>
-              <span className="link-arrow">Découvrir →</span>
+              <span className="link-arrow">{bento.musiciansLinkLabel || 'Découvrir'} →</span>
             </div>
           </Link>
 
           {/* History — small card */}
-          <Link href="/a-propos" className="bento-card bento-card--history">
-            <p className="eyebrow eyebrow--accent">Depuis</p>
-            <span className="bento-card__year">2017</span>
+          <Link href={bento.historyLink || '/a-propos'} className="bento-card bento-card--history">
+            <p className="eyebrow eyebrow--accent">{bento.historyEyebrow || 'Depuis'}</p>
+            <span className="bento-card__year">{bento.historyYear || '2017'}</span>
             <p className="bento-card__history-text">
-              Fondé à Mâcon, l'orchestre rassemble plus de 80 musiciens autour de la passion
-              du répertoire symphonique.
+              {bento.historyText ||
+                'Fondé à Mâcon, l\'orchestre rassemble plus de 80 musiciens autour de la passion du répertoire symphonique.'}
             </p>
-            <span className="link-arrow">L'histoire →</span>
+            <span className="link-arrow">{bento.historyLinkLabel || 'L\'histoire'} →</span>
           </Link>
         </div>
       </section>
@@ -378,7 +411,7 @@ export function HomeClient({
           data-live-field="featured.soloists"
         >
           <header className="home-soloists__head">
-            <p className="eyebrow eyebrow--accent">Avec nous</p>
+            <p className="eyebrow eyebrow--accent">{soloistsEyebrow}</p>
             <h2 className="home-soloists__title">
               <em>{soloistsTitle}</em>
             </h2>
@@ -427,7 +460,7 @@ export function HomeClient({
                         rel="noopener noreferrer"
                         className="link-arrow link-arrow--mute"
                       >
-                        Son univers →
+                        {soloistLinkLabel} →
                       </a>
                     )}
                   </div>
@@ -483,7 +516,7 @@ export function HomeClient({
       {/* PARTNERS */}
       {partners.length > 0 && (
         <section className="home-partners" data-live-link="/admin/collections/partners">
-          <p className="eyebrow eyebrow--centered">Avec le soutien de</p>
+          <p className="eyebrow eyebrow--centered">{partnersCfg.eyebrow || 'Avec le soutien de'}</p>
           <ul className="home-partners__list">
             {partners.map((partner: any, i: number) => (
               <li
@@ -509,7 +542,11 @@ export function HomeClient({
             {newsletter?.description && (
               <p className="home-newsletter__lede">{newsletter.description}</p>
             )}
-            <NewsletterForm />
+            <NewsletterForm
+              placeholder={newsletter?.placeholder}
+              buttonLabel={newsletter?.buttonLabel}
+              successLabel={newsletter?.successLabel}
+            />
           </div>
         </section>
       </div>

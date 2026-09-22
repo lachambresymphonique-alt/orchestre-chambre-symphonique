@@ -6,9 +6,23 @@ import { HomeClient } from './HomeClient';
 
 const SITE_URL = 'https://www.lachambresymphonique.fr';
 
-export const metadata: Metadata = {
-  alternates: { canonical: '/' },
-};
+// Title/description editable in Pages → Page d'accueil → Référencement;
+// when empty, the site-wide values from the layout apply.
+export async function generateMetadata(): Promise<Metadata> {
+  let seo: { metaTitle?: string; metaDescription?: string } = {};
+  try {
+    const payload = await getPayloadClient();
+    const home = (await payload.findGlobal({ slug: 'home-page' as any, depth: 0 })) as any;
+    seo = home?.seo || {};
+  } catch {
+    seo = {};
+  }
+  return {
+    alternates: { canonical: '/' },
+    ...(seo.metaTitle ? { title: seo.metaTitle } : {}),
+    ...(seo.metaDescription ? { description: seo.metaDescription } : {}),
+  };
+}
 
 export default async function Home() {
   const payload = await getPayloadClient();

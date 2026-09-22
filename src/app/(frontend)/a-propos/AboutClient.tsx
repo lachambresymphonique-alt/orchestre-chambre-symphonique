@@ -6,6 +6,7 @@ import { useLivePreview } from '@payloadcms/live-preview-react';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FadeIn } from '@/components/FadeIn';
 import { stockImages } from '@/lib/unsplash';
+import { renderEmphasis } from '@/lib/emphasis';
 
 interface AboutClientProps {
   initialData: any;
@@ -27,6 +28,9 @@ export function AboutClient({ initialData, timelineEvents }: AboutClientProps) {
 
   const intro = data.intro;
   const stats = data.stats || [];
+  // Titles below are editable in Pages → Page À propos; strings are defaults.
+  const header = data.header || {};
+  const timeline = data.timeline || {};
 
   const introParas = (intro?.content || '').split('\n\n').filter(Boolean);
 
@@ -38,10 +42,10 @@ export function AboutClient({ initialData, timelineEvents }: AboutClientProps) {
           <p className="breadcrumb">
             <Link href="/">Accueil</Link> &nbsp;/&nbsp; À propos
           </p>
-          <h1>L'orchestre</h1>
+          <h1>{header.title || 'L\'orchestre'}</h1>
           <p>
-            Un orchestre fondé en 2017 par Loïc Emmelin, porté par
-            l'ambition du répertoire symphonique en effectif resserré.
+            {header.lede ||
+              'Un orchestre fondé en 2017 par Loïc Emmelin, porté par l\'ambition du répertoire symphonique en effectif resserré.'}
           </p>
         </div>
       </div>
@@ -95,11 +99,11 @@ export function AboutClient({ initialData, timelineEvents }: AboutClientProps) {
 
       {/* TIMELINE — editorial */}
       {timelineEvents.length > 0 && (
-        <section className="about-timeline">
+        <section className="about-timeline" data-live-field="timeline">
           <header className="about-timeline__head">
-            <p className="eyebrow eyebrow--gold">Le parcours</p>
+            <p className="eyebrow eyebrow--gold">{timeline.eyebrow || 'Le parcours'}</p>
             <h2 className="about-timeline__title">
-              <em>Les grandes dates</em>
+              {renderEmphasis(timeline.title || '*Les grandes dates*')}
             </h2>
             <hr className="velvet-rule" />
           </header>

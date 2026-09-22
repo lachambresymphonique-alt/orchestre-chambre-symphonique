@@ -38,6 +38,16 @@ export const HomePage: GlobalConfig = {
           },
         },
         {
+          name: 'directorTaglineFallback',
+          type: 'text',
+          label: 'Phrase sous le nom du chef (par défaut)',
+          defaultValue: 'Violoniste de formation, directeur artistique de l\'orchestre depuis sa fondation en 2017.',
+          admin: {
+            description:
+              'Affichée dans la grande carte si la fiche du musicien n\'a pas de « Phrase signature ».',
+          },
+        },
+        {
           name: 'director',
           type: 'relationship',
           relationTo: 'musicians' as any,
@@ -65,6 +75,18 @@ export const HomePage: GlobalConfig = {
             description:
               "Une phrase ou deux pour présenter les solistes invités (optionnel).",
           },
+        },
+        {
+          name: 'soloistsEyebrow',
+          type: 'text',
+          label: 'Sur-titre de la section Solistes',
+          defaultValue: 'Avec nous',
+        },
+        {
+          name: 'soloistLinkLabel',
+          type: 'text',
+          label: 'Texte du lien vers le site du soliste',
+          defaultValue: 'Son univers',
         },
         {
           name: 'soloists',
@@ -127,6 +149,125 @@ export const HomePage: GlobalConfig = {
         { name: 'ctaPrimaryLink', type: 'text', label: 'Bouton principal — lien', admin: { description: 'Page vers laquelle le bouton redirige (ex : /nous-soutenir).' } },
         { name: 'ctaSecondaryText', type: 'text', label: 'Bouton secondaire — texte' },
         { name: 'ctaSecondaryLink', type: 'text', label: 'Bouton secondaire — lien' },
+        {
+          name: 'credits',
+          type: 'array',
+          label: 'Ligne de repères (bas de bannière)',
+          labels: { singular: 'Repère', plural: 'Repères' },
+          maxRows: 4,
+          defaultValue: [
+            { text: 'Fondé en 2017' },
+            { text: '40 à 80 musiciens' },
+            { text: 'Direction Loïc Emmelin' },
+          ],
+          admin: { description: 'Petits mots séparés par des points, en bas à gauche de la bannière.' },
+          fields: [{ name: 'text', type: 'text', required: true, label: 'Texte' }],
+        },
+      ],
+    },
+    {
+      name: 'statement',
+      type: 'group',
+      label: 'Section Conviction',
+      admin: { description: 'Le manifeste en grandes lettres sous la bannière, avec une photo d\'ambiance.' },
+      fields: [
+        { name: 'eyebrow', type: 'text', label: 'Sur-titre', defaultValue: 'Notre conviction' },
+        {
+          name: 'lines',
+          type: 'textarea',
+          label: 'Texte du manifeste',
+          defaultValue:
+            'Une *chambre* de musiciens\nqui jouent le répertoire *symphonique*\nsans rien perdre : ni la précision,\nni la chaleur, ni l\'*émotion*\ndu premier accord.',
+          admin: {
+            description:
+              'Un retour à la ligne = une ligne à l\'écran. Un mot entre astérisques est mis en italique coloré : *chambre*.',
+          },
+        },
+        { name: 'ctaText', type: 'text', label: 'Lien — texte', defaultValue: 'Notre histoire' },
+        { name: 'ctaLink', type: 'text', label: 'Lien — page', defaultValue: '/a-propos' },
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Photo d\'ambiance',
+          admin: { description: 'Si vide, une photo d\'illustration par défaut est utilisée.' },
+        },
+      ],
+    },
+    {
+      name: 'concerts',
+      type: 'group',
+      label: 'Section Concerts',
+      admin: {
+        description:
+          'Titres et libellés de la liste des prochains concerts. Les concerts eux-mêmes se gèrent dans Contenu → Concerts.',
+      },
+      fields: [
+        { name: 'eyebrow', type: 'text', label: 'Sur-titre', defaultValue: 'La saison' },
+        {
+          name: 'title',
+          type: 'text',
+          label: 'Titre',
+          defaultValue: '*Prochains* concerts',
+          admin: { description: 'Un mot entre astérisques est mis en italique coloré.' },
+        },
+        { name: 'nextLabel', type: 'text', label: 'Étiquette « Prochain concert »', defaultValue: 'Prochain concert' },
+        { name: 'todayLabel', type: 'text', label: 'Étiquette le jour même', defaultValue: 'Aujourd\'hui' },
+        { name: 'cancelledLabel', type: 'text', label: 'Étiquette concert annulé', defaultValue: 'Annulé' },
+        { name: 'bookingLabel', type: 'text', label: 'Bouton de réservation (prochain concert)', defaultValue: 'Réserver une place' },
+        { name: 'bookingLabelShort', type: 'text', label: 'Lien de réservation (autres dates)', defaultValue: 'Réserver' },
+        {
+          name: 'emptyTitle',
+          type: 'text',
+          label: 'Aucune date — titre',
+          defaultValue: 'La prochaine saison se prépare.',
+          admin: { description: 'Affiché quand aucun concert à venir n\'est publié.' },
+        },
+        {
+          name: 'emptyText',
+          type: 'textarea',
+          label: 'Aucune date — texte',
+          defaultValue:
+            'Les dates seront annoncées ici dès qu\'elles seront fixées. Inscrivez-vous à la lettre d\'information pour être prévenu·e en avant-première.',
+        },
+        { name: 'emptyCtaText', type: 'text', label: 'Aucune date — lien', defaultValue: 'Recevoir les prochaines dates' },
+      ],
+    },
+    {
+      name: 'bento',
+      type: 'group',
+      label: 'Section Rencontre',
+      admin: { description: 'Les trois cartes : le chef, les musiciens, l\'histoire.' },
+      fields: [
+        { name: 'eyebrow', type: 'text', label: 'Sur-titre', defaultValue: 'Rencontre' },
+        {
+          name: 'title',
+          type: 'text',
+          label: 'Titre',
+          defaultValue: '*Les visages* de l\'orchestre',
+          admin: { description: 'Un mot entre astérisques est mis en italique coloré.' },
+        },
+        { name: 'musiciansEyebrow', type: 'text', label: 'Carte musiciens — sur-titre', defaultValue: 'L\'ensemble' },
+        { name: 'musiciansTitle', type: 'text', label: 'Carte musiciens — titre', defaultValue: '*Les musiciens*' },
+        {
+          name: 'musiciansText',
+          type: 'textarea',
+          label: 'Carte musiciens — texte',
+          defaultValue:
+            'Issus de conservatoires français, suisses et belges. Étudiants, amateurs éclairés, jeunes professionnels.',
+        },
+        { name: 'musiciansLinkLabel', type: 'text', label: 'Carte musiciens — lien', defaultValue: 'Découvrir' },
+        { name: 'historyEyebrow', type: 'text', label: 'Carte histoire — sur-titre', defaultValue: 'Depuis' },
+        { name: 'historyYear', type: 'text', label: 'Carte histoire — année', defaultValue: '2017' },
+        {
+          name: 'historyText',
+          type: 'textarea',
+          label: 'Carte histoire — texte',
+          defaultValue:
+            'Fondé à Mâcon, l\'orchestre rassemble plus de 80 musiciens autour de la passion du répertoire symphonique.',
+        },
+        { name: 'historyLinkLabel', type: 'text', label: 'Carte histoire — lien', defaultValue: 'L\'histoire' },
+        { name: 'historyLink', type: 'text', label: 'Carte histoire — page', defaultValue: '/a-propos' },
       ],
     },
     {
@@ -153,6 +294,26 @@ export const HomePage: GlobalConfig = {
         { name: 'subtitle', type: 'text', label: 'Sur-titre' },
         { name: 'title', type: 'text', label: 'Titre' },
         { name: 'description', type: 'textarea', label: 'Description', admin: { description: 'Texte d\'accroche pour inciter à s\'inscrire.' } },
+        { name: 'placeholder', type: 'text', label: 'Texte du champ e-mail', defaultValue: 'Votre adresse e-mail' },
+        { name: 'buttonLabel', type: 'text', label: 'Bouton', defaultValue: 'S\'inscrire' },
+        { name: 'successLabel', type: 'text', label: 'Bouton après inscription', defaultValue: 'Inscrit !' },
+      ],
+    },
+    {
+      name: 'partners',
+      type: 'group',
+      label: 'Section Partenaires',
+      admin: { description: 'Les partenaires eux-mêmes se gèrent dans Contenu → Partenaires.' },
+      fields: [{ name: 'eyebrow', type: 'text', label: 'Sur-titre', defaultValue: 'Avec le soutien de' }],
+    },
+    {
+      name: 'seo',
+      type: 'group',
+      label: 'Référencement',
+      admin: { description: 'Titre et description de la page d\'accueil pour Google et les réseaux sociaux. Laisser vide pour utiliser ceux du site.' },
+      fields: [
+        { name: 'metaTitle', type: 'text', label: 'Titre de la page (onglet, Google)' },
+        { name: 'metaDescription', type: 'textarea', label: 'Description (Google, réseaux sociaux)' },
       ],
     },
   ],

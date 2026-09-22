@@ -6,7 +6,8 @@ import { getPayloadClient } from '@/lib/payload';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { directorPlaceholder } from '@/lib/unsplash';
 import { toEmbedUrl } from '@/lib/videoEmbed';
-import { DIRECTOR_FALLBACK } from '@/lib/directorDefaults';
+import { resolveDirectorPage, type DirectorPageContent } from '@/lib/directorDefaults';
+import { renderEmphasis } from '@/lib/emphasis';
 
 type Director = {
   id?: string | number;
@@ -22,29 +23,56 @@ type Director = {
   videoUrl?: string;
 };
 
-const getDirector = cache(async (): Promise<Director | null> => {
+type PageData = { content: DirectorPageContent; director: Director | null };
+
+/**
+ * Everything on this page is editable in the admin:
+ * - Pages → Page Direction: which musician, section titles, buttons, fallback texts;
+ * - Musiciens → the conductor's fiche: photo, role, tagline, bio, training, video, quote.
+ */
+const getPageData = cache(async (): Promise<PageData> => {
   const payload = await getPayloadClient();
-  const result = await payload.find({
-    collection: 'musicians' as any,
-    where: { section: { equals: 'direction' } } as any,
-    sort: 'order' as any,
-    limit: 1,
-    depth: 1,
-  });
-  return ((result.docs?.[0] as Director) || null) ?? null;
+
+  let global: any = null;
+  try {
+    // depth 2: director → its photo
+    global = await payload.findGlobal({ slug: 'director-page' as any, depth: 2 });
+  } catch {
+    global = null;
+  }
+  const content = resolveDirectorPage(global);
+
+  let director: Director | null =
+    global?.director && typeof global.director === 'object' ? (global.director as Director) : null;
+
+  if (!director) {
+    const result = await payload.find({
+      collection: 'musicians' as any,
+      where: { section: { equals: 'direction' } } as any,
+      sort: 'order' as any,
+      limit: 1,
+      depth: 1,
+    });
+    director = ((result.docs?.[0] as Director) || null) ?? null;
+  }
+
+  return { content, director };
 });
 
+const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
+
 export async function generateMetadata(): Promise<Metadata> {
-  const director = await getDirector();
+  const { content, director } = await getPageData();
   const name = director?.name || 'Direction artistique';
   const role = director?.role || 'Chef d\'orchestre';
   const photoUrl = director?.photo?.url;
   return {
     alternates: { canonical: '/directeur-artistique' },
-    title: `${name}, ${role.charAt(0).toLowerCase() + role.slice(1)} — La Chambre Symphonique`,
+    title: content.seo.metaTitle || `${name}, ${lowerFirst(role)} — La Chambre Symphonique`,
     description:
+      content.seo.metaDescription ||
       director?.tagline ||
-      `${name}, ${role.charAt(0).toLowerCase() + role.slice(1)} et fondateur de La Chambre Symphonique. ${DIRECTOR_FALLBACK.lede}`,
+      `${name}, ${lowerFirst(role)} et fondateur de La Chambre Symphonique. ${content.hero.ledeFallback}`,
     ...(photoUrl ? { openGraph: { images: [{ url: photoUrl }] } } : {}),
   };
 }
@@ -85,7 +113,8 @@ const FrameOrnament = () => (
 );
 
 export default async function DirectorPage() {
-  const director = await getDirector();
+  const { content, director } = await getPageData();
+  const { hero, story, path, encore } = content;
 
   if (!director) {
     return (
@@ -151,9 +180,13 @@ export default async function DirectorPage() {
     .split(/\n\n+/)
     .map((p) => p.trim())
     .filter(Boolean);
-  // Biographie de secours tant que la fiche n'est pas remplie (voir lib/directorDefaults.ts).
-  const paragraphs = bioParagraphs.length > 0 ? bioParagraphs : DIRECTOR_FALLBACK.bio;
-  const lede = director.tagline?.trim() || DIRECTOR_FALLBACK.lede;
+  // Fallbacks come from Pages → Page Direction while the fiche is not filled in.
+  const paragraphs =
+    bioParagraphs.length > 0
+      ? bioParagraphs
+      : story.bioFallback.split(/\n\n+/).map((p) => p.trim()).filter(Boolean);
+  const lede = director.tagline?.trim() || hero.ledeFallback;
+  const facts = [{ label: 'Fonction', value: director.role }, ...hero.facts];
 
   const photo = director.photo?.url ? director.photo : null;
   const photoRatio =
@@ -192,7 +225,7 @@ export default async function DirectorPage() {
           </figure>
 
           <div className="director-hero__text">
-            <p className="eyebrow eyebrow--gold">Direction artistique &nbsp;·&nbsp; Fondateur</p>
+            <p className="eyebrow eyebrow--gold">{hero.eyebrow}</p>
             <h1 className="director-hero__name">
               <span>{firstName}</span>
               {lastName && <em>{lastName}</em>}
@@ -204,27 +237,25 @@ export default async function DirectorPage() {
             <p className="director-hero__lede">{lede}</p>
 
             <dl className="director-facts">
-              <div>
-                <dt>Fonction</dt>
-                <dd>{director.role}</dd>
-              </div>
-              <div>
-                <dt>Fondateur</dt>
-                <dd>La Chambre Symphonique, 2017</dd>
-              </div>
-              <div>
-                <dt>{director.instrument ? 'Instrument' : 'Parcours'}</dt>
-                <dd>{director.instrument || DIRECTOR_FALLBACK.background}</dd>
-              </div>
+              {facts.map((fact, i) => (
+                <div key={i}>
+                  <dt>{fact.label}</dt>
+                  <dd>{fact.value}</dd>
+                </div>
+              ))}
             </dl>
 
             <div className="director-hero__cta">
-              <Link href="/#concerts" className="btn-filled">
-                Prochains concerts →
-              </Link>
-              <Link href="/contact" className="link-arrow link-arrow--mute">
-                Contacter l'orchestre
-              </Link>
+              {hero.ctaPrimaryText && (
+                <Link href={hero.ctaPrimaryLink} className="btn-filled">
+                  {hero.ctaPrimaryText} →
+                </Link>
+              )}
+              {hero.ctaSecondaryText && (
+                <Link href={hero.ctaSecondaryLink} className="link-arrow link-arrow--mute">
+                  {hero.ctaSecondaryText}
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -233,10 +264,8 @@ export default async function DirectorPage() {
       {/* === II. LE CHEF — long-form bio === */}
       <section id="portrait" className="director-story">
         <header className="director-story__head">
-          <p className="eyebrow eyebrow--gold">Le chef</p>
-          <h2 className="director-story__title">
-            Une lecture <em>vivante</em> du grand répertoire
-          </h2>
+          <p className="eyebrow eyebrow--gold">{story.eyebrow}</p>
+          <h2 className="director-story__title">{renderEmphasis(story.title)}</h2>
           <hr className="velvet-rule" />
         </header>
 
@@ -254,10 +283,8 @@ export default async function DirectorPage() {
         <section className="director-path">
           <div className="director-path__inner">
             <header className="director-path__head">
-              <p className="eyebrow eyebrow--gold">Parcours</p>
-              <h2 className="director-path__title">
-                Formation <em>&amp; distinctions</em>
-              </h2>
+              <p className="eyebrow eyebrow--gold">{path.eyebrow}</p>
+              <h2 className="director-path__title">{renderEmphasis(path.title)}</h2>
             </header>
 
             {(formation.length > 0 || concours.length > 0) && (
@@ -320,33 +347,17 @@ export default async function DirectorPage() {
 
       {/* === V. ENCORE — outro === */}
       <section className="director-encore">
-        <p className="eyebrow eyebrow--gold eyebrow--centered">Et après</p>
-        <h2 className="director-encore__title">
-          L'orchestre, <em>c'est aussi</em>
-        </h2>
+        <p className="eyebrow eyebrow--gold eyebrow--centered">{encore.eyebrow}</p>
+        <h2 className="director-encore__title">{renderEmphasis(encore.title)}</h2>
         <hr className="velvet-rule long centered" />
         <div className="director-encore__links">
-          <Link href="/musiciens" className="director-encore__card">
-            <span className="director-encore__card-eyebrow">Les musiciens</span>
-            <span className="director-encore__card-title">
-              Quarante à quatre-vingts <em>complices</em>
-            </span>
-            <span className="link-arrow">Voir l'effectif →</span>
-          </Link>
-          <Link href="/#concerts" className="director-encore__card">
-            <span className="director-encore__card-eyebrow">La saison</span>
-            <span className="director-encore__card-title">
-              Les <em>prochains concerts</em>
-            </span>
-            <span className="link-arrow">Voir la programmation →</span>
-          </Link>
-          <Link href="/nous-soutenir" className="director-encore__card">
-            <span className="director-encore__card-eyebrow">Soutenir</span>
-            <span className="director-encore__card-title">
-              Devenir un <em>mécène</em>
-            </span>
-            <span className="link-arrow">Nous soutenir →</span>
-          </Link>
+          {encore.cards.map((card, i) => (
+            <Link key={i} href={card.link} className="director-encore__card">
+              {card.eyebrow && <span className="director-encore__card-eyebrow">{card.eyebrow}</span>}
+              <span className="director-encore__card-title">{renderEmphasis(card.title)}</span>
+              <span className="link-arrow">{card.linkLabel} →</span>
+            </Link>
+          ))}
         </div>
       </section>
     </div>

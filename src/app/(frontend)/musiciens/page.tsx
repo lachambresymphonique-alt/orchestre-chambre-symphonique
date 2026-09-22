@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { cache } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FadeIn } from '@/components/FadeIn';
@@ -6,12 +7,25 @@ import { getPayloadClient } from '@/lib/payload';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { placeholderForMusician } from '@/lib/unsplash';
 
-export const metadata: Metadata = {
-  alternates: { canonical: '/musiciens' },
-  title: 'Musiciens — La Chambre Symphonique',
-  description:
-    "Les musiciens de l'Orchestre de la Chambre Symphonique, dirigé par Loïc Emmelin.",
-};
+const getMusiciansPage = cache(async () => {
+  const payload = await getPayloadClient();
+  try {
+    return (await payload.findGlobal({ slug: 'musicians-page' as any })) as any;
+  } catch {
+    return null;
+  }
+});
+
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getMusiciansPage();
+  return {
+    alternates: { canonical: '/musiciens' },
+    title: page?.seo?.metaTitle || 'Musiciens — La Chambre Symphonique',
+    description:
+      page?.seo?.metaDescription ||
+      "Les musiciens de l'Orchestre de la Chambre Symphonique, dirigé par Loïc Emmelin.",
+  };
+}
 
 type Musician = {
   id?: string;
@@ -86,6 +100,10 @@ function Section({ title, count, musicians }: { title: string; count: number; mu
 
 export default async function Musiciens() {
   const payload = await getPayloadClient();
+  // Titles editable in Pages → Page Musiciens.
+  const page = await getMusiciansPage();
+  const header = page?.header || {};
+  const sections = page?.sections || {};
 
   const musicians = await payload.find({
     collection: 'musicians' as any,
@@ -109,18 +127,18 @@ export default async function Musiciens() {
           <p className="breadcrumb">
             <Link href="/">Accueil</Link> &nbsp;/&nbsp; Musiciens
           </p>
-          <h1>Les visages de l'orchestre</h1>
+          <h1>{header.title || 'Les visages de l\'orchestre'}</h1>
           <p>
-            De 40 à 80 musiciens issus de conservatoires français, suisses et belges,
-            réunis autour de la passion du répertoire symphonique.
+            {header.lede ||
+              'De 40 à 80 musiciens issus de conservatoires français, suisses et belges, réunis autour de la passion du répertoire symphonique.'}
           </p>
         </div>
       </div>
 
-      <Section title="Direction artistique" count={direction.length} musicians={direction} />
-      <Section title="Les Cordes" count={cordes.length} musicians={cordes} />
-      <Section title="Les Vents" count={vents.length} musicians={vents} />
-      <Section title="Claviers & Percussions" count={claviers.length} musicians={claviers} />
+      <Section title={sections.direction || 'Direction artistique'} count={direction.length} musicians={direction} />
+      <Section title={sections.cordes || 'Les Cordes'} count={cordes.length} musicians={cordes} />
+      <Section title={sections.vents || 'Les Vents'} count={vents.length} musicians={vents} />
+      <Section title={sections.claviers || 'Claviers & Percussions'} count={claviers.length} musicians={claviers} />
     </div>
   );
 }

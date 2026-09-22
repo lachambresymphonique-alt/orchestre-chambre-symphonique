@@ -375,7 +375,7 @@ export function MusicianSubmissionForm({ formToken }: MusicianSubmissionFormProp
 
         <p className="contribute-outro__fallback">
           Bloqué ?{' '}
-          <a href="mailto:contact@chambre-symphonique.fr?subject=Ma%20fiche%20musicien">
+          <a href="mailto:contact@lachambresymphonique.fr?subject=Ma%20fiche%20musicien">
             Écrivez-nous
           </a>{' '}
           et nous reprenons à la main.

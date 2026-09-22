@@ -24,6 +24,10 @@ import { SiteSettings } from './globals/SiteSettings';
 import { HomePage } from './globals/HomePage';
 import { AboutPage } from './globals/AboutPage';
 import { SupportPage } from './globals/SupportPage';
+import { DirectorPage } from './globals/DirectorPage';
+import { ContactPage } from './globals/ContactPage';
+import { MediaPage } from './globals/MediaPage';
+import { MusiciansPage } from './globals/MusiciansPage';
 import { ThemeSettings } from './globals/ThemeSettings';
 import { Navigation } from './globals/Navigation';
 
@@ -57,6 +61,10 @@ export default buildConfig({
             'home-page': '/',
             'about-page': '/a-propos',
             'support-page': '/nous-soutenir',
+            'director-page': '/directeur-artistique',
+            'contact-page': '/contact',
+            'media-page': '/medias',
+            'musicians-page': '/musiciens',
             'site-settings': '/contact',
             navigation: '/',
           };
@@ -72,13 +80,17 @@ export default buildConfig({
           pages: `/${data?.slug || ''}`,
         };
         const slug = collectionConfig?.slug || '';
+        // The conductor's fiche feeds the Direction page: preview it there.
+        if (slug === 'musicians' && data?.section === 'direction') {
+          return `${base}/directeur-artistique`;
+        }
         if (slug === 'musician-submissions') {
           const id = data?.id;
           return id ? `${base}/musiciens/apercu/${id}` : `${base}/musiciens`;
         }
         return `${base}${collectionMap[slug] || '/'}`;
       },
-      globals: ['home-page', 'about-page', 'support-page', 'site-settings', 'navigation'],
+      globals: ['home-page', 'about-page', 'support-page', 'director-page', 'contact-page', 'media-page', 'musicians-page', 'site-settings', 'navigation'],
       collections: ['concerts', 'musicians', 'media-items', 'partners', 'timeline-events', 'support-tiers', 'pages', 'musician-submissions'],
       breakpoints: [
         { label: 'Mobile', name: 'mobile', width: 375, height: 667 },
@@ -113,6 +125,10 @@ export default buildConfig({
     HomePage,
     AboutPage,
     SupportPage,
+    DirectorPage,
+    ContactPage,
+    MediaPage,
+    MusiciansPage,
     // Réglages
     SiteSettings,
     ThemeSettings,

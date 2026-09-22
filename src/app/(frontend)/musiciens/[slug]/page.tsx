@@ -48,10 +48,19 @@ export default async function MusicianPage({ params }: { params: Promise<{ slug:
   const m = await getMusician(slug);
   if (!m) notFound();
 
+  // Section names and fiche labels are editable in Pages → Page Musiciens.
+  let labels: any = null;
+  try {
+    const payload = await getPayloadClient();
+    labels = await payload.findGlobal({ slug: 'musicians-page' as any });
+  } catch {
+    labels = null;
+  }
+
   return (
     <>
       <RefreshOnSave />
-      <MusicianDetail musician={m} />
+      <MusicianDetail musician={m} labels={labels} />
     </>
   );
 }

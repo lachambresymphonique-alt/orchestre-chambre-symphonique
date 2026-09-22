@@ -2,7 +2,13 @@
 
 import { useState, FormEvent } from 'react';
 
-export function NewsletterForm() {
+type Props = {
+  placeholder?: string | null;
+  buttonLabel?: string | null;
+  successLabel?: string | null;
+};
+
+export function NewsletterForm({ placeholder, buttonLabel, successLabel }: Props) {
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -14,12 +20,12 @@ export function NewsletterForm() {
 
   return (
     <form className="newsletter-form" onSubmit={handleSubmit}>
-      <input type="email" placeholder="Votre adresse e-mail" required />
+      <input type="email" placeholder={placeholder || 'Votre adresse e-mail'} required />
       <button
         type="submit"
         style={submitted ? { background: '#2E7D32', borderColor: '#2E7D32', color: '#fff' } : undefined}
       >
-        {submitted ? 'Inscrit !' : "S'inscrire"}
+        {submitted ? successLabel || 'Inscrit !' : buttonLabel || 'S\'inscrire'}
       </button>
     </form>
   );

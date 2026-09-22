@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { cache } from 'react';
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -10,12 +11,25 @@ import { getPayloadClient } from '@/lib/payload';
 import { parseVideoUrl, resolveVimeoThumbnail } from '@/lib/video';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
 
-export const metadata: Metadata = {
-  alternates: { canonical: '/medias' },
-  title: 'Médias — La Chambre Symphonique',
-  description:
-    "Vidéos, enregistrements et galerie photos de La Chambre Symphonique, orchestre dirigé par Loïc Emmelin.",
-};
+const getMediaPage = cache(async () => {
+  const payload = await getPayloadClient();
+  try {
+    return (await payload.findGlobal({ slug: 'media-page' as any })) as any;
+  } catch {
+    return null;
+  }
+});
+
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getMediaPage();
+  return {
+    alternates: { canonical: '/medias' },
+    title: page?.seo?.metaTitle || 'Médias — La Chambre Symphonique',
+    description:
+      page?.seo?.metaDescription ||
+      "Vidéos, enregistrements et galerie photos de La Chambre Symphonique, orchestre dirigé par Loïc Emmelin.",
+  };
+}
 
 function MusicIcon() {
   return (
@@ -54,6 +68,9 @@ function uploadUrl(thumb: any, size: 'thumbnail' | 'card'): string | null {
 
 export default async function Medias() {
   const payload = await getPayloadClient();
+  // Titles editable in Pages → Page Médias.
+  const page = await getMediaPage();
+  const header = page?.header || {};
 
   const mediaItems = await payload.find({
     collection: 'media-items' as any,
@@ -198,10 +215,10 @@ export default async function Medias() {
           <p className="breadcrumb">
             <Link href="/">Accueil</Link> / Médias
           </p>
-          <h1>Médias</h1>
+          <h1>{header.title || 'Médias'}</h1>
           <p>
-            Retrouvez nos vidéos de concerts, nos enregistrements et notre galerie
-            photographique.
+            {header.lede ||
+              'Retrouvez nos vidéos de concerts, nos enregistrements et notre galerie photographique.'}
           </p>
         </div>
       </div>
@@ -209,7 +226,7 @@ export default async function Medias() {
       {/* MEDIA CONTENT */}
       <section style={{ background: 'var(--color-bg)' }}>
         <div className="container">
-          <MediaTabs videos={videos} audio={audio} photos={photos} />
+          <MediaTabs videos={videos} audio={audio} photos={photos} labels={page?.tabs} />
         </div>
       </section>
     </>
