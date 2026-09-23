@@ -128,9 +128,9 @@ export function useLivePreviewSync(data: any) {
   };
 
   // ── Scroll the admin panel to a field group ──
-  const scrollAdminToField = useCallback((fieldName: string) => {
+  const scrollAdminToField = useCallback((fieldName: string): boolean => {
     try {
-      if (!isInIframe) return;
+      if (!isInIframe) return false;
       const parentDoc = window.parent.document;
 
       const selectors = [
@@ -147,7 +147,7 @@ export function useLivePreviewSync(data: any) {
           el.style.boxShadow = '0 0 0 3px rgba(201, 168, 76, 0.6)';
           setTimeout(() => { el.style.boxShadow = ''; }, 2000);
           focusFieldInput(el);
-          return;
+          return true;
         }
       }
 
@@ -157,19 +157,20 @@ export function useLivePreviewSync(data: any) {
       );
       for (const el of allFields) {
         const id = el.id || '';
-        const classes = el.className || '';
+        const classes = el.getAttribute('class') || ''; // SVG : className n'est pas une chaîne
         if (id.includes(fieldName) || classes.includes(fieldName)) {
           el.scrollIntoView({ behavior: 'smooth', block: 'center' });
           el.style.transition = 'box-shadow 0.3s ease';
           el.style.boxShadow = '0 0 0 3px rgba(201, 168, 76, 0.6)';
           setTimeout(() => { el.style.boxShadow = ''; }, 2000);
           focusFieldInput(el);
-          return;
+          return true;
         }
       }
     } catch {
       // Cross-origin or security error — ignore
     }
+    return false;
   }, [isInIframe]);
 
   // ── Scroll the preview to a [data-live-field] section ──
@@ -231,7 +232,7 @@ export function useLivePreviewSync(data: any) {
       }
 
       // Also check class names as fallback
-      const classes = current.className || '';
+      const classes = current.getAttribute('class') || ''; // SVG : className n'est pas une chaîne
       for (const name of fieldNames) {
         if (classes.includes(name) && (id.includes('field') || current.classList.contains('field-type'))) {
           return name;
@@ -256,6 +257,21 @@ export function useLivePreviewSync(data: any) {
       const linkTarget = root.closest<HTMLElement>('[data-live-link]');
       if (linkTarget) {
         const path = linkTarget.getAttribute('data-live-link');
+        // The linked record is the one open in the admin: stay here and go to
+        // the clicked field (data-live-item-field), or to the top of the form.
+        let editingPath = '';
+        try { editingPath = window.parent.location.pathname.replace(/\/$/, ''); } catch { /* cross-origin */ }
+        if (path && editingPath && path.replace(/\/$/, '') === editingPath) {
+          e.preventDefault();
+          e.stopPropagation();
+          const itemField = root.closest<HTMLElement>('[data-live-item-field]')?.getAttribute('data-live-item-field');
+          const first = window.parent.document.querySelector<HTMLElement>('.document-fields__main .field-type, .document-fields .field-type');
+          if (!(itemField && scrollAdminToField(itemField)) && first) {
+            first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            focusFieldInput(first);
+          }
+          return;
+        }
         if (path) {
           e.preventDefault();
           e.stopPropagation();
@@ -284,8 +300,19 @@ export function useLivePreviewSync(data: any) {
       target.classList.add('live-field--selected');
       activeFieldRef.current = fieldName;
 
-      // Scroll the admin panel to the corresponding field
-      scrollAdminToField(fieldName);
+      // Scroll the admin panel to the corresponding field. If the form open in
+      // the admin has no such field, the section belongs to another record
+      // (data-live-owner, e.g. site settings shown on the contact page): open it.
+      if (!scrollAdminToField(fieldName)) {
+        const owner = target.getAttribute('data-live-owner');
+        if (owner) {
+          try {
+            window.open(`${window.parent.location.origin}${owner}`, '_blank', 'noopener,noreferrer');
+          } catch {
+            window.open(owner, '_blank', 'noopener,noreferrer');
+          }
+        }
+      }
     };
 
     document.addEventListener('click', handleClick, true);

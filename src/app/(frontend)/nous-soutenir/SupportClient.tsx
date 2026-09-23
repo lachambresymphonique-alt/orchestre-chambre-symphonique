@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useLivePreview } from '@payloadcms/live-preview-react';
+import { useLiveGlobal, useLiveList } from '@/hooks/useLiveDocument';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FadeIn } from '@/components/FadeIn';
 import { DonationSimulator } from '@/components/DonationSimulator';
@@ -12,15 +12,9 @@ interface SupportClientProps {
 }
 
 export function SupportClient({ initialData, tiers }: SupportClientProps) {
-  const serverURL = typeof window !== 'undefined'
-    ? window.location.origin
-    : (process.env.NEXT_PUBLIC_SITE_URL || '');
-
-  const { data } = useLivePreview({
-    initialData,
-    serverURL,
-    depth: 0,
-  });
+  // Aperçu en direct : la page « Nous soutenir » et les cercles de soutien.
+  const data = useLiveGlobal('support-page', initialData, 0);
+  const liveTiers = useLiveList('support-tiers', tiers);
 
   useLivePreviewSync(data);
 
@@ -127,23 +121,25 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
           <h2 className="section-title">{tiersHeading.title || 'Nos cercles de soutien'}</h2>
 
           <div className="support-options">
-            {tiers.map((tier: any, i: number) => (
+            {liveTiers.map((tier: any, i: number) => (
               <FadeIn
                 className="support-card"
                 key={tier.id || i}
+                data-live-link={tier.id ? `/admin/collections/support-tiers/${tier.id}` : undefined}
                 style={tier.highlighted ? { borderColor: 'var(--color-gold)' } : undefined}
               >
-                <h3>{tier.name}</h3>
+                <h3 data-live-item-field="name">{tier.name}</h3>
                 {tier.minAmount && (
-                  <p style={{ fontWeight: 500, marginBottom: '0.5rem' }}>
+                  <p style={{ fontWeight: 500, marginBottom: '0.5rem' }} data-live-item-field="minAmount">
                     {amountTemplate.replace('{montant}', String(tier.minAmount))}
                   </p>
                 )}
-                <p>{tier.description}</p>
+                <p data-live-item-field="description">{tier.description}</p>
                 {tier.ctaLink && (
                   <a
                     href={tier.ctaLink}
                     className={tier.highlighted ? 'btn btn-primary' : 'btn btn-outline'}
+                    data-live-item-field="ctaText"
                   >
                     {tier.ctaText || 'Rejoindre'}
                   </a>

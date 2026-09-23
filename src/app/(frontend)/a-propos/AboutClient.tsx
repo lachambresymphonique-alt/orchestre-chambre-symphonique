@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useLivePreview } from '@payloadcms/live-preview-react';
+import { useLiveGlobal, useLiveList } from '@/hooks/useLiveDocument';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FadeIn } from '@/components/FadeIn';
 import { stockImages } from '@/lib/unsplash';
@@ -14,15 +14,9 @@ interface AboutClientProps {
 }
 
 export function AboutClient({ initialData, timelineEvents }: AboutClientProps) {
-  const serverURL = typeof window !== 'undefined'
-    ? window.location.origin
-    : (process.env.NEXT_PUBLIC_SITE_URL || '');
-
-  const { data } = useLivePreview({
-    initialData,
-    serverURL,
-    depth: 1,
-  });
+  // Aperçu en direct : la page « À propos » et les événements de la chronologie.
+  const data = useLiveGlobal('about-page', initialData, 1);
+  const events = useLiveList('timeline-events', timelineEvents);
 
   useLivePreviewSync(data);
 
@@ -98,7 +92,7 @@ export function AboutClient({ initialData, timelineEvents }: AboutClientProps) {
       )}
 
       {/* TIMELINE — editorial */}
-      {timelineEvents.length > 0 && (
+      {events.length > 0 && (
         <section className="about-timeline" data-live-field="timeline">
           <header className="about-timeline__head">
             <p className="eyebrow eyebrow--gold">{timeline.eyebrow || 'Le parcours'}</p>
@@ -109,11 +103,14 @@ export function AboutClient({ initialData, timelineEvents }: AboutClientProps) {
           </header>
 
           <ol className="timeline-editorial">
-            {timelineEvents.map((item: any) => (
+            {events.map((item: any) => (
               <FadeIn key={item.id || item.year}>
-                <li className="timeline-editorial__item">
-                  <span className="timeline-editorial__year">{item.year}</span>
-                  <p className="timeline-editorial__desc">{item.description}</p>
+                <li
+                  className="timeline-editorial__item"
+                  data-live-link={item.id ? `/admin/collections/timeline-events/${item.id}` : undefined}
+                >
+                  <span className="timeline-editorial__year" data-live-item-field="year">{item.year}</span>
+                  <p className="timeline-editorial__desc" data-live-item-field="description">{item.description}</p>
                 </li>
               </FadeIn>
             ))}

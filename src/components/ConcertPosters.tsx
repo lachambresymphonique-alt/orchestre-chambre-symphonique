@@ -220,7 +220,7 @@ function ConcertPoster({
           <time dateTime={concert.date.iso}>{concert.date.long}</time>
           {concert.date.time && <> · {concert.date.time}</>}
         </p>
-        <h3 className="concert-poster__title">{concert.title}</h3>
+        <h3 className="concert-poster__title" data-live-item-field="title">{concert.title}</h3>
         {concert.venue && <p className="concert-poster__venue">{concert.venue}</p>}
         {concert.program && (
           <ExpandableText text={concert.program} lines={3} className="concert-poster__program" />

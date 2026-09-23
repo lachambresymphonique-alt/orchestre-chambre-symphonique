@@ -4,12 +4,21 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LogoSvg } from './LogoSvg';
-import { DEFAULT_NAV_ITEMS, type NavLink } from '@/lib/navigation';
+import { DEFAULT_NAV_ITEMS, resolveNavItems, type NavLink, type NavigationDoc } from '@/lib/navigation';
+import { useLiveGlobal } from '@/hooks/useLiveDocument';
 
 export function Header({ items }: { items?: NavLink[] }) {
   // Menu composé dans l'admin (Réglages → Menu du site), sinon menu historique.
   // Une liste vide est respectée : toutes les entrées ont été masquées.
-  const navItems = items ?? DEFAULT_NAV_ITEMS;
+  // Aperçu en direct du « Menu du site » : dès que l'admin envoie une version,
+  // elle remplace le menu reçu du serveur.
+  const liveNav = useLiveGlobal<NavigationDoc | null>('navigation', null, 1);
+  const navItems = liveNav ? resolveNavItems(liveNav) : items ?? DEFAULT_NAV_ITEMS;
+  // Aperçu en direct de « Apparence du site » : typographie des titres.
+  const liveTheme = useLiveGlobal<{ displayFont?: string } | null>('theme-settings', null, 0);
+  useEffect(() => {
+    if (liveTheme?.displayFont) document.documentElement.dataset.display = liveTheme.displayFont;
+  }, [liveTheme?.displayFont]);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();

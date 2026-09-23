@@ -2,14 +2,14 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useLivePreview } from '@payloadcms/live-preview-react';
+import { useLiveGlobal, useLiveList } from '@/hooks/useLiveDocument';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FadeIn } from '@/components/FadeIn';
 import { NewsletterForm } from '@/components/NewsletterForm';
 import { ExpandableText } from '@/components/ExpandableText';
 import { ConcertPosters } from '@/components/ConcertPosters';
 import { stockImages, placeholderForMusician, directorPlaceholder } from '@/lib/unsplash';
-import type { ConcertCard } from '@/lib/concerts';
+import { toConcertCard, type ConcertCard, type ConcertDoc } from '@/lib/concerts';
 import { renderEmphasis } from '@/lib/emphasis';
 
 interface HomeClientProps {
@@ -20,22 +20,22 @@ interface HomeClientProps {
   musiciansSample: any[];
 }
 
+/** Concert modifié dans l'admin → carte affichée ; brouillon ou concert passé → retiré. */
+const liveConcertCard = (doc: Record<string, any>): ConcertCard | null =>
+  doc?.status === 'draft' ? null : toConcertCard(doc as ConcertDoc);
+
 export function HomeClient({
   initialData,
-  concerts,
-  partners,
+  concerts: initialConcerts,
+  partners: initialPartners,
   director,
   musiciansSample,
 }: HomeClientProps) {
-  const serverURL = typeof window !== 'undefined'
-    ? window.location.origin
-    : (process.env.NEXT_PUBLIC_SITE_URL || '');
-
-  const { data } = useLivePreview({
-    initialData,
-    serverURL,
-    depth: 1,
-  });
+  // Aperçu en direct : la page d'accueil, et les concerts ou partenaires
+  // modifiés dans l'admin (chacun ne touche que sa propre fiche).
+  const data = useLiveGlobal('home-page', initialData, 2);
+  const concerts = useLiveList<ConcertCard>('concerts', initialConcerts, { transform: liveConcertCard });
+  const partners = useLiveList('partners', initialPartners);
 
   useLivePreviewSync(data);
 
@@ -298,7 +298,7 @@ export function HomeClient({
                         </span>
                       </div>
                       <div className="concert-row__body">
-                        <h3 className="concert-row__title">{concert.title}</h3>
+                        <h3 className="concert-row__title" data-live-item-field="title">{concert.title}</h3>
                         <p className="concert-row__venue">{concert.venue}</p>
                         {concert.program && (
                           <ExpandableText
@@ -542,7 +542,7 @@ export function HomeClient({
                 key={partner.id || i}
                 data-live-link={partner.id ? `/admin/collections/partners/${partner.id}` : undefined}
               >
-                <span>{partner.name}</span>
+                <span data-live-item-field="name">{partner.name}</span>
               </li>
             ))}
           </ul>

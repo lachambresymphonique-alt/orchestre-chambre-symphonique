@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useLivePreview } from '@payloadcms/live-preview-react';
+import { useLiveGlobal } from '@/hooks/useLiveDocument';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FadeIn } from '@/components/FadeIn';
 import { ContactForm } from '@/components/ContactForm';
@@ -28,15 +28,10 @@ const SOCIAL_NETWORKS = [
 ] as const;
 
 export function ContactClient({ initialData, pageContent, formToken, turnstileSiteKey }: ContactClientProps) {
-  const serverURL = typeof window !== 'undefined'
-    ? window.location.origin
-    : (process.env.NEXT_PUBLIC_SITE_URL || '');
-
-  const { data } = useLivePreview({
-    initialData,
-    serverURL,
-    depth: 0,
-  });
+  // Aperçu en direct : les deux pages globales montrées ici (Réglages du site et
+  // Page Contact) ; chacune ne se met à jour qu'avec sa propre fiche.
+  const data = useLiveGlobal('site-settings', initialData, 0);
+  const liveContent = useLiveGlobal('contact-page', pageContent, 0);
 
   useLivePreviewSync(data);
 
@@ -45,8 +40,8 @@ export function ContactClient({ initialData, pageContent, formToken, turnstileSi
   const social = data.social || {};
   const socialLinks = SOCIAL_NETWORKS.filter((n) => typeof social[n.key] === 'string' && social[n.key].trim());
   // Page texts are editable in Pages → Page Contact; strings are defaults.
-  const header = pageContent?.header || {};
-  const info = pageContent?.info || {};
+  const header = liveContent?.header || {};
+  const info = liveContent?.info || {};
 
   return (
     <>
@@ -66,10 +61,10 @@ export function ContactClient({ initialData, pageContent, formToken, turnstileSi
 
       <section className="contact-section">
         <div className="contact-grid">
-            <ContactForm formToken={formToken} turnstileSiteKey={turnstileSiteKey} copy={pageContent?.form} />
+            <ContactForm formToken={formToken} turnstileSiteKey={turnstileSiteKey} copy={liveContent?.form} />
 
             <FadeIn>
-              <div className="contact-info-block" data-live-field="contact">
+              <div className="contact-info-block" data-live-field="contact" data-live-owner="/admin/globals/site-settings">
                 <h3>{info.coordinatesTitle || 'Coordonnées'}</h3>
                 <div className="contact-detail">
                   <div className="icon">
@@ -126,7 +121,7 @@ export function ContactClient({ initialData, pageContent, formToken, turnstileSi
                 </div>
               </div>
 
-              <div className="contact-info-block" data-live-field="hours">
+              <div className="contact-info-block" data-live-field="hours" data-live-owner="/admin/globals/site-settings">
                 <h3>{info.hoursTitle || 'Horaires d\u2019ouverture'}</h3>
                 <div className="contact-detail">
                   <div className="icon">
@@ -151,7 +146,7 @@ export function ContactClient({ initialData, pageContent, formToken, turnstileSi
               </div>
 
               {socialLinks.length > 0 && (
-                <div className="contact-info-block" data-live-field="social">
+                <div className="contact-info-block" data-live-field="social" data-live-owner="/admin/globals/site-settings">
                   <h3>{info.socialTitle || 'Suivez-nous'}</h3>
                   <div className="footer-social" style={{ marginTop: 0 }}>
                     {socialLinks.map(({ key, label, Icon }) => (

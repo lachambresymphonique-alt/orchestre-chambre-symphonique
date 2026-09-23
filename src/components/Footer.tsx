@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { useLiveGlobal } from '@/hooks/useLiveDocument';
 import { LogoSvg } from './LogoSvg';
 import { FacebookIcon, InstagramIcon, YouTubeIcon, LinkedInIcon, TikTokIcon } from './SocialIcons';
 
@@ -13,7 +16,10 @@ interface FooterProps {
   };
 }
 
-export function Footer({ settings }: FooterProps) {
+export function Footer({ settings: initialSettings }: FooterProps) {
+  // Aperçu en direct des « Réglages du site » (description, coordonnées).
+  const live = useLiveGlobal<Record<string, any> | null>('site-settings', null, 0);
+  const settings = live ? { description: live.footerDescription, contact: live.contact } : initialSettings;
   const description =
     settings?.description ||
     "La Chambre Symphonique est un orchestre fondé en 2017 par Loïc Emmelin, rassemblant plus de 80 musiciens autour de la passion du répertoire symphonique.";
