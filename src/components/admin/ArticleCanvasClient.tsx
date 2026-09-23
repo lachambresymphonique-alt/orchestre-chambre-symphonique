@@ -4,17 +4,22 @@ import './admin-article.css';
 import { useEffect, useRef } from 'react';
 import { useFormFields } from '@payloadcms/ui';
 import { postCategory } from '@/lib/postCategories';
+import { ADMIN_FONTS_HREF } from '@/lib/theme';
 
 /**
- * Feuille Google Fonts : les polices du site, absentes de l’admin, pour que
- * l’article s’écrive dans la typographie où il sera lu.
+ * Feuille Google Fonts : les polices du site (tout le catalogue d'« Apparence
+ * du site »), absentes de l’admin, pour que l’article s’écrive dans la
+ * typographie où il sera lu.
  */
-const FONTS_HREF =
-  'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..600,0..100,0..1;1,9..144,300..600,0..100,0..1&family=Ibarra+Real+Nova:ital,wght@0,400..600;1,400..600&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..500;1,6..96,400..500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400..600&family=Inter:wght@300..700&display=swap';
+const FONTS_HREF = ADMIN_FONTS_HREF;
 
-type Props = { displayFont: string };
+type Props = {
+  displayFont: string;
+  /** Polices et couleurs d'« Apparence du site », en variables de admin-article.css. */
+  vars?: Record<string, string>;
+};
 
-export function ArticleCanvasClient({ displayFont }: Props) {
+export function ArticleCanvasClient({ displayFont, vars }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const category = useFormFields(([fields]) => fields?.category?.value as string | undefined);
 
@@ -33,8 +38,13 @@ export function ArticleCanvasClient({ displayFont }: Props) {
     const root = ref.current?.closest<HTMLElement>('.collection-edit');
     if (!root) return;
     root.setAttribute('data-display', displayFont);
-    return () => root.removeAttribute('data-display');
-  }, [displayFont]);
+    const entries = Object.entries(vars ?? {});
+    for (const [name, value] of entries) root.style.setProperty(name, value);
+    return () => {
+      root.removeAttribute('data-display');
+      for (const [name] of entries) root.style.removeProperty(name);
+    };
+  }, [displayFont, vars]);
 
   const rubric = postCategory(category);
 

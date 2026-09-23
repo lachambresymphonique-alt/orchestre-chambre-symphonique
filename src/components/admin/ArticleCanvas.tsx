@@ -1,8 +1,16 @@
 import type { Payload } from 'payload';
 import { getPayloadClient } from '@/lib/payload';
+import { adminFontStack, effectiveFont, normalizeHex, type ThemeDoc } from '@/lib/theme';
 import { ArticleCanvasClient } from './ArticleCanvasClient';
 
-const DISPLAY_FONTS = ['fraunces-soft', 'fraunces-sharp', 'ibarra', 'bodoni'];
+/** Couleurs d'« Apparence du site » → variables de l'écran d'article (admin-article.css). */
+const ARTICLE_COLORS: Array<[keyof ThemeDoc, string]> = [
+  ['colorHeadings', '--lcs-a-cream'],
+  ['colorText', '--lcs-a-cream-soft'],
+  ['colorMuted', '--lcs-a-mute'],
+  ['colorLink', '--lcs-a-amber'],
+  ['colorAccent', '--lcs-a-velvet'],
+];
 
 /**
  * En tête du formulaire d’article (champ « ui » de la collection Posts).
@@ -14,16 +22,26 @@ const DISPLAY_FONTS = ['fraunces-soft', 'fraunces-sharp', 'ibarra', 'bodoni'];
  * (admin-article.css), rattaché à `.collection-edit--posts`.
  */
 export async function ArticleCanvas(props: { payload?: Payload }) {
-  let displayFont = 'fraunces-soft';
+  let theme: ThemeDoc | null = null;
   try {
     const payload = props.payload ?? (await getPayloadClient());
-    const theme = await payload.findGlobal({ slug: 'theme-settings' as any });
-    const chosen = (theme as any)?.displayFont;
-    if (typeof chosen === 'string' && DISPLAY_FONTS.includes(chosen)) displayFont = chosen;
+    theme = (await payload.findGlobal({ slug: 'theme-settings' as any })) as ThemeDoc;
   } catch {
     // Réglage absent : dessin d’origine.
   }
-  return <ArticleCanvasClient displayFont={displayFont} />;
+  // L'article s'écrit dans les polices où il sera lu : titre (H1), texte, interface.
+  const title = effectiveFont(theme, 'h1');
+  const vars: Record<string, string> = {
+    '--lcs-a-display': adminFontStack(title),
+    '--lcs-a-serif': adminFontStack(effectiveFont(theme, 'body')),
+    '--lcs-a-sans': adminFontStack(effectiveFont(theme, 'ui')),
+  };
+  if (title.sharp) vars['--lcs-a-soft'] = '0';
+  for (const [field, name] of ARTICLE_COLORS) {
+    const hex = normalizeHex(theme?.[field]);
+    if (hex) vars[name] = hex;
+  }
+  return <ArticleCanvasClient displayFont={title.key} vars={vars} />;
 }
 
 export default ArticleCanvas;

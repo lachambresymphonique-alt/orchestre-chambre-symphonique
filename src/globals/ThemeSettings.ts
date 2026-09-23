@@ -1,4 +1,55 @@
-import type { GlobalConfig } from 'payload';
+import type { Field, GlobalConfig } from 'payload';
+import {
+  COLORS,
+  FONT_ROLES,
+  validateFontFor,
+  validateHex,
+  BUTTON_SHAPES,
+  BUTTON_STYLES,
+  type ColorField,
+} from '../lib/theme';
+
+/**
+ * « Réglages → Apparence du site » : polices, couleurs et boutons du site.
+ *
+ * Trois onglets, un aperçu qui suit chaque réglage, et l'aperçu en direct du
+ * site à droite. Un champ vide garde le dessin d'origine ; le catalogue, les
+ * valeurs d'origine et la traduction en variables CSS sont dans
+ * src/lib/theme.ts. Tous les champs sont du texte (pas d'énumération en base) :
+ * ajouter une police ou une palette ne demande aucune migration.
+ */
+
+const FONT_FIELD = '@/components/admin/ThemeFontField#ThemeFontField';
+const COLOR_FIELD = '@/components/admin/ThemeColorField#ThemeColorField';
+const CHOICE_FIELD = '@/components/admin/ThemeChoiceField#ThemeChoiceField';
+const SPECIMEN = '@/components/admin/ThemeSpecimen#ThemeSpecimen';
+const SECTION = '@/components/admin/ThemeSection#ThemeSection';
+
+const fontField = (info: (typeof FONT_ROLES)[number]): Field => ({
+  name: info.field,
+  type: 'text',
+  label: info.label,
+  validate: validateFontFor(info.role) as any,
+  admin: { description: info.where, components: { Field: FONT_FIELD } },
+});
+
+const colorField = (field: ColorField): Field => {
+  const info = COLORS.find((c) => c.field === field)!;
+  return {
+    name: field,
+    type: 'text',
+    label: info.label,
+    validate: validateHex as any,
+    admin: { description: info.where, components: { Field: COLOR_FIELD } },
+  };
+};
+
+const section = (name: string, label: string, description: string): Field => ({
+  name,
+  type: 'ui',
+  label,
+  admin: { description, components: { Field: SECTION } } as any,
+});
 
 export const ThemeSettings: GlobalConfig = {
   slug: 'theme-settings',
@@ -6,27 +57,110 @@ export const ThemeSettings: GlobalConfig = {
   admin: {
     group: 'Réglages',
     description:
-      "Le style du site : pour l'instant, la typographie de tous les titres.",
+      'Polices, couleurs et boutons du site. Chaque réglage se voit aussitôt dans l’aperçu à droite ; enregistrez pour publier. Un réglage laissé vide garde le dessin d’origine.',
   },
   fields: [
     {
-      name: 'displayFont',
-      type: 'radio',
-      label: 'Typographie des titres',
-      defaultValue: 'fraunces-soft',
-      options: [
-        { label: 'Ibarra Real Nova', value: 'ibarra' },
-        { label: 'Bodoni Moda', value: 'bodoni' },
-        { label: 'Fraunces affûté', value: 'fraunces-sharp' },
-        { label: 'Fraunces arrondi (dessin d\'origine)', value: 'fraunces-soft' },
-      ],
-      admin: {
-        description:
-          "S'applique à tous les titres du site : bannière, titres de section, noms de concerts et de musiciens. Enregistrez, puis rechargez le site pour voir le résultat.",
-        components: {
-          Field: '@/components/admin/DisplayFontField#DisplayFontField',
+      type: 'tabs',
+      tabs: [
+        {
+          label: 'Typographie',
+          description:
+            'Une police par niveau de texte. Les titres de page, de section et de carte peuvent se distinguer ou partager la même police.',
+          fields: [
+            { name: 'typeSpecimen', type: 'ui', admin: { components: { Field: SPECIMEN } } as any },
+            section('typeHeadings', 'Titres', 'Du plus grand au plus petit.'),
+            fontField(FONT_ROLES[0]),
+            fontField(FONT_ROLES[1]),
+            fontField(FONT_ROLES[2]),
+            section('typeText', 'Texte', 'La lecture et l’interface.'),
+            fontField(FONT_ROLES[3]),
+            fontField(FONT_ROLES[4]),
+            // Ancien réglage unique « Typographie des titres » : sert de valeur par
+            // défaut aux trois niveaux de titre tant qu'ils ne sont pas choisis.
+            // Type et options inchangés : la colonne est une énumération en base.
+            {
+              name: 'displayFont',
+              type: 'radio',
+              defaultValue: 'fraunces-soft',
+              options: [
+                { label: 'Ibarra Real Nova', value: 'ibarra' },
+                { label: 'Bodoni Moda', value: 'bodoni' },
+                { label: 'Fraunces affûté', value: 'fraunces-sharp' },
+                { label: 'Fraunces arrondi (dessin d\'origine)', value: 'fraunces-soft' },
+              ],
+              admin: { hidden: true },
+            },
+          ],
         },
-      },
+        {
+          label: 'Couleurs',
+          description:
+            'L’ambiance, sombre ou claire, puis une palette et les couleurs une à une. Le contraste de chaque couleur est mesuré sur le fond où elle se pose.',
+          fields: [
+            { name: 'colorSpecimen', type: 'ui', admin: { components: { Field: SPECIMEN } } as any },
+            {
+              name: 'colorMode',
+              type: 'text',
+              label: 'Ambiance',
+              validate: ((v: unknown) => (!v || v === 'light' || v === 'dark' ? true : 'Ambiance inconnue.')) as any,
+              admin: { components: { Field: '@/components/admin/ThemeModeField#ThemeModeField' } },
+            },
+            {
+              name: 'colorPresets',
+              type: 'ui',
+              label: 'Palettes',
+              admin: {
+                description: 'Un point de départ : la palette remplace les couleurs d’accent et de bouton, vous pouvez ensuite ajuster.',
+                components: { Field: '@/components/admin/ThemePresets#ThemePresets' },
+              } as any,
+            },
+            section('colorsText', 'Texte', 'Les trois tons du texte, du plus fort au plus discret.'),
+            {
+              type: 'row',
+              fields: [colorField('colorHeadings'), colorField('colorText'), colorField('colorMuted')],
+            },
+            section('colorsAccents', 'Accents', 'Ce qui guide l’œil : filets, liens, mots en italique.'),
+            { type: 'row', fields: [colorField('colorAccent'), colorField('colorLink')] },
+          ],
+        },
+        {
+          label: 'Boutons',
+          description:
+            'Les boutons d’action du site : « Réserver une place », l’envoi des formulaires, le don. Les liens fléchés suivent la couleur « Liens et italiques ».',
+          fields: [
+            { name: 'buttonSpecimen', type: 'ui', admin: { components: { Field: SPECIMEN } } as any },
+            {
+              name: 'buttonStyle',
+              type: 'text',
+              label: 'Style',
+              validate: ((v: unknown) =>
+                !v || BUTTON_STYLES.some((s) => s.value === v) ? true : 'Style inconnu.') as any,
+              admin: { components: { Field: CHOICE_FIELD } },
+            },
+            {
+              name: 'buttonShape',
+              type: 'text',
+              label: 'Forme des angles',
+              validate: ((v: unknown) =>
+                !v || BUTTON_SHAPES.some((s) => s.value === v) ? true : 'Forme inconnue.') as any,
+              admin: { components: { Field: CHOICE_FIELD } },
+            },
+            section('buttonColors', 'Couleurs du bouton', 'Le fond, le texte posé dessus et le fond au survol.'),
+            { type: 'row', fields: [colorField('buttonBg'), colorField('buttonText'), colorField('buttonHover')] },
+          ],
+        },
+      ],
+    },
+
+    // ── Barre latérale : résumé et retour au dessin d'origine ────────────
+    {
+      name: 'themeSummary',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: { Field: '@/components/admin/ThemeSummary#ThemeSummary' },
+      } as any,
     },
 
     // ── Ancien système de thème (couleurs, mode clair/sombre, polices) ──

@@ -38,7 +38,14 @@ import { MusicianFormChoiceRowLabel as MusicianFormChoiceRowLabel_06e40e52a38c8c
 import { MusicianFormQuestionRowLabel as MusicianFormQuestionRowLabel_06e40e52a38c8c46926f7949f0a13d21 } from '@/components/admin/MusicianFormRowLabel'
 import { MusicianFormPartRowLabel as MusicianFormPartRowLabel_06e40e52a38c8c46926f7949f0a13d21 } from '@/components/admin/MusicianFormRowLabel'
 import { ShareFormButton as ShareFormButton_81e3a91bd5903567b2fd1e5aeef5f959 } from '@/components/admin/ShareFormButton'
-import { DisplayFontField as DisplayFontField_307bdf94f3509d3afd145b42122f8531 } from '@/components/admin/DisplayFontField'
+import { ThemeSpecimen as ThemeSpecimen_5254f2b7c31c7bba0ee8e1b3c2c8ac20 } from '@/components/admin/ThemeSpecimen'
+import { ThemeSection as ThemeSection_58e18b7f0ce6ac9ef02ac859817c6039 } from '@/components/admin/ThemeSection'
+import { ThemeFontField as ThemeFontField_a5355cad86614e9955c1875140942740 } from '@/components/admin/ThemeFontField'
+import { ThemeModeField as ThemeModeField_e88f7a2fe6f94f89ee33d330910903fc } from '@/components/admin/ThemeModeField'
+import { ThemePresets as ThemePresets_81bbe54381f61464b860450d840e4946 } from '@/components/admin/ThemePresets'
+import { ThemeColorField as ThemeColorField_083666974322f0a8b2244e62c210f3ce } from '@/components/admin/ThemeColorField'
+import { ThemeChoiceField as ThemeChoiceField_e5377ffb001fd2479a009351e0411846 } from '@/components/admin/ThemeChoiceField'
+import { ThemeSummary as ThemeSummary_8ac0b2d77bf10bc361bf96ce288c68cb } from '@/components/admin/ThemeSummary'
 import { ColorPickerField as ColorPickerField_d572ded1c017fe858839e8cdc754e090 } from '@/components/admin/ColorPickerField'
 import { FontPreviewField as FontPreviewField_58bad2c11be57550fc4300d2f844cb48 } from '@/components/admin/FontPreviewField'
 import { NavItemsSummary as NavItemsSummary_83b5fd269b28c009f3d42d60454851df } from '@/components/admin/NavItemsSummary'
@@ -98,7 +105,14 @@ export const importMap = {
   "@/components/admin/MusicianFormRowLabel#MusicianFormQuestionRowLabel": MusicianFormQuestionRowLabel_06e40e52a38c8c46926f7949f0a13d21,
   "@/components/admin/MusicianFormRowLabel#MusicianFormPartRowLabel": MusicianFormPartRowLabel_06e40e52a38c8c46926f7949f0a13d21,
   "@/components/admin/ShareFormButton#ShareFormButton": ShareFormButton_81e3a91bd5903567b2fd1e5aeef5f959,
-  "@/components/admin/DisplayFontField#DisplayFontField": DisplayFontField_307bdf94f3509d3afd145b42122f8531,
+  "@/components/admin/ThemeSpecimen#ThemeSpecimen": ThemeSpecimen_5254f2b7c31c7bba0ee8e1b3c2c8ac20,
+  "@/components/admin/ThemeSection#ThemeSection": ThemeSection_58e18b7f0ce6ac9ef02ac859817c6039,
+  "@/components/admin/ThemeFontField#ThemeFontField": ThemeFontField_a5355cad86614e9955c1875140942740,
+  "@/components/admin/ThemeModeField#ThemeModeField": ThemeModeField_e88f7a2fe6f94f89ee33d330910903fc,
+  "@/components/admin/ThemePresets#ThemePresets": ThemePresets_81bbe54381f61464b860450d840e4946,
+  "@/components/admin/ThemeColorField#ThemeColorField": ThemeColorField_083666974322f0a8b2244e62c210f3ce,
+  "@/components/admin/ThemeChoiceField#ThemeChoiceField": ThemeChoiceField_e5377ffb001fd2479a009351e0411846,
+  "@/components/admin/ThemeSummary#ThemeSummary": ThemeSummary_8ac0b2d77bf10bc361bf96ce288c68cb,
   "@/components/admin/ColorPickerField#ColorPickerField": ColorPickerField_d572ded1c017fe858839e8cdc754e090,
   "@/components/admin/FontPreviewField#FontPreviewField": FontPreviewField_58bad2c11be57550fc4300d2f844cb48,
   "@/components/admin/NavItemsSummary#NavItemsSummary": NavItemsSummary_83b5fd269b28c009f3d42d60454851df,

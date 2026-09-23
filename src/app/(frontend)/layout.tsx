@@ -1,12 +1,30 @@
 import type { Metadata } from 'next';
-import { Bodoni_Moda, Fraunces, Ibarra_Real_Nova, Inter, Source_Serif_4 } from 'next/font/google';
+import {
+  Bodoni_Moda,
+  Cormorant_Garamond,
+  DM_Sans,
+  EB_Garamond,
+  Fraunces,
+  Ibarra_Real_Nova,
+  Inter,
+  Josefin_Sans,
+  Jost,
+  Lato,
+  Lora,
+  Montserrat,
+  Playfair_Display,
+  Raleway,
+  Source_Serif_4,
+} from 'next/font/google';
 import Script from 'next/script';
 import '../globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { PageViewTracker } from '@/components/PageViewTracker';
+import { ThemeLive } from '@/components/ThemeLive';
 import { getPayloadClient } from '@/lib/payload';
 import { isNavConfigured, legacyNavItems, resolveNavItems, type NavLink } from '@/lib/navigation';
+import { resolveTheme, type ThemeDoc } from '@/lib/theme';
 
 const fraunces = Fraunces({
   variable: '--font-fraunces',
@@ -16,13 +34,15 @@ const fraunces = Fraunces({
   display: 'swap',
 });
 
-// Polices de titres proposées dans « Réglages → Apparence du site ». Le
-// navigateur ne télécharge que celle qui est réellement utilisée.
+// Polices proposées dans « Réglages → Apparence du site » (catalogue :
+// src/lib/theme.ts). Sans préchargement : le navigateur ne télécharge que
+// celles que le thème utilise réellement.
 const ibarra = Ibarra_Real_Nova({
   variable: '--font-ibarra',
   subsets: ['latin'],
   style: ['normal', 'italic'],
   display: 'swap',
+  preload: false,
 });
 
 const bodoni = Bodoni_Moda({
@@ -31,6 +51,89 @@ const bodoni = Bodoni_Moda({
   style: ['normal', 'italic'],
   axes: ['opsz'],
   display: 'swap',
+  preload: false,
+});
+
+const cormorant = Cormorant_Garamond({
+  variable: '--font-cormorant',
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  weight: ['400', '500', '600'],
+  display: 'swap',
+  preload: false,
+});
+
+const playfair = Playfair_Display({
+  variable: '--font-playfair',
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  preload: false,
+});
+
+const ebGaramond = EB_Garamond({
+  variable: '--font-ebgaramond',
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  preload: false,
+});
+
+const lora = Lora({
+  variable: '--font-lora',
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  preload: false,
+});
+
+const lato = Lato({
+  variable: '--font-lato',
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  weight: ['300', '400', '700'],
+  display: 'swap',
+  preload: false,
+});
+
+const montserrat = Montserrat({
+  variable: '--font-montserrat',
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  preload: false,
+});
+
+const raleway = Raleway({
+  variable: '--font-raleway',
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  preload: false,
+});
+
+const josefin = Josefin_Sans({
+  variable: '--font-josefin',
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  preload: false,
+});
+
+const jost = Jost({
+  variable: '--font-jost',
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  preload: false,
+});
+
+const dmSans = DM_Sans({
+  variable: '--font-dmsans',
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  preload: false,
 });
 
 const inter = Inter({
@@ -74,22 +177,14 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-/** Valeurs acceptées pour la typographie des titres (voir globals.css). */
-const DISPLAY_FONTS = ['fraunces-soft', 'fraunces-sharp', 'ibarra', 'bodoni'] as const;
-type DisplayFont = (typeof DISPLAY_FONTS)[number];
-
-/** Typographie choisie dans l'admin ; le dessin d'origine par défaut. */
-async function getDisplayFont(
-  payload: Awaited<ReturnType<typeof getPayloadClient>>,
-): Promise<DisplayFont> {
+/** Apparence choisie dans l'admin (Réglages → Apparence du site) ; le dessin d'origine par défaut. */
+async function getTheme(payload: Awaited<ReturnType<typeof getPayloadClient>>): Promise<ThemeDoc | null> {
   try {
-    const theme = await payload.findGlobal({ slug: 'theme-settings' as any });
-    const chosen = (theme as any)?.displayFont;
-    if (DISPLAY_FONTS.includes(chosen)) return chosen;
+    return (await payload.findGlobal({ slug: 'theme-settings' as any })) as ThemeDoc;
   } catch {
     // Réglage absent (schéma pas encore poussé) : dessin d'origine.
+    return null;
   }
-  return 'fraunces-soft';
 }
 
 /** Menu principal : composé dans l'admin (Réglages → Menu du site), sinon menu historique. */
@@ -133,10 +228,10 @@ export default async function FrontendLayout({
   children: React.ReactNode;
 }) {
   const payload = await getPayloadClient();
-  const [siteSettings, navItems, displayFont] = await Promise.all([
+  const [siteSettings, navItems, theme] = await Promise.all([
     payload.findGlobal({ slug: 'site-settings' as any }),
     getNavItems(payload),
-    getDisplayFont(payload),
+    getTheme(payload),
   ]);
 
   const settings = {
@@ -144,10 +239,22 @@ export default async function FrontendLayout({
     contact: (siteSettings as any).contact,
   };
 
+  const { vars: themeVars, attrs } = resolveTheme(theme);
+
   const fontClasses = [
     fraunces.variable,
     ibarra.variable,
     bodoni.variable,
+    cormorant.variable,
+    playfair.variable,
+    ebGaramond.variable,
+    lora.variable,
+    dmSans.variable,
+    lato.variable,
+    montserrat.variable,
+    raleway.variable,
+    josefin.variable,
+    jost.variable,
     inter.variable,
     sourceSerif.variable,
   ].join(' ');
@@ -157,8 +264,9 @@ export default async function FrontendLayout({
     // (--font-display, --font-body…) are declared on :root and reference them.
     // Declared on <body> they were undefined at :root, which invalidated the
     // tokens and made the whole site fall back to Times.
-    // data-display : typographie des titres choisie dans l'admin.
-    <html lang="fr" className={fontClasses} data-display={displayFont}>
+    // Apparence choisie dans l'admin : variables CSS (polices, couleurs,
+    // boutons) en style, réglages fins en data-* (voir src/lib/theme.ts).
+    <html lang="fr" className={fontClasses} style={themeVars as React.CSSProperties} {...attrs}>
       <body>
         {/* Google tag (gtag.js) */}
         <Script
@@ -174,6 +282,7 @@ export default async function FrontendLayout({
             gtag('config', 'G-PEYDBZWKSP');
           `}
         </Script>
+        <ThemeLive />
         <Header items={navItems} />
         {children}
         <Footer settings={settings} />
