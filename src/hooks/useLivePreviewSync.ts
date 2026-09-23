@@ -116,15 +116,28 @@ export function useLivePreviewSync(data: any) {
           'input:not([type="hidden"]):not([type="file"]):not([disabled]), textarea:not([disabled]), [contenteditable="true"]',
         );
     if (!input) return;
-    input.focus({ preventScroll: true });
-    if (input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement) {
-      try {
-        const end = input.value.length;
-        input.setSelectionRange(end, end);
-      } catch {
-        // Types sans sélection (email, number…) : le focus suffit.
-      }
+    // Champ dans un bloc replié de l'admin : on déplie d'abord, sinon il ne
+    // peut pas recevoir le curseur.
+    let folded = input.parentElement?.closest<HTMLElement>('.collapsible--collapsed');
+    let guard = 0;
+    while (folded && guard++ < 5) {
+      folded.querySelector<HTMLElement>(':scope > .collapsible__toggle-wrap .collapsible__toggle, .collapsible__toggle')?.click();
+      folded = folded.parentElement?.closest<HTMLElement>('.collapsible--collapsed') ?? null;
     }
+    // Léger délai : quitter le champ précédent (clic dans l'aperçu) déclenche
+    // des mises à jour de l'admin qui reprendraient sinon le focus.
+    window.setTimeout(() => {
+      input.focus({ preventScroll: true });
+      if (guard > 0) input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement) {
+        try {
+          const end = input.value.length;
+          input.setSelectionRange(end, end);
+        } catch {
+          // Types sans sélection (email, number…) : le focus suffit.
+        }
+      }
+    }, guard > 0 ? 250 : 80);
   };
 
   // ── Scroll the admin panel to a field group ──
