@@ -25,6 +25,82 @@ export function useLivePreviewSync(data: any) {
   const editingFieldRef = useRef<string | null>(null);
   const isInIframe = typeof window !== 'undefined' && window.self !== window.top;
 
+  // ── Unsaved changes in the admin: banner + links blocked in the preview ──
+  // The admin (UnsavedChanges.tsx) posts { type: 'lcs:unsaved', unsaved }.
+  const unsavedRef = useRef(false);
+  useEffect(() => {
+    if (!isInIframe) return;
+
+    const banner = document.createElement('div');
+    banner.setAttribute('role', 'status');
+    banner.setAttribute('aria-live', 'polite');
+    Object.assign(banner.style, {
+      position: 'fixed',
+      left: '50%',
+      bottom: '16px',
+      transform: 'translateX(-50%)',
+      zIndex: '2147483000',
+      display: 'none',
+      alignItems: 'center',
+      gap: '10px',
+      maxWidth: 'calc(100% - 32px)',
+      padding: '10px 16px',
+      borderRadius: '999px',
+      background: '#8B1A1A',
+      color: '#fff',
+      font: '600 13px/1.35 system-ui, -apple-system, sans-serif',
+      boxShadow: '0 8px 28px rgba(0,0,0,0.35)',
+      pointerEvents: 'none',
+      transition: 'transform 0.2s ease',
+    } as Partial<CSSStyleDeclaration>);
+    const label = 'Aperçu non enregistré — pensez à « Sauvegarder » ou « Annuler les modifications ».';
+    banner.textContent = label;
+    document.body.appendChild(banner);
+
+    const show = (unsaved: boolean) => {
+      unsavedRef.current = unsaved;
+      banner.style.display = unsaved ? 'flex' : 'none';
+      document.body.classList.toggle('live-preview-unsaved', unsaved);
+    };
+
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type === 'lcs:unsaved') show(Boolean(event.data.unsaved));
+    };
+    window.addEventListener('message', onMessage);
+    try {
+      window.parent.postMessage({ type: 'lcs:unsaved?' }, window.location.origin);
+    } catch {
+      // Admin sur une autre origine.
+    }
+
+    // Links would leave the page being previewed: blocked while unsaved.
+    const onClick = (e: MouseEvent) => {
+      if (!unsavedRef.current) return;
+      const anchor = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href]');
+      if (!anchor || anchor.closest('[data-live-link]')) return;
+      const url = new URL(anchor.href, window.location.href);
+      const samePage = url.pathname === window.location.pathname && url.search === window.location.search;
+      if (samePage) return;
+      e.preventDefault();
+      e.stopPropagation();
+      banner.textContent = 'Lien désactivé : sauvegardez ou annulez vos modifications avant de quitter cette page.';
+      banner.animate?.(
+        [{ transform: 'translateX(-50%)' }, { transform: 'translateX(calc(-50% - 6px))' }, { transform: 'translateX(calc(-50% + 6px))' }, { transform: 'translateX(-50%)' }],
+        { duration: 300 },
+      );
+      window.setTimeout(() => { banner.textContent = label; }, 3500);
+    };
+    document.addEventListener('click', onClick, true);
+
+    return () => {
+      window.removeEventListener('message', onMessage);
+      document.removeEventListener('click', onClick, true);
+      banner.remove();
+      document.body.classList.remove('live-preview-unsaved');
+    };
+  }, [isInIframe]);
+
   // ── Add live-preview-mode class to body ──
   useEffect(() => {
     if (!isInIframe) return;

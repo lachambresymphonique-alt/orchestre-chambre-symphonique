@@ -34,6 +34,7 @@ import { AdminIcon as AdminIcon_d500ae2ad98a0a33d640ae0ac1a3417c } from '@/compo
 import { AdminLogo as AdminLogo_b80a86fce1072afc84cd6a430a965697 } from '@/components/admin/AdminLogo'
 import { BeforeDashboard as BeforeDashboard_915324d4628771dbb8d31cdc4601c33e } from '@/components/admin/BeforeDashboard'
 import { ContentOverview as ContentOverview_fd1a60f6a06df1c7c572d2606eb412b0 } from '@/components/admin/ContentOverview'
+import { UnsavedChanges as UnsavedChanges_937f98f92304cb030c9bd5ab6af069f0 } from '@/components/admin/UnsavedChanges'
 import { ViewSiteLink as ViewSiteLink_4825072285f9364e3016113bb30951e2 } from '@/components/admin/ViewSiteLink'
 import { HeaderSiteLink as HeaderSiteLink_67bb467c5b5fe7e595a72cdfb499f798 } from '@/components/admin/HeaderSiteLink'
 import { AnalyticsNavLink as AnalyticsNavLink_fb17e397022e83cc802d5c55b8837bc2 } from '@/components/admin/AnalyticsNavLink'
@@ -82,6 +83,7 @@ export const importMap = {
   "@/components/admin/AdminLogo#AdminLogo": AdminLogo_b80a86fce1072afc84cd6a430a965697,
   "@/components/admin/BeforeDashboard#BeforeDashboard": BeforeDashboard_915324d4628771dbb8d31cdc4601c33e,
   "@/components/admin/ContentOverview#ContentOverview": ContentOverview_fd1a60f6a06df1c7c572d2606eb412b0,
+  "@/components/admin/UnsavedChanges#UnsavedChanges": UnsavedChanges_937f98f92304cb030c9bd5ab6af069f0,
   "@/components/admin/ViewSiteLink#ViewSiteLink": ViewSiteLink_4825072285f9364e3016113bb30951e2,
   "@/components/admin/HeaderSiteLink#HeaderSiteLink": HeaderSiteLink_67bb467c5b5fe7e595a72cdfb499f798,
   "@/components/admin/AnalyticsNavLink#AnalyticsNavLink": AnalyticsNavLink_fb17e397022e83cc802d5c55b8837bc2,

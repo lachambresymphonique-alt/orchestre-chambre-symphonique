@@ -30,6 +30,7 @@ import { MediaPage } from './globals/MediaPage';
 import { MusiciansPage } from './globals/MusiciansPage';
 import { ThemeSettings } from './globals/ThemeSettings';
 import { Navigation } from './globals/Navigation';
+import { unsavedChangesPlugin } from './lib/unsavedChangesPlugin';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -203,6 +204,8 @@ export default buildConfig({
   }),
 
   plugins: [
+    // « Modifications non enregistrées » + « Annuler les modifications » sur chaque fiche.
+    unsavedChangesPlugin,
     ...(process.env.BLOB_READ_WRITE_TOKEN
       ? [
           vercelBlobStorage({
