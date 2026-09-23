@@ -12,6 +12,8 @@ export const metadata: Metadata = {
 export default function MusicianContributePage() {
   // Jeton anti-robot : émis à chaque rendu (page dynamique), vérifié par /api/musician-submissions.
   const formToken = issueFormToken(getFormSecret());
+  // Captcha Cloudflare Turnstile : mêmes clés que le formulaire de contact ; absent tant qu'elles ne sont pas configurées.
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || null;
 
   return (
     <div className="contribute-page">
@@ -27,7 +29,7 @@ export default function MusicianContributePage() {
       </header>
 
       <section className="contribute-form-wrap">
-        <MusicianSubmissionForm formToken={formToken} />
+        <MusicianSubmissionForm formToken={formToken} turnstileSiteKey={turnstileSiteKey} />
       </section>
     </div>
   );

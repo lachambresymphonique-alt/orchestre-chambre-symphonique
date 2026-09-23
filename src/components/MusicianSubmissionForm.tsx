@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, FormEvent, useRef, ChangeEvent, CSSProperties } from 'react';
+import { Turnstile } from '@/components/Turnstile';
 
 const SECTIONS = [
   { value: 'cordes', label: 'Cordes' },
@@ -24,13 +25,27 @@ const HONEYPOT_STYLE: CSSProperties = {
 type MusicianSubmissionFormProps = {
   /** Jeton signé côté serveur : prouve que la page a été chargée et mesure le temps de remplissage. */
   formToken: string;
+  /** Clé publique Cloudflare Turnstile ; `null` quand le captcha n'est pas configuré. */
+  turnstileSiteKey: string | null;
 };
 
-export function MusicianSubmissionForm({ formToken }: MusicianSubmissionFormProps) {
+export function MusicianSubmissionForm({ formToken, turnstileSiteKey }: MusicianSubmissionFormProps) {
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
   const [section, setSection] = useState<string>('');
   const [photoName, setPhotoName] = useState<string>('');
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileFailed, setTurnstileFailed] = useState(false);
+  // Un jeton Turnstile ne sert qu'une fois : on remonte le widget après un envoi refusé.
+  const [widgetKey, setWidgetKey] = useState(0);
+
+  const captchaRequired = Boolean(turnstileSiteKey);
+  const waitingForCaptcha = captchaRequired && !turnstileToken;
+
+  const renewCaptcha = () => {
+    setTurnstileToken(null);
+    setWidgetKey((k) => k + 1);
+  };
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -40,11 +55,13 @@ export function MusicianSubmissionForm({ formToken }: MusicianSubmissionFormProp
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (waitingForCaptcha) return;
     setStatus('sending');
     setErrorMsg('');
 
     const form = e.currentTarget;
     const fd = new FormData(form);
+    if (turnstileToken) fd.append('turnstileToken', turnstileToken);
 
     try {
       const res = await fetch('/api/musician-submissions', {
@@ -64,6 +81,7 @@ export function MusicianSubmissionForm({ formToken }: MusicianSubmissionFormProp
     } catch (err: any) {
       setErrorMsg(err.message || 'Une erreur est survenue.');
       setStatus('error');
+      renewCaptcha();
       setTimeout(() => setStatus('idle'), 6000);
     }
   };
@@ -369,7 +387,35 @@ export function MusicianSubmissionForm({ formToken }: MusicianSubmissionFormProp
           </p>
         )}
 
-        <button type="submit" className="btn-filled" disabled={status === 'sending'}>
+        {turnstileSiteKey && (
+          <div className="form-group contribute-captcha">
+            <Turnstile
+              key={widgetKey}
+              siteKey={turnstileSiteKey}
+              onToken={(token) => {
+                setTurnstileToken(token);
+                if (token) setTurnstileFailed(false);
+              }}
+              onError={() => setTurnstileFailed(true)}
+            />
+            <p style={{ fontSize: '0.78rem', color: 'var(--rose-mute)', marginTop: '0.5rem' }}>
+              Formulaire protégé par Cloudflare Turnstile.
+            </p>
+          </div>
+        )}
+
+        {turnstileFailed && (
+          <p className="contribute-outro__error" role="alert">
+            <em>La vérification anti-robot n&apos;a pas pu se charger.</em> Rechargez la page
+            ou réessayez plus tard.
+          </p>
+        )}
+
+        <button
+          type="submit"
+          className="btn-filled"
+          disabled={status === 'sending' || waitingForCaptcha}
+        >
           {status === 'sending' ? 'Envoi…' : 'Envoyer ma fiche'}
           <span aria-hidden>→</span>
         </button>

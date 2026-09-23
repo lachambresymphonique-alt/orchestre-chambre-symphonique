@@ -6,6 +6,8 @@ import {
   checkFormToken,
   getFormSecret,
   isHoneypotFilled,
+  turnstileConfigured,
+  verifyTurnstile,
 } from '@/lib/antispam';
 
 const ALLOWED_SECTIONS = new Set(['direction', 'cordes', 'vents', 'claviers']);
@@ -20,6 +22,11 @@ const MAX_FIELD_LENGTH = 10_000;
 
 function badRequest(error: string) {
   return NextResponse.json({ error }, { status: 400 });
+}
+
+function clientIp(req: NextRequest): string | null {
+  const forwarded = req.headers.get('x-forwarded-for');
+  return forwarded?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || null;
 }
 
 export async function POST(req: NextRequest) {
@@ -47,6 +54,20 @@ export async function POST(req: NextRequest) {
     const tokenStatus = checkFormToken(get('formToken'), getFormSecret());
     if (tokenStatus !== 'ok') {
       return badRequest(FORM_TOKEN_ERRORS[tokenStatus]);
+    }
+
+    // Captcha Cloudflare Turnstile, si configuré (mêmes clés que le formulaire de
+    // contact). Le pot de miel et le jeton signé restent en place en dessous.
+    if (turnstileConfigured()) {
+      const result = await verifyTurnstile(
+        get('turnstileToken'),
+        process.env.TURNSTILE_SECRET_KEY as string,
+        clientIp(req),
+      );
+      if (!result.success) {
+        console.warn('Musician form: Turnstile refusé', result.errorCodes);
+        return badRequest('La vérification anti-robot a échoué. Merci de réessayer.');
+      }
     }
 
     const firstName = get('firstName');
