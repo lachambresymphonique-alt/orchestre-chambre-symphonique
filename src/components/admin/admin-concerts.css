@@ -35,3 +35,27 @@
   font-style: italic;
   color: var(--theme-elevation-500);
 }
+
+/* ---------- Sous un champ de concert(s) (ConcertRelationSummary) ---------- */
+.lcs-concert-summary {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lcs-concert-summary__item {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--lcs-radius-sm, 6px);
+  background: var(--theme-elevation-50);
+}
+
+.lcs-concert-summary__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--theme-elevation-1000);
+}

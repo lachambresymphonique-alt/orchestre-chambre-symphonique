@@ -23,6 +23,7 @@ import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { UnsavedChanges as UnsavedChanges_937f98f92304cb030c9bd5ab6af069f0 } from '@/components/admin/UnsavedChanges'
 import { ConcertDateCell as ConcertDateCell_a4bec657baa40be44d47c8f1a300ac27 } from '@/components/admin/ConcertDateCell'
+import { ConcertRelationSummary as ConcertRelationSummary_2ca3343c9d3df24ab3b7ab898be63c2a } from '@/components/admin/ConcertRelationSummary'
 import { ConcertPerformanceRowLabel as ConcertPerformanceRowLabel_3bdb41ae31c16bb59408a2f1f3625608 } from '@/components/admin/ConcertPerformanceRowLabel'
 import { ConcertsListNav as ConcertsListNav_2b5e84c20ff024dced76640216aaefa0 } from '@/components/admin/ConcertsListNav'
 import { MusiciansTabsNav as MusiciansTabsNav_f0bf74af169ff57631fe48d885ee464a } from '@/components/admin/MusiciansTabsNav'
@@ -90,6 +91,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/admin/UnsavedChanges#UnsavedChanges": UnsavedChanges_937f98f92304cb030c9bd5ab6af069f0,
   "@/components/admin/ConcertDateCell#ConcertDateCell": ConcertDateCell_a4bec657baa40be44d47c8f1a300ac27,
+  "@/components/admin/ConcertRelationSummary#ConcertRelationSummary": ConcertRelationSummary_2ca3343c9d3df24ab3b7ab898be63c2a,
   "@/components/admin/ConcertPerformanceRowLabel#ConcertPerformanceRowLabel": ConcertPerformanceRowLabel_3bdb41ae31c16bb59408a2f1f3625608,
   "@/components/admin/ConcertsListNav#ConcertsListNav": ConcertsListNav_2b5e84c20ff024dced76640216aaefa0,
   "@/components/admin/MusiciansTabsNav#MusiciansTabsNav": MusiciansTabsNav_f0bf74af169ff57631fe48d885ee464a,
