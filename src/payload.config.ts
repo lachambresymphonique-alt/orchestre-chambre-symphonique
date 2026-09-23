@@ -115,6 +115,12 @@ export default buildConfig({
         if (slug === 'musicians' && data?.section === 'direction') {
           return `${base}/directeur-artistique`;
         }
+        // A musician's fiche: preview its own detail page (slug, or id before
+        // the slug exists). Nothing saved yet: fall back to the list.
+        if (slug === 'musicians') {
+          const handle = data?.slug || data?.id;
+          return handle ? `${base}/musiciens/${handle}` : `${base}/musiciens`;
+        }
         if (slug === 'musician-submissions') {
           const id = data?.id;
           return id ? `${base}/musiciens/apercu/${id}` : `${base}/musiciens`;
