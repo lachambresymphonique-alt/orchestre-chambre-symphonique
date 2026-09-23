@@ -32,6 +32,25 @@ export function useLivePreviewSync(data: any) {
     return () => document.body.classList.remove('live-preview-mode');
   }, [isInIframe]);
 
+  // ── Put the cursor in the field's text input, ready to type ──
+  const focusFieldInput = (container: HTMLElement) => {
+    const input = container.matches('input, textarea, [contenteditable="true"]')
+      ? container
+      : container.querySelector<HTMLElement>(
+          'input:not([type="hidden"]):not([type="file"]):not([disabled]), textarea:not([disabled]), [contenteditable="true"]',
+        );
+    if (!input) return;
+    input.focus({ preventScroll: true });
+    if (input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement) {
+      try {
+        const end = input.value.length;
+        input.setSelectionRange(end, end);
+      } catch {
+        // Types sans sélection (email, number…) : le focus suffit.
+      }
+    }
+  };
+
   // ── Scroll the admin panel to a field group ──
   const scrollAdminToField = useCallback((fieldName: string) => {
     try {
@@ -51,6 +70,7 @@ export function useLivePreviewSync(data: any) {
           el.style.transition = 'box-shadow 0.3s ease';
           el.style.boxShadow = '0 0 0 3px rgba(201, 168, 76, 0.6)';
           setTimeout(() => { el.style.boxShadow = ''; }, 2000);
+          focusFieldInput(el);
           return;
         }
       }
@@ -67,6 +87,7 @@ export function useLivePreviewSync(data: any) {
           el.style.transition = 'box-shadow 0.3s ease';
           el.style.boxShadow = '0 0 0 3px rgba(201, 168, 76, 0.6)';
           setTimeout(() => { el.style.boxShadow = ''; }, 2000);
+          focusFieldInput(el);
           return;
         }
       }

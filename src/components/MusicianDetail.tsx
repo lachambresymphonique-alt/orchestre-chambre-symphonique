@@ -79,7 +79,7 @@ export function MusicianDetail({ musician: m, previewMode = false, labels }: Pro
       )}
 
       <article className="musician-feature">
-        <div className="musician-feature__portrait">
+        <div className="musician-feature__portrait" data-live-field="photo">
           <Image
             src={m.photo?.url || placeholderForMusician(m.name)}
             alt={m.photo?.alt || m.name}
@@ -98,19 +98,19 @@ export function MusicianDetail({ musician: m, previewMode = false, labels }: Pro
             <span className="breadcrumb-current">{sectionLabel}</span>
           </p>
 
-          <p className="eyebrow eyebrow--gold">{m.role}</p>
-          <h1 className="musician-feature__name">{m.name}</h1>
-          {m.instrument && <p className="musician-feature__instrument">{m.instrument}</p>}
+          <p className="eyebrow eyebrow--gold" data-live-field="role">{m.role}</p>
+          <h1 className="musician-feature__name" data-live-field="name">{m.name}</h1>
+          {m.instrument && <p className="musician-feature__instrument" data-live-field="instrument">{m.instrument}</p>}
 
           {m.tagline && (
             <>
               <hr className="velvet-rule long" />
-              <p className="musician-feature__tagline">{m.tagline}</p>
+              <p className="musician-feature__tagline" data-live-field="tagline">{m.tagline}</p>
             </>
           )}
 
           {bioParagraphs.length > 0 && (
-            <div className="musician-feature__bio">
+            <div className="musician-feature__bio" data-live-field="bio">
               {bioParagraphs.map((p, i) => (
                 <p key={i}>{p}</p>
               ))}
@@ -120,19 +120,19 @@ export function MusicianDetail({ musician: m, previewMode = false, labels }: Pro
           {(m.inspiringSymphony || m.favoriteWork || m.favoriteComposer) && (
             <dl className="musician-feature__qa">
               {m.inspiringSymphony && (
-                <div className="musician-feature__qa-item">
+                <div className="musician-feature__qa-item" data-live-field="inspiringSymphony">
                   <dt>{t.inspiring}</dt>
                   <dd>{m.inspiringSymphony}</dd>
                 </div>
               )}
               {m.favoriteWork && (
-                <div className="musician-feature__qa-item">
+                <div className="musician-feature__qa-item" data-live-field="favoriteWork">
                   <dt>{t.favoriteWork}</dt>
                   <dd>{m.favoriteWork}</dd>
                 </div>
               )}
               {m.favoriteComposer && (
-                <div className="musician-feature__qa-item">
+                <div className="musician-feature__qa-item" data-live-field="favoriteComposer">
                   <dt>{t.favoriteComposer}</dt>
                   <dd>{m.favoriteComposer}</dd>
                 </div>
@@ -143,7 +143,7 @@ export function MusicianDetail({ musician: m, previewMode = false, labels }: Pro
           {(m.formation?.length || m.concours?.length) ? (
             <div className="musician-feature__credits">
               {m.formation && m.formation.length > 0 && (
-                <section className="musician-feature__credits-block">
+                <section className="musician-feature__credits-block" data-live-field="formation">
                   <h2 className="musician-feature__credits-title">{t.formation}</h2>
                   <ul className="musician-feature__credits-list">
                     {m.formation.map((f, i) => (
@@ -153,7 +153,7 @@ export function MusicianDetail({ musician: m, previewMode = false, labels }: Pro
                 </section>
               )}
               {m.concours && m.concours.length > 0 && (
-                <section className="musician-feature__credits-block">
+                <section className="musician-feature__credits-block" data-live-field="concours">
                   <h2 className="musician-feature__credits-title">{t.concours}</h2>
                   <ul className="musician-feature__credits-list">
                     {m.concours.map((c, i) => (
@@ -166,7 +166,7 @@ export function MusicianDetail({ musician: m, previewMode = false, labels }: Pro
           ) : null}
 
           {embedUrl && (
-            <div className="musician-feature__video">
+            <div className="musician-feature__video" data-live-field="videoUrl">
               <h2 className="musician-feature__credits-title">{t.video}</h2>
               <div className="musician-feature__video-frame">
                 <iframe
@@ -181,7 +181,7 @@ export function MusicianDetail({ musician: m, previewMode = false, labels }: Pro
           )}
 
           {m.quote && (
-            <figure className="quote-slab">
+            <figure className="quote-slab" data-live-field="quote">
               <blockquote>{m.quote}</blockquote>
               <figcaption>
                 <span className="velvet-mark" aria-hidden /> {m.name}
