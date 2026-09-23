@@ -13,6 +13,7 @@ type Row = {
   url?: string | null;
   newTab?: boolean | null;
   hidden?: boolean | null;
+  children?: Row[] | null;
 };
 
 /** Page de l'admin liée à une ligne ; null si elle est introuvable. */
@@ -141,6 +142,14 @@ function summarize(
         dest: page?.slug ? `/${page.slug}` : undefined,
         warning: page && !page.published ? 'Non publiée' : undefined,
       };
+    }
+    case 'group': {
+      const links = Array.isArray(data.children) ? data.children : [];
+      const shown = links.filter((l) => l?.hidden !== true).length;
+      const kind = `Sous-menu · ${shown} lien${shown > 1 ? 's' : ''}${shown < links.length ? ` (+${links.length - shown} masqué${links.length - shown > 1 ? 's' : ''})` : ''}`;
+      if (!label) return { name: 'Sous-menu sans titre', kind, warning: 'À compléter' };
+      if (shown === 0) return { name: label, kind, warning: 'Aucun lien' };
+      return { name: label, kind };
     }
     case 'custom': {
       const url = (data.url ?? '').trim();

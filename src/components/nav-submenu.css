@@ -1,0 +1,201 @@
+/* ==========================================================================
+   Sous-menus du menu principal (Header.tsx, Réglages → Menu du site).
+   Un titre (bouton) et ses liens. Ordinateur : panneau sous le titre, ouvert
+   au survol, au clic ou au clavier. Mobile : les liens se déplient sous le
+   titre dans le panneau latéral.
+   Couleurs et polices : jetons du thème (réglables dans « Apparence du site »).
+   ========================================================================== */
+
+/* Liens simples : l'enveloppe ne change rien à la mise en page existante. */
+.nav-main .nav-item {
+  display: contents;
+}
+
+.nav-group {
+  position: relative;
+}
+
+.nav-group__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bordeaux-deep);
+  position: relative;
+  transition: color var(--d-quick) var(--ease-curtain);
+}
+
+/* Même soulignement que les liens du menu */
+.nav-group__toggle::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--velvet);
+  transition: width var(--d-quick) var(--ease-curtain);
+}
+
+.nav-group.active > .nav-group__toggle,
+.nav-group.is-open > .nav-group__toggle,
+.nav-group__toggle:hover {
+  color: var(--bordeaux-bright);
+}
+
+.nav-group.active > .nav-group__toggle::after {
+  width: calc(100% - 1rem);
+}
+
+.nav-group__toggle:focus-visible {
+  outline: 1px solid var(--bordeaux-bright);
+  outline-offset: 4px;
+}
+
+/* Chevron fin, tracé à la main (1.25px, DESIGN.md) */
+.nav-group__chevron {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-right: 1.25px solid currentColor;
+  border-bottom: 1.25px solid currentColor;
+  transform: translateY(-0.12rem) rotate(45deg);
+  transition: transform var(--d-quick) var(--ease-curtain);
+}
+
+.nav-group.is-open .nav-group__chevron {
+  transform: translateY(0.08rem) rotate(-135deg);
+}
+
+.nav-submenu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Ordinateur : panneau sous le titre ─────────────────────────────── */
+@media (min-width: 969px) {
+  .nav-submenu {
+    position: absolute;
+    top: calc(100% + 1.1rem);
+    left: -1.25rem;
+    min-width: 13.5rem;
+    padding: 0.6rem 0;
+    background: var(--paper);
+    border: 1px solid var(--paper-rule);
+    border-top: 1px solid color-mix(in oklab, var(--velvet) 70%, transparent);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition:
+      opacity var(--d-quick) var(--ease-curtain),
+      transform var(--d-quick) var(--ease-curtain),
+      visibility 0s linear var(--d-quick);
+    z-index: 10;
+  }
+
+  /* Passerelle invisible : la souris passe du titre au panneau sans le fermer. */
+  .nav-submenu::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -1.2rem;
+    height: 1.2rem;
+  }
+
+  .nav-group.is-open > .nav-submenu,
+  .nav-group:focus-within > .nav-submenu {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+  }
+
+  .nav-submenu li a {
+    display: block;
+    padding: 0.7rem 1.25rem;
+    white-space: nowrap;
+  }
+
+  .nav-submenu li a::after {
+    left: 1.25rem;
+    bottom: 0.45rem;
+  }
+
+  .nav-submenu li a:hover::after,
+  .nav-submenu li a.active::after {
+    width: calc(100% - 2.5rem);
+  }
+}
+
+/* Survol : seulement avec une vraie souris */
+@media (min-width: 969px) and (hover: hover) {
+  .nav-group:hover > .nav-submenu {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+  }
+
+  .nav-group:hover > .nav-group__toggle {
+    color: var(--bordeaux-bright);
+  }
+
+  .nav-group:hover .nav-group__chevron {
+    transform: translateY(0.08rem) rotate(-135deg);
+  }
+}
+
+/* ── Mobile : liens dépliés sous le titre, dans le panneau latéral ──── */
+@media (max-width: 968px) {
+  .nav-group {
+    width: 100%;
+    border-bottom: 1px solid var(--paper-rule);
+  }
+
+  .nav-group__toggle {
+    width: 100%;
+    justify-content: space-between;
+    padding: 0.85rem 0;
+    font-size: 0.85rem;
+  }
+
+  .nav-group__toggle::after {
+    display: none;
+  }
+
+  .nav-submenu {
+    display: none;
+  }
+
+  .nav-group.is-open > .nav-submenu {
+    display: block;
+    padding-bottom: 0.5rem;
+  }
+
+  /* Liens du sous-menu : en retrait, sans filet entre eux */
+  .nav-main .nav-submenu a {
+    display: block;
+    padding: 0.6rem 0 0.6rem 1rem;
+    border-bottom: 0;
+    font-size: 0.78rem;
+    color: var(--rose-mute);
+  }
+
+  .nav-main .nav-submenu a.active,
+  .nav-main .nav-submenu a:hover {
+    color: var(--bordeaux-bright);
+  }
+
+  .nav-main .nav-submenu a::after {
+    display: none;
+  }
+}

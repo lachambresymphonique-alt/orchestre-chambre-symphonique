@@ -1,11 +1,33 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import './nav-submenu.css';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LogoSvg } from './LogoSvg';
 import { DEFAULT_NAV_ITEMS, resolveNavItems, type NavLink, type NavigationDoc } from '@/lib/navigation';
 import { useLiveGlobal } from '@/hooks/useLiveDocument';
+
+function renderLink(item: NavLink, active: boolean) {
+  const className = active ? 'active' : '';
+  if (item.external || item.newTab) {
+    return (
+      <a
+        href={item.href}
+        className={className}
+        target={item.newTab ? '_blank' : undefined}
+        rel={item.newTab ? 'noopener noreferrer' : undefined}
+      >
+        {item.label}
+      </a>
+    );
+  }
+  return (
+    <Link href={item.href} className={className} aria-current={active ? 'page' : undefined}>
+      {item.label}
+    </Link>
+  );
+}
 
 export function Header({ items }: { items?: NavLink[] }) {
   // Menu composé dans l'admin (Réglages → Menu du site), sinon menu historique.
@@ -22,9 +44,34 @@ export function Header({ items }: { items?: NavLink[] }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  // Sous-menu ouvert (au clic, au clavier, et toujours sur mobile) ; le survol
+  // l'ouvre aussi sur ordinateur (voir nav-submenu.css).
+  const [openGroup, setOpenGroup] = useState<number | null>(null);
+  const navRef = useRef<HTMLElement>(null);
   // Actif sur la page et sur ses sous-pages (/blog/mon-article, /musiciens/…).
-  const isActive = (href: string) =>
-    pathname === href || (href !== '/' && pathname.startsWith(`${href}/`));
+  // Une adresse avec paramètres (/blog?rubrique=projet) compte pour sa page.
+  const isActive = (href: string) => {
+    const path = href.split('?')[0];
+    return !!path && (pathname === path || (path !== '/' && pathname.startsWith(`${path}/`)));
+  };
+  const isGroupActive = (item: NavLink) => !!item.children?.some((child) => isActive(child.href));
+
+  // Échap ou clic en dehors : le sous-menu se referme.
+  useEffect(() => {
+    if (openGroup === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpenGroup(null);
+    };
+    const onPointer = (e: PointerEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) setOpenGroup(null);
+    };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('pointerdown', onPointer);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('pointerdown', onPointer);
+    };
+  }, [openGroup]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -35,6 +82,7 @@ export function Header({ items }: { items?: NavLink[] }) {
 
   useEffect(() => {
     setMenuOpen(false);
+    setOpenGroup(null);
     document.body.style.overflow = '';
   }, [pathname]);
 
@@ -52,28 +100,36 @@ export function Header({ items }: { items?: NavLink[] }) {
           <LogoSvg />
         </Link>
 
-        <nav className={`nav-main${menuOpen ? ' open' : ''}`}>
+        <nav ref={navRef} className={`nav-main${menuOpen ? ' open' : ''}`}>
           {navItems.map((item, i) => {
-            const key = `${item.href}-${i}`;
-            const className = isActive(item.href) ? 'active' : '';
-            if (item.external || item.newTab) {
+            const key = `${item.href || item.label}-${i}`;
+            if (item.children?.length) {
+              const open = openGroup === i;
+              const menuId = `nav-submenu-${i}`;
               return (
-                <a
+                <div
                   key={key}
-                  href={item.href}
-                  className={className}
-                  target={item.newTab ? '_blank' : undefined}
-                  rel={item.newTab ? 'noopener noreferrer' : undefined}
+                  className={`nav-group${open ? ' is-open' : ''}${isGroupActive(item) ? ' active' : ''}`}
                 >
-                  {item.label}
-                </a>
+                  <button
+                    type="button"
+                    className="nav-group__toggle"
+                    aria-expanded={open}
+                    aria-controls={menuId}
+                    onClick={() => setOpenGroup(open ? null : i)}
+                  >
+                    {item.label}
+                    <span className="nav-group__chevron" aria-hidden="true" />
+                  </button>
+                  <ul id={menuId} className="nav-submenu">
+                    {item.children.map((child, j) => (
+                      <li key={`${child.href}-${j}`}>{renderLink(child, isActive(child.href))}</li>
+                    ))}
+                  </ul>
+                </div>
               );
             }
-            return (
-              <Link key={key} href={item.href} className={className}>
-                {item.label}
-              </Link>
-            );
+            return <span key={key} className="nav-item">{renderLink(item, isActive(item.href))}</span>;
           })}
         </nav>
 

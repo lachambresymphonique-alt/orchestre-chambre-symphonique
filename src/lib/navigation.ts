@@ -18,6 +18,11 @@ export type NavLink = {
   /** Adresse hors du site (https://…, mailto:…) : rendue avec <a>, pas <Link>. */
   external?: boolean;
   newTab?: boolean;
+  /**
+   * Sous-menu : l'entrée est un titre (sans lien, `href` vide) qui ouvre ces
+   * liens. Un seul niveau.
+   */
+  children?: NavLink[];
 };
 
 /** Pages fixes du site, proposées dans l'admin. `value` est la clé enregistrée en base. */
@@ -28,14 +33,19 @@ export const BUILTIN_PAGES = [
   { value: 'musicians', href: '/musiciens', label: 'Musiciens' },
   { value: 'medias', href: '/medias', label: 'Médias' },
   { value: 'journal', href: '/blog', label: 'Blog' },
+  { value: 'projects', href: '/blog?rubrique=projet', label: 'Projets passés' },
   { value: 'support', href: '/nous-soutenir', label: 'Nous soutenir' },
   { value: 'contact', href: '/contact', label: 'Contact' },
 ] as const;
 
+/** Pages proposées dans l'admin mais absentes du menu par défaut (sous-rubriques). */
+const NOT_IN_DEFAULT_MENU: ReadonlySet<string> = new Set(['projects']);
+const DEFAULT_PAGES = BUILTIN_PAGES.filter((p) => !NOT_IN_DEFAULT_MENU.has(p.value));
+
 export type BuiltinPageKey = (typeof BUILTIN_PAGES)[number]['value'];
 
 /** Menu historique, avant toute configuration dans l'admin. */
-export const DEFAULT_NAV_ITEMS: NavLink[] = BUILTIN_PAGES.map(({ href, label }) => ({ href, label }));
+export const DEFAULT_NAV_ITEMS: NavLink[] = DEFAULT_PAGES.map(({ href, label }) => ({ href, label }));
 
 /** Une page de l'admin telle que peuplée dans une relation (depth ≥ 1). */
 export type NavPageDoc = {
@@ -54,6 +64,8 @@ export type NavigationItemDoc = {
   newTab?: boolean | null;
   /** Masquée : conservée dans l'admin mais absente du menu du site. */
   hidden?: boolean | null;
+  /** Type « group » : les liens du sous-menu (mêmes champs, sans sous-niveau). */
+  children?: NavigationItemDoc[] | null;
 };
 
 export type NavigationDoc = { items?: NavigationItemDoc[] | null } | null | undefined;
@@ -73,40 +85,56 @@ export function resolveNavItems(nav: NavigationDoc): NavLink[] {
 
   for (const item of items) {
     if (item?.hidden === true) continue;
-    const label = (item?.label ?? '').trim();
 
-    switch (item?.type) {
-      case 'builtin': {
-        const page = BUILTIN_PAGES.find((p) => p.value === item.builtin);
-        if (!page) break;
-        links.push({ href: page.href, label: label || page.label });
-        break;
-      }
-      case 'page': {
-        const page = item.page;
-        // Non peuplée (depth 0) ou supprimée : on ne peut rien afficher.
-        if (!page || typeof page !== 'object') break;
-        if (page._status && page._status !== 'published') break;
-        const slug = (page.slug ?? '').trim();
-        if (!slug) break;
-        links.push({ href: `/${slug}`, label: label || (page.title ?? '').trim() || slug });
-        break;
-      }
-      case 'custom': {
-        const url = (item.url ?? '').trim();
-        if (!url || !label) break;
-        const link: NavLink = { href: url, label };
-        if (!isInternalHref(url)) link.external = true;
-        if (item.newTab) link.newTab = true;
-        links.push(link);
-        break;
-      }
-      default:
-        break;
+    if (item?.type === 'group') {
+      // Sous-menu : un titre et ses liens ; vide (tout masqué, incomplet), il disparaît.
+      const title = (item.label ?? '').trim();
+      const children = (Array.isArray(item.children) ? item.children : [])
+        .filter((child) => child?.hidden !== true)
+        .map(resolveLink)
+        .filter((link): link is NavLink => link !== null);
+      if (!title || children.length === 0) continue;
+      links.push({ href: '', label: title, children });
+      continue;
     }
+
+    const link = resolveLink(item);
+    if (link) links.push(link);
   }
 
   return links;
+}
+
+/** Une entrée simple (page du site, page de l'admin, lien libre) → lien, ou null si incomplète. */
+function resolveLink(item: NavigationItemDoc | null | undefined): NavLink | null {
+  const label = (item?.label ?? '').trim();
+
+  switch (item?.type) {
+    case 'builtin': {
+      const page = BUILTIN_PAGES.find((p) => p.value === item.builtin);
+      if (!page) return null;
+      return { href: page.href, label: label || page.label };
+    }
+    case 'page': {
+      const page = item.page;
+      // Non peuplée (depth 0) ou supprimée : on ne peut rien afficher.
+      if (!page || typeof page !== 'object') return null;
+      if (page._status && page._status !== 'published') return null;
+      const slug = (page.slug ?? '').trim();
+      if (!slug) return null;
+      return { href: `/${slug}`, label: label || (page.title ?? '').trim() || slug };
+    }
+    case 'custom': {
+      const url = (item.url ?? '').trim();
+      if (!url || !label) return null;
+      const link: NavLink = { href: url, label };
+      if (!isInternalHref(url)) link.external = true;
+      if (item.newTab) link.newTab = true;
+      return link;
+    }
+    default:
+      return null;
+  }
 }
 
 /**
@@ -131,7 +159,7 @@ export type LegacyNavPage = {
  * « Afficher dans la navigation », insérées selon leur « Ordre dans le menu ».
  */
 export function legacyNavItems(pages: LegacyNavPage[]): NavLink[] {
-  const builtin = BUILTIN_PAGES.map((p, i) => ({ href: p.href, label: p.label, order: i + 1 }));
+  const builtin = DEFAULT_PAGES.map((p, i) => ({ href: p.href, label: p.label, order: i + 1 }));
   const extra = pages
     .filter((p) => typeof p.slug === 'string' && p.slug.trim().length > 0)
     .map((p) => ({
