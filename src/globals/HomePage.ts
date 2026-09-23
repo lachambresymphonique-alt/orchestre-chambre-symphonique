@@ -200,9 +200,27 @@ export const HomePage: GlobalConfig = {
       label: 'Section Concerts',
       admin: {
         description:
-          'Titres et libellés de la liste des prochains concerts. Les concerts eux-mêmes se gèrent dans Contenu → Concerts.',
+          'Affichage, titres et libellés des prochains concerts. Les concerts eux-mêmes se gèrent dans Contenu → Concerts.',
       },
       fields: [
+        {
+          name: 'layout',
+          type: 'radio',
+          label: 'Affichage des concerts',
+          defaultValue: 'posters',
+          options: [
+            { label: 'Affiches', value: 'posters' },
+            { label: 'Bande', value: 'strip' },
+            { label: 'Liste', value: 'list' },
+          ],
+          admin: {
+            description:
+              "Comment les prochains concerts apparaissent sur la page d'accueil. L'aperçu à droite se met à jour aussitôt ; enregistrez pour publier.",
+            components: {
+              Field: '@/components/admin/ConcertLayoutField#ConcertLayoutField',
+            },
+          },
+        },
         { name: 'eyebrow', type: 'text', label: 'Sur-titre', defaultValue: 'La saison' },
         {
           name: 'title',

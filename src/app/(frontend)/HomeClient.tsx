@@ -7,6 +7,7 @@ import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FadeIn } from '@/components/FadeIn';
 import { NewsletterForm } from '@/components/NewsletterForm';
 import { ExpandableText } from '@/components/ExpandableText';
+import { ConcertPosters } from '@/components/ConcertPosters';
 import { stockImages, placeholderForMusician, directorPlaceholder } from '@/lib/unsplash';
 import type { ConcertCard } from '@/lib/concerts';
 import { renderEmphasis } from '@/lib/emphasis';
@@ -84,6 +85,10 @@ export function HomeClient({
   const cancelledLabel: string = concertsCfg.cancelledLabel || 'Annulé';
   const bookingLabel: string = concertsCfg.bookingLabel || 'Réserver une place';
   const bookingLabelShort: string = concertsCfg.bookingLabelShort || 'Réserver';
+  // Affichage choisi dans l'admin (Section Concerts → Affichage) : mur
+  // d'affiches (défaut), bande défilante ou liste éditoriale.
+  const concertsLayout: 'posters' | 'strip' | 'list' =
+    concertsCfg.layout === 'list' || concertsCfg.layout === 'strip' ? concertsCfg.layout : 'posters';
 
   const bento = data?.bento || {};
   const partnersCfg = data?.partners || {};
@@ -215,7 +220,7 @@ export function HomeClient({
         </div>
       </section>
 
-      {/* CONCERTS — one simple list; the next concert leads with its photo */}
+      {/* CONCERTS — affichage choisi dans l'admin : affiches, bande ou liste */}
       <section className="home-concerts" id="concerts" data-live-link="/admin/collections/concerts">
         <header className="home-concerts__head">
           <p className="eyebrow">{concertsCfg.eyebrow || 'La saison'}</p>
@@ -227,6 +232,19 @@ export function HomeClient({
 
         {hasConcerts ? (
           <FadeIn>
+          {concertsLayout !== 'list' ? (
+            <ConcertPosters
+              concerts={concerts}
+              variant={concertsLayout}
+              labels={{
+                next: nextLabel,
+                today: todayLabel,
+                cancelled: cancelledLabel,
+                booking: bookingLabel,
+                bookingShort: bookingLabelShort,
+              }}
+            />
+          ) : (
           <ol className="concerts-list">
             {concerts.map((concert, index) => {
               const isLead = index === 0;
@@ -309,6 +327,7 @@ export function HomeClient({
               );
             })}
           </ol>
+          )}
           </FadeIn>
         ) : (
           <div className="home-concerts__empty">

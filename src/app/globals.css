@@ -4925,3 +4925,347 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   outline: 1px solid var(--velvet);
   outline-offset: 3px;
 }
+
+/* ============================================================
+   CONCERTS — « Affiches » : mur d'affiches et bande défilante
+   Affichage choisi dans l'admin (Page d'accueil → Section Concerts).
+   Composant : src/components/ConcertPosters.tsx
+   ============================================================ */
+
+/* — Mur d'affiches — */
+.concerts-posters {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  max-width: var(--max-width-wide);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(3rem, 5vw, 4.5rem) clamp(1.5rem, 3vw, 2.5rem);
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .concerts-posters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .concerts-posters {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3rem;
+  }
+}
+
+/* — Une affiche — */
+.concert-poster {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.concert-poster__media {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--paper-deep);
+  isolation: isolate;
+}
+
+/* Fond : l'image elle-même, floutée — l'affiche entière tient dans le cadre */
+.concert-poster__backdrop {
+  z-index: 0;
+  transform: scale(1.3);
+  filter: blur(26px) saturate(1.2) brightness(0.55);
+}
+
+.concert-poster__img {
+  z-index: 1;
+  transition: transform var(--d-medium) var(--ease-curtain);
+}
+
+/* Onglet date, posé en haut à droite du visuel comme un billet
+   (le bas des affiches porte souvent billetterie, QR code et partenaires) */
+.concert-poster__stub {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 0.3rem;
+  min-width: 4.75rem;
+  padding: 0.7rem 0.9rem 0.65rem;
+  background: var(--paper);
+  color: var(--bordeaux);
+}
+
+.concert-poster__stub-day {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-variation-settings: "opsz" 144, "SOFT" 100;
+  font-size: 2.6rem;
+  line-height: 0.85;
+  color: var(--velvet);
+}
+
+.concert-poster__stub-month {
+  font-family: var(--font-body);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+}
+
+/* Sans visuel : la date est l'affiche */
+.concert-poster__blank {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background:
+    radial-gradient(ellipse at 50% 40%, oklch(40% 0.09 55 / 0.45), transparent 60%),
+    var(--paper-deep);
+}
+
+.concert-poster__blank-day {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-variation-settings: "opsz" 144, "SOFT" 100;
+  font-size: clamp(6rem, 9vw, 9.5rem);
+  line-height: 0.85;
+  color: var(--velvet);
+}
+
+.concert-poster__blank-rule {
+  display: block;
+  width: 3rem;
+  height: 1px;
+  background: var(--velvet);
+  opacity: 0.6;
+}
+
+.concert-poster__blank-month {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--rose-shadow);
+}
+
+/* Étiquette « Prochain concert » / « Aujourd'hui » / « Annulé » */
+.concert-poster__tag {
+  position: absolute;
+  top: 0.9rem;
+  left: 0.9rem;
+  z-index: 3;
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 0.55rem 0.75rem;
+  background: var(--paper);
+  color: var(--velvet);
+  border: 1px solid oklch(62% 0.205 45 / 0.55);
+}
+
+.concert-poster__tag--cancelled {
+  color: var(--rose-mute);
+  border-color: var(--paper-rule);
+}
+
+/* Texte sous l'affiche */
+.concert-poster__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding-top: 1.25rem;
+}
+
+.concert-poster__when {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+}
+
+.concert-poster__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 1.8vw, 1.7rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+  color: var(--bordeaux);
+  margin: 0.1rem 0 0;
+  text-wrap: balance;
+  transition: color var(--d-quick) var(--ease-curtain);
+}
+
+.concert-poster__venue {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--bordeaux-bright);
+}
+
+.concert-poster__program {
+  font-family: var(--font-body-serif);
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--rose-shadow);
+  white-space: pre-line;
+  margin-top: 0.3rem;
+}
+
+/* Le bouton « Lire la suite » reste cliquable au-dessus du lien étendu */
+.concert-poster .expandable__toggle {
+  position: relative;
+  z-index: 2;
+}
+
+.concert-poster__action {
+  margin-top: 0.9rem;
+}
+
+.concert-poster__cta.btn-filled {
+  padding: 0.95rem 1.9rem;
+}
+
+/* Un transform sur le lien en ferait le bloc conteneur du ::after ci-dessous */
+.concert-poster__cta.btn-filled:hover:not(:disabled) {
+  transform: none;
+}
+
+/* Toute l'affiche est cliquable quand une billetterie existe */
+.concert-poster.is-linked .concert-poster__cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.concert-poster.is-linked:hover .concert-poster__img {
+  transform: scale(1.035);
+}
+
+.concert-poster.is-linked:hover .concert-poster__title {
+  color: var(--bordeaux-bright);
+}
+
+.concert-poster.is-linked:hover .link-arrow {
+  border-bottom-color: var(--bordeaux-bright);
+  gap: 0.85rem;
+}
+
+.concert-poster.is-linked:hover .btn-filled {
+  background: var(--bordeaux-bright);
+}
+
+.concert-poster:has(.concert-poster__cta:focus-visible) {
+  outline: 1px solid var(--velvet);
+  outline-offset: 8px;
+}
+
+.concert-poster__cta:focus-visible {
+  outline: none;
+}
+
+/* Annulé */
+.concert-poster.is-cancelled .concert-poster__media {
+  filter: saturate(0.25);
+  opacity: 0.8;
+}
+
+.concert-poster.is-cancelled .concert-poster__title {
+  text-decoration: line-through;
+  text-decoration-color: var(--velvet);
+  text-decoration-thickness: 1px;
+  opacity: 0.72;
+}
+
+/* — Bande défilante — */
+.concerts-strip {
+  max-width: var(--max-width-wide);
+  margin: 0 auto;
+}
+
+.concerts-strip__nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding: 0 var(--gutter);
+  margin-bottom: 1.5rem;
+}
+
+.concerts-strip__nav.is-hidden {
+  visibility: hidden;
+}
+
+.concerts-strip__btn {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--paper-rule);
+  background: transparent;
+  color: var(--bordeaux);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: border-color var(--d-quick) var(--ease-curtain), color var(--d-quick) var(--ease-curtain);
+}
+
+.concerts-strip__btn:hover {
+  border-color: var(--velvet);
+  color: var(--velvet);
+}
+
+.concerts-strip__btn:focus-visible {
+  outline: 1px solid var(--velvet);
+  outline-offset: 3px;
+}
+
+@media (hover: none) {
+  .concerts-strip__nav {
+    display: none;
+  }
+}
+
+.concerts-strip__track {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--gutter) 1rem;
+  display: flex;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter);
+  scrollbar-width: none;
+}
+
+.concerts-strip__track::-webkit-scrollbar {
+  display: none;
+}
+
+.concerts-strip__track > .concert-poster {
+  flex: 0 0 clamp(17rem, 24vw, 22rem);
+  scroll-snap-align: start;
+}
+
+@media (max-width: 640px) {
+  .concerts-strip__track > .concert-poster {
+    flex-basis: min(78vw, 20rem);
+  }
+}
