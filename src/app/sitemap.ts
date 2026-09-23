@@ -10,6 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Routes statiques connues du site.
   const staticRoutes: MetadataRoute.Sitemap = [
     { path: '', priority: 1, changeFrequency: 'weekly' as const },
+    { path: 'concerts', priority: 0.9, changeFrequency: 'weekly' as const },
     { path: 'a-propos', priority: 0.8, changeFrequency: 'monthly' as const },
     { path: 'directeur-artistique', priority: 0.7, changeFrequency: 'monthly' as const },
     { path: 'musiciens', priority: 0.7, changeFrequency: 'monthly' as const },
@@ -82,7 +83,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.5,
       }));
 
-    dynamicRoutes = [...pageRoutes, ...musicianRoutes, ...postRoutes];
+    // Pages des concerts : publiés ou annulés (brouillons exclus), archives comprises.
+    const concerts = await payload
+      .find({
+        collection: 'concerts' as any,
+        where: { and: [{ status: { not_equals: 'draft' } }, { slug: { exists: true } }] } as any,
+        limit: 500,
+        depth: 0,
+      })
+      .catch(() => ({ docs: [] as any[] }));
+    const concertRoutes = (concerts.docs as any[])
+      .filter((c) => c.slug)
+      .map((c) => ({
+        url: `${BASE_URL}/concerts/${c.slug}`,
+        lastModified: c.updatedAt ? new Date(c.updatedAt) : new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+      }));
+
+    dynamicRoutes = [...pageRoutes, ...musicianRoutes, ...postRoutes, ...concertRoutes];
   } catch {
     // Base de données indisponible (ex. au build) : on renvoie au moins les routes statiques.
   }

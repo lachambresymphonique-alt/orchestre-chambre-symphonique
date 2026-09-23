@@ -44,7 +44,7 @@ export const Pages: CollectionConfig = {
         if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
           return 'Utilisez uniquement des lettres minuscules, chiffres et tirets (ex : ma-nouvelle-page).';
         }
-        const reserved = ['admin', 'api', 'a-propos', 'directeur-artistique', 'musiciens', 'medias', 'journal', 'blog', 'nous-soutenir', 'contact'];
+        const reserved = ['admin', 'api', 'a-propos', 'directeur-artistique', 'musiciens', 'medias', 'journal', 'blog', 'nous-soutenir', 'contact', 'concerts', 'solistes'];
         if (reserved.includes(value)) {
           return `« ${value} » est déjà utilisé par une page du site. Choisissez un autre slug.`;
         }

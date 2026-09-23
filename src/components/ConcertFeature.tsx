@@ -73,7 +73,13 @@ export function ConcertFeature({ concert, labels }: { concert: ConcertCard; labe
           </span>
         </p>
         <h3 className="concert-feature__title" data-live-item-field="title">
-          {concert.title}
+          {concert.url ? (
+            <Link href={concert.url} className="concert-title-link">
+              {concert.title}
+            </Link>
+          ) : (
+            concert.title
+          )}
         </h3>
 
         {concert.soloists.length > 0 && (

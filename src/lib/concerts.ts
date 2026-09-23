@@ -19,6 +19,8 @@
  * performances still to come are listed.
  */
 
+import { foldAscii } from './slug';
+
 export const CONCERT_TIMEZONE = 'Europe/Paris';
 
 export type ConcertStatus = 'published' | 'draft' | 'cancelled';
@@ -43,6 +45,12 @@ export function formatPlace(venue: string | null | undefined, city: string | nul
 export type ConcertDoc = {
   id: string | number;
   title?: string | null;
+  /** Adresse de la page du concert : /concerts/<slug>. */
+  slug?: string | null;
+  /** « Présentation » : texte de la page du concert. */
+  description?: string | null;
+  /** Référencement : titre et description pour les moteurs de recherche. */
+  meta?: { title?: string | null; description?: string | null } | null;
   performances?: ConcertPerformanceDoc[] | null;
   /** Derived: first performance. */
   date?: string | Date | null;
@@ -143,6 +151,10 @@ export type ConcertPerformanceView = {
 export type ConcertCard = {
   id: string | number;
   title: string;
+  /** Page du concert (/concerts/<slug>), ou null tant que la fiche n'a pas d'adresse. */
+  url: string | null;
+  /** « Présentation » : paragraphes de la page du concert. */
+  description: string;
   /** Venue and city of the performance shown in `date`, on one line. */
   venue: string;
   program: string;
@@ -154,6 +166,8 @@ export type ConcertCard = {
   date: ConcertDateView;
   /** Performances still to come (today or later), soonest first. */
   performances: ConcertPerformanceView[];
+  /** Every performance, past ones included, soonest first. */
+  allPerformances: ConcertPerformanceView[];
   /** Every performance, past ones included. */
   performanceCount: number;
   /** Coché « À la une sur l'accueil » dans l'admin. */
@@ -429,7 +443,10 @@ export function toConcertCard(doc: ConcertDoc, now: Date = new Date()): ConcertC
   const img = doc.image && typeof doc.image === 'object' && doc.image.url ? doc.image : null;
   return {
     id: doc.id,
-    title: doc.title?.trim() || 'Concert',
+    // Espaces doublés des saisies nettoyés (titre de page, données structurées, partage).
+    title: doc.title?.replace(/\s+/g, ' ').trim() || 'Concert',
+    url: concertPath(doc),
+    description: doc.description?.trim() || '',
     venue: primary.place,
     program: doc.program?.trim() || '',
     bookingLink: primary.bookingLink,
@@ -444,10 +461,41 @@ export function toConcertCard(doc: ConcertDoc, now: Date = new Date()): ConcertC
     status: doc.status === 'draft' || doc.status === 'cancelled' ? doc.status : 'published',
     date: primary.date,
     performances: upcoming,
+    allPerformances: all,
     performanceCount: all.length,
     featured: doc.featured === true,
     soloists: soloistsOf(doc),
   };
+}
+
+// ─── Page du concert ─────────────────────────────────────────────────────────
+
+/** Adresse de la page d'un concert, ou null tant qu'il n'a pas de slug. */
+export function concertPath(doc: Pick<ConcertDoc, 'slug'> | null | undefined): string | null {
+  const slug = doc?.slug?.trim();
+  return slug ? `/concerts/${slug}` : null;
+}
+
+/** Mots vides retirés des adresses : « concerto-pour-violon » → « concerto-violon ». */
+const SLUG_STOPWORDS = new Set([
+  'a', 'au', 'aux', 'avec', 'd', 'de', 'des', 'du', 'en', 'et', 'l', 'la', 'le', 'les',
+  'par', 'pour', 'sur', 'un', 'une', '1e', '1er', '1re',
+]);
+
+/**
+ * Adresse proposée pour un concert : les six premiers mots utiles du titre et
+ * l'année de la première représentation (« concerto-violon-beethoven-2026 »).
+ * L'année départage les reprises d'un même programme d'une saison à l'autre.
+ */
+export function concertSlugBase(title: unknown, performances: unknown): string {
+  const words = foldAscii(typeof title === 'string' ? title : '')
+    .split(/[^a-z0-9]+/)
+    .filter((w) => w && !SLUG_STOPWORDS.has(w))
+    .slice(0, 6);
+  if (words.length === 0) return '';
+  const first = performancesOf({ performances: Array.isArray(performances) ? performances : [] })[0];
+  const year = parisDateKey(first?.date ?? null)?.slice(0, 4);
+  return [...words, ...(year ? [year] : [])].join('-');
 }
 
 // ─── Admin ───────────────────────────────────────────────────────────────────
@@ -515,4 +563,68 @@ export async function findUpcomingConcerts(
       return timeToMinutes(a.date.time) - timeToMinutes(b.date.time);
     })
     .slice(0, limit);
+}
+
+/**
+ * Un concert par l'adresse de sa page. Les brouillons ne sont rendus qu'aux
+ * personnes connectées à l'admin (`withDrafts`), pour l'aperçu en direct.
+ * depth 2 : l'affiche et le portrait des solistes.
+ */
+export async function findConcertBySlug(
+  payload: PayloadLike,
+  slug: string,
+  { withDrafts = false }: { withDrafts?: boolean } = {},
+): Promise<ConcertDoc | null> {
+  const res = await payload.find({
+    collection: 'concerts',
+    where: {
+      and: [{ slug: { equals: slug } }, ...(withDrafts ? [] : [{ status: { not_equals: 'draft' } }])],
+    },
+    limit: 1,
+    depth: 2,
+  });
+  return (res.docs[0] as ConcertDoc | undefined) ?? null;
+}
+
+/**
+ * Archive : concerts dont la dernière représentation est passée (Paris),
+ * brouillons exclus, le plus récent d'abord.
+ */
+export async function findPastConcerts(
+  payload: PayloadLike,
+  { limit = 200, now = new Date() }: { limit?: number; now?: Date } = {},
+): Promise<ConcertCard[]> {
+  const today = todayKey(now);
+  const res = await payload.find({
+    collection: 'concerts',
+    where: {
+      and: [
+        { lastDate: { less_than: startOfKeyIso(shiftKey(today, 1)) } },
+        { status: { not_equals: 'draft' } },
+      ],
+    },
+    sort: '-date',
+    limit,
+    depth: 1,
+  });
+  return (res.docs as ConcertDoc[])
+    .map((d) => toConcertCard(d, now))
+    .filter((c): c is ConcertCard => c !== null && c.performances.length === 0)
+    .sort((a, b) => (a.date.key < b.date.key ? 1 : a.date.key > b.date.key ? -1 : 0));
+}
+
+/**
+ * Concert dont l'une des anciennes adresses est `slug` (voir `slugHistory`
+ * dans la collection) : la page redirige les liens déjà partagés vers la nouvelle.
+ */
+export async function findConcertByPreviousSlug(payload: PayloadLike, slug: string): Promise<ConcertDoc | null> {
+  const res = await payload.find({
+    collection: 'concerts',
+    where: {
+      and: [{ 'slugHistory.slug': { equals: slug } }, { status: { not_equals: 'draft' } }],
+    },
+    limit: 1,
+    depth: 0,
+  });
+  return (res.docs[0] as ConcertDoc | undefined) ?? null;
 }

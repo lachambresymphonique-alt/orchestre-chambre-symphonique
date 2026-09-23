@@ -109,7 +109,7 @@ export function SoloistDetail({ soloist, concerts }: { soloist: SoloistDoc; conc
                   const where = [...new Set(c.performances.map((p) => p.venue).filter(Boolean))].join(' · ') || c.venue;
                   return (
                     <li key={c.id}>
-                      <Link href="/#concerts" className="soloist-detail__concert">
+                      <Link href={c.url || '/#concerts'} className="soloist-detail__concert">
                         <span className="soloist-detail__concert-when">{when}</span>
                         <span className="soloist-detail__concert-title">{c.title}</span>
                         {where && <span className="soloist-detail__concert-where">{where}</span>}
@@ -122,8 +122,8 @@ export function SoloistDetail({ soloist, concerts }: { soloist: SoloistDoc; conc
           )}
 
           <div className="musician-feature__back">
-            <Link href="/#concerts" className="link-arrow">
-              ← Les prochains concerts
+            <Link href="/concerts" className="link-arrow">
+              ← Tous les concerts
             </Link>
           </div>
         </div>

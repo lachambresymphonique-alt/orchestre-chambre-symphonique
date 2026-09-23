@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { ExpandableText } from '@/components/ExpandableText';
 import type { ConcertCard, ConcertPerformanceView } from '@/lib/concerts';
 
@@ -230,7 +231,15 @@ function ConcertPoster({
             </>
           )}
         </p>
-        <h3 className="concert-poster__title" data-live-item-field="title">{concert.title}</h3>
+        <h3 className="concert-poster__title" data-live-item-field="title">
+          {concert.url ? (
+            <Link href={concert.url} className="concert-title-link">
+              {concert.title}
+            </Link>
+          ) : (
+            concert.title
+          )}
+        </h3>
         {multiple ? (
           <ConcertDates
             performances={concert.performances}

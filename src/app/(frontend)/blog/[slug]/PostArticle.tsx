@@ -177,7 +177,15 @@ export function PostArticle({
                     {d?.time ? ` · ${d.time}` : ''}
                   </span>
                   <div>
-                    <h3 className="post-concert__title">{c.title}</h3>
+                    <h3 className="post-concert__title">
+                      {c.slug && c.status !== 'draft' ? (
+                        <Link href={`/concerts/${c.slug}`} className="concert-title-link">
+                          {c.title}
+                        </Link>
+                      ) : (
+                        c.title
+                      )}
+                    </h3>
                     {c.venue && <p className="post-concert__venue">{c.venue}</p>}
                   </div>
                 </li>

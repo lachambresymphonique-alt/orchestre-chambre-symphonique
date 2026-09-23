@@ -264,7 +264,15 @@ export function HomeClient({
                           </span>
                         </div>
                         <div className="concert-row__body">
-                          <h3 className="concert-row__title" data-live-item-field="title">{concert.title}</h3>
+                          <h3 className="concert-row__title" data-live-item-field="title">
+                            {concert.url ? (
+                              <Link href={concert.url} className="concert-title-link">
+                                {concert.title}
+                              </Link>
+                            ) : (
+                              concert.title
+                            )}
+                          </h3>
                           {multiple ? (
                             <ConcertDates
                               performances={concert.performances}

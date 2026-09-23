@@ -1,0 +1,511 @@
+/* ==========================================================================
+   Pages des concerts : /concerts (saison et archives) et /concerts/<slug>
+   Uniquement des jetons du thème (Réglages → Apparence du site) : polices
+   --font-h1/h2/h3, --font-body(-serif), couleurs --bordeaux*, --velvet,
+   --rose-*, --paper*. L'en-tête reprend .page-header, un bandeau encré qui
+   reste sombre en ambiance claire.
+   ========================================================================== */
+
+/* ---------- En-tête d'un concert ---------- */
+/* Préfixe .page-header p : la règle générale des paragraphes d'en-tête est plus spécifique. */
+.page-header p.concert-page__summary {
+  max-width: none;
+  margin: 0 0 1rem;
+  line-height: 1.4;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--on-bordeaux-glow);
+}
+
+.page-header h1.concert-page__title {
+  max-width: 22ch;
+  font-size: clamp(2.1rem, 4.6vw, 3.8rem);
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.concert-page.is-cancelled .concert-page__title {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--velvet);
+}
+
+.page-header p.concert-page__cities {
+  max-width: none;
+  margin: 1rem 0 0;
+  line-height: 1.5;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* ---------- Corps : affiche à gauche, contenu à droite ---------- */
+.concert-page__body {
+  background: var(--paper);
+  padding: clamp(3rem, 7vw, 6rem) var(--gutter);
+}
+
+.concert-page__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr);
+  gap: clamp(2rem, 6vw, 5.5rem);
+  align-items: start;
+  max-width: var(--max-width-wide);
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .concert-page__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* L'affiche ne repousse pas les dates et la billetterie de plusieurs écrans. */
+  .concert-page__poster {
+    width: min(100%, 26rem);
+    justify-self: center;
+  }
+}
+
+.concert-page__poster {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--paper-deep);
+}
+
+@media (min-width: 901px) {
+  .concert-page__poster {
+    position: sticky;
+    top: calc(var(--header-height) + 2rem);
+    max-height: calc(100svh - var(--header-height) - 4rem);
+  }
+}
+
+/* L'affiche entière, jamais recadrée, posée sur un fond flouté d'elle-même. */
+.concert-page__poster-backdrop {
+  filter: blur(28px) saturate(1.1) brightness(0.55);
+  transform: scale(1.15);
+}
+
+.concert-page__poster-blank {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 0.5rem;
+  text-align: center;
+  color: var(--bordeaux);
+}
+
+.concert-page__poster-blank span:first-child {
+  font-family: var(--font-h3);
+  font-size: clamp(4rem, 9vw, 7rem);
+  line-height: 1;
+}
+
+.concert-page__poster-blank span:last-child {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+}
+
+.concert-page__main {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 3.5rem);
+  min-width: 0;
+}
+
+/* La règle générale « section { padding: 4–5rem 0 } » ne s'applique pas ici :
+   l'écart entre les blocs est celui de la grille. */
+.concert-page__main > .concert-page__section {
+  padding: 0;
+}
+
+.concert-page__notice {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--velvet);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: var(--bordeaux);
+}
+
+.concert-page__h2 {
+  margin: 0 0 1.25rem;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+}
+
+/* ---------- Dates et billetterie ---------- */
+.concert-page__dates {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--paper-rule);
+}
+
+.concert-page__date {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2rem);
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--paper-rule);
+}
+
+/* Représentation passée : le jour perd sa couleur, le texte garde son contraste. */
+.concert-page__date.is-past .concert-page__date-day {
+  color: var(--rose-mute);
+}
+
+.concert-page__date.is-past .concert-page__date-place {
+  color: var(--bordeaux-deep);
+}
+
+.concert-page__date-when {
+  display: grid;
+  line-height: 1;
+}
+
+.concert-page__date-day {
+  font-family: var(--font-h3);
+  font-size: 2.6rem;
+  color: var(--velvet);
+}
+
+.concert-page__date-month {
+  margin-top: 0.35rem;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+}
+
+.concert-page__date-body p {
+  margin: 0;
+}
+
+.concert-page__date-line {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+}
+
+.concert-page__date-place {
+  margin-top: 0.35rem !important;
+  font-family: var(--font-h3);
+  font-size: clamp(1.15rem, 1.6vw, 1.35rem);
+  line-height: 1.3;
+  color: var(--bordeaux);
+}
+
+.concert-page__date-state {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+  white-space: nowrap;
+}
+
+.concert-page__book.btn-filled {
+  padding: 0.85rem 1.4rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  /* 5rem : « NOVEMBRE » en capitales espacées tient sans toucher la salle. */
+  .concert-page__date {
+    grid-template-columns: 5rem minmax(0, 1fr);
+    column-gap: 0.75rem;
+  }
+
+  .concert-page__date-action {
+    grid-column: 2;
+  }
+}
+
+/* ---------- Programme, solistes, présentation ---------- */
+.concert-page__program {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.concert-page__program li {
+  font-family: var(--font-h3);
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+  line-height: 1.3;
+  color: var(--bordeaux);
+}
+
+.concert-page__soloists {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.concert-page__soloist {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+}
+
+.concert-page__soloist-photo {
+  position: relative;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--paper-deep);
+  font-family: var(--font-h3);
+  font-size: 1.5rem;
+  color: var(--bordeaux);
+}
+
+.concert-page__soloist-text {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.concert-page__soloist-name {
+  font-family: var(--font-h3);
+  font-size: 1.3rem;
+  color: var(--bordeaux);
+  transition: color var(--d-quick) var(--ease-curtain);
+}
+
+.concert-page__soloist:hover .concert-page__soloist-name {
+  color: var(--bordeaux-bright);
+}
+
+.concert-page__soloist-role {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+}
+
+.concert-page__prose {
+  max-width: 62ch;
+}
+
+.concert-page__prose p {
+  margin: 0 0 1.1rem;
+  font-family: var(--font-body-serif);
+  font-size: 1.08rem;
+  line-height: 1.7;
+  color: var(--bordeaux-deep);
+}
+
+/* ---------- Les autres concerts ---------- */
+.concert-page__others {
+  background: var(--paper-soft);
+  padding: clamp(3rem, 6vw, 5rem) var(--gutter);
+}
+
+.concert-page__others-inner {
+  max-width: var(--max-width-wide);
+  margin: 0 auto;
+}
+
+.concert-page__others-list {
+  list-style: none;
+  margin: 0 0 2rem;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+  gap: 1.5rem;
+}
+
+.concert-page__other,
+.concerts-index__row {
+  display: grid;
+  gap: 0.4rem;
+  text-decoration: none;
+}
+
+.concert-page__other {
+  padding: 1.5rem;
+  border: 1px solid var(--paper-rule);
+  height: 100%;
+  transition: border-color var(--d-quick) var(--ease-curtain);
+}
+
+.concert-page__other:hover {
+  border-color: var(--velvet);
+}
+
+.concert-page__other-when,
+.concerts-index__when,
+.concerts-index__row-when {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+}
+
+.concert-page__other-title,
+.concerts-index__title,
+.concerts-index__row-title {
+  font-family: var(--font-h3);
+  font-size: 1.3rem;
+  line-height: 1.25;
+  color: var(--bordeaux);
+  text-wrap: balance;
+}
+
+.concert-page__other-where,
+.concerts-index__where,
+.concerts-index__row-where {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--bordeaux-bright);
+}
+
+/* ==========================================================================
+   /concerts — la saison et les archives
+   ========================================================================== */
+.concerts-index__season,
+.concerts-index__archive {
+  max-width: var(--max-width-wide);
+  margin: 0 auto;
+  padding: clamp(3rem, 7vw, 6rem) var(--gutter);
+}
+
+.concerts-index__archive {
+  padding-top: 0;
+}
+
+.concerts-index__empty {
+  font-family: var(--font-body-serif);
+  font-size: 1.1rem;
+  color: var(--bordeaux-deep);
+}
+
+.concerts-index__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.concerts-index__link {
+  display: grid;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.concerts-index__poster {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+  background: var(--paper-deep);
+}
+
+.concerts-index__poster img {
+  transition: transform var(--d-medium) var(--ease-curtain);
+}
+
+.concerts-index__link:hover .concerts-index__poster img {
+  transform: scale(1.03);
+}
+
+.concerts-index__poster-blank {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-h3);
+  font-size: 2.5rem;
+  color: var(--bordeaux);
+}
+
+.concerts-index__link:hover .concerts-index__title {
+  color: var(--bordeaux-bright);
+}
+
+.concerts-index__more {
+  margin-top: 0.5rem;
+  justify-self: start;
+}
+
+.concerts-index__card.is-cancelled .concerts-index__title {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.concerts-index__year + .concerts-index__year {
+  margin-top: 2.5rem;
+}
+
+.concerts-index__year-title {
+  margin: 0 0 1rem;
+  font-family: var(--font-h2);
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  color: var(--bordeaux);
+}
+
+.concerts-index__rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--paper-rule);
+}
+
+.concerts-index__row {
+  grid-template-columns: minmax(9rem, 1fr) minmax(0, 2fr) minmax(0, 1fr);
+  align-items: baseline;
+  gap: 1.5rem;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--paper-rule);
+}
+
+.concerts-index__row:hover .concerts-index__row-title {
+  color: var(--bordeaux-bright);
+}
+
+.is-cancelled > .concerts-index__row .concerts-index__row-title {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+@media (max-width: 800px) {
+  .concerts-index__row {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+}

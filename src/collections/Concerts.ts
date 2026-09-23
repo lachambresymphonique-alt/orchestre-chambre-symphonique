@@ -1,5 +1,7 @@
-import type { CollectionBeforeValidateHook, CollectionConfig, FieldHook } from 'payload';
+import type { CollectionBeforeChangeHook, CollectionBeforeValidateHook, CollectionConfig, FieldHook } from 'payload';
+import { SLUG_PATTERN, slugify } from '../lib/slug';
 import {
+  concertSlugBase,
   deriveConcertFields,
   isValidConcertTime,
   normalizeConcertDate,
@@ -67,6 +69,64 @@ const syncPerformances: CollectionBeforeValidateHook = ({ data, originalDoc }) =
   };
 };
 
+/**
+ * Adresse de la page du concert (/concerts/<slug>). Tapée : nettoyée. Vide :
+ * tirée du titre et de l'année de la première représentation. Toujours unique :
+ * un suffixe (-2, -3…) départage deux concerts de même titre. Une mise à jour
+ * qui n'envoie pas ce champ (API, script) garde l'adresse existante.
+ */
+const concertSlug: FieldHook = async ({ value, data, originalDoc, req }) => {
+  if (value === undefined && originalDoc?.slug) return originalDoc.slug;
+  const typed = typeof value === 'string' ? value.trim() : '';
+  const base =
+    (typed && slugify(typed)) ||
+    concertSlugBase(data?.title ?? originalDoc?.title, data?.performances ?? originalDoc?.performances);
+  if (!base) return value;
+
+  const selfId = originalDoc?.id;
+  for (let n = 1; n < 50; n++) {
+    const candidate = n === 1 ? base : `${base}-${n}`;
+    const taken = await req.payload.find({
+      collection: 'concerts' as any,
+      where: {
+        and: [{ slug: { equals: candidate } }, ...(selfId ? [{ id: { not_equals: selfId } }] : [])],
+      } as any,
+      limit: 1,
+      depth: 0,
+      pagination: false,
+      req,
+    });
+    if (taken.docs.length === 0) return candidate;
+  }
+  return `${base}-${Date.now().toString(36)}`;
+};
+
+/**
+ * Quand l'adresse d'un concert change, l'ancienne est gardée dans
+ * `slugHistory` : /concerts/<ancienne> redirige (308) vers la nouvelle, et les
+ * liens déjà partagés ou indexés continuent de fonctionner. L'adresse courante
+ * n'y figure jamais, ce qui exclut toute boucle. (Même principe que le blog.)
+ */
+const rememberPreviousSlug: CollectionBeforeChangeHook = ({ data, originalDoc }) => {
+  const next = typeof data?.slug === 'string' ? data.slug : undefined;
+  const previous = typeof originalDoc?.slug === 'string' ? originalDoc.slug : undefined;
+  if (!next) return data;
+  const source: unknown[] = Array.isArray(data?.slugHistory)
+    ? data.slugHistory
+    : Array.isArray(originalDoc?.slugHistory)
+      ? originalDoc.slugHistory
+      : [];
+  const slugs = new Set<string>();
+  for (const entry of source) {
+    const s = (entry as { slug?: unknown } | null)?.slug;
+    if (typeof s === 'string' && s) slugs.add(s);
+  }
+  if (previous && previous !== next) slugs.add(previous);
+  slugs.delete(next);
+  data.slugHistory = [...slugs].map((slug) => ({ slug }));
+  return data;
+};
+
 export const Concerts: CollectionConfig = {
   slug: 'concerts',
   labels: { singular: 'Concert', plural: 'Concerts' },
@@ -84,6 +144,7 @@ export const Concerts: CollectionConfig = {
   defaultSort: '-date',
   hooks: {
     beforeValidate: [syncPerformances],
+    beforeChange: [rememberPreviousSlug],
   },
   fields: [
     {
@@ -209,6 +270,16 @@ export const Concerts: CollectionConfig = {
       },
     },
     {
+      name: 'description',
+      type: 'textarea',
+      label: 'Présentation',
+      hooks: { beforeValidate: [trim] },
+      admin: {
+        description:
+          'Texte de la page du concert, sous le programme : les œuvres, les interprètes, l’histoire du projet. Quelques paragraphes (une ligne vide les sépare). C’est aussi ce que lit Google.',
+      },
+    },
+    {
       name: 'image',
       type: 'upload',
       relationTo: 'media',
@@ -247,6 +318,60 @@ export const Concerts: CollectionConfig = {
         description:
           'Affiché en grand en tête de la section Concerts de l\'accueil : affiche, dates avec billetterie et programme. Sans concert coché, le prochain concert est mis à la une ; si plusieurs sont cochés, le plus proche.',
       },
+    },
+
+    {
+      name: 'slug',
+      type: 'text',
+      unique: true,
+      index: true,
+      label: 'Adresse de la page',
+      hooks: { beforeValidate: [concertSlug] },
+      validate: (value: string | null | undefined) =>
+        !value || SLUG_PATTERN.test(value)
+          ? true
+          : 'Lettres minuscules, chiffres et tirets seulement (ex : schumann-mahler-titan-2026).',
+      admin: {
+        position: 'sidebar',
+        description:
+          'Fin de l’adresse de la page : /concerts/schumann-mahler-titan-2026. Remplie toute seule à partir du titre ; raccourcissez-la si besoin : l’ancienne adresse redirigera vers la nouvelle.',
+      },
+    },
+    {
+      name: 'slugHistory',
+      type: 'array',
+      label: 'Anciennes adresses',
+      labels: { singular: 'Ancienne adresse', plural: 'Anciennes adresses' },
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        description: 'Remplies automatiquement quand l’adresse change : chacune redirige vers la page du concert.',
+        condition: (data) => Array.isArray(data?.slugHistory) && data.slugHistory.length > 0,
+      },
+      fields: [{ name: 'slug', type: 'text', required: true, index: true, label: 'Adresse' }],
+    },
+    {
+      name: 'meta',
+      type: 'group',
+      label: 'Référencement (Google)',
+      admin: {
+        position: 'sidebar',
+        description: 'Facultatif : sans ces champs, le titre, les villes et les dates sont utilisés.',
+      },
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          label: 'Titre pour Google',
+          admin: { description: 'Environ 60 caractères. Ex : « Schumann & Mahler, Symphonie Titan — Grenoble, Lyon, Beaune ».' },
+        },
+        {
+          name: 'description',
+          type: 'textarea',
+          label: 'Description pour Google',
+          admin: { description: 'Environ 150 caractères : ce qui s’affiche sous le titre dans les résultats de recherche.' },
+        },
+      ],
     },
 
     // ── Champs dérivés des représentations (voir syncPerformances) ──────

@@ -22,6 +22,10 @@ export type MusicianRef = { id?: string | number; slug?: string | null; name?: s
 export type ConcertRef = {
   id: string | number;
   title?: string | null;
+  /** Adresse de la page du concert (/concerts/<slug>). */
+  slug?: string | null;
+  /** Un brouillon n'a pas de page publique : pas de lien. */
+  status?: 'published' | 'draft' | 'cancelled' | null;
   date?: string | null;
   time?: string | null;
   venue?: string | null;

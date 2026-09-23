@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getPayloadClient } from '@/lib/payload';
 import { findUpcomingConcerts } from '@/lib/concerts';
+import { concertEvents, jsonLdString } from '@/lib/concertSeo';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { HomeClient } from './HomeClient';
 
@@ -63,7 +64,7 @@ export default async function Home() {
   const sameAs = [social.facebook, social.instagram, social.youtube, social.linkedin, social.tiktok]
     .filter((url: unknown): url is string => typeof url === 'string' && /^https?:\/\//.test(url));
 
-  const jsonLd = {
+  const orchestra = {
     '@context': 'https://schema.org',
     '@type': 'MusicGroup',
     name: 'La Chambre Symphonique',
@@ -77,6 +78,8 @@ export default async function Home() {
     areaServed: ['Bourgogne', 'Rhône-Alpes'],
     ...(sameAs.length > 0 ? { sameAs } : {}),
   };
+  // Les concerts à venir, une représentation = un MusicEvent (détail sur la page de chaque concert).
+  const jsonLd = [orchestra, ...concerts.flatMap((c) => concertEvents(c))];
 
   return (
     <>
@@ -84,7 +87,7 @@ export default async function Home() {
       <RefreshOnSave />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
       <HomeClient
         initialData={homePage as any}

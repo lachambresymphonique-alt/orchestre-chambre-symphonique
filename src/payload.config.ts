@@ -126,7 +126,7 @@ export default buildConfig({
           return `${base}${map[globalConfig.slug] || '/'}`;
         }
         const collectionMap: Record<string, string> = {
-          concerts: '/',
+          concerts: data?.slug ? `/concerts/${data.slug}` : '/',
           musicians: '/musiciens',
           'media-items': '/medias',
           partners: '/',
