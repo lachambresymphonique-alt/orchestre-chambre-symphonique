@@ -52,6 +52,8 @@ export type ConcertDoc = {
     | string
     | null;
   status?: ConcertStatus | null;
+  /** « À la une sur l'accueil » (case de l'admin). */
+  featured?: boolean | null;
 };
 
 export type ConcertDateView = {
@@ -101,6 +103,8 @@ export type ConcertCard = {
   performances: ConcertPerformanceView[];
   /** Every performance, past ones included. */
   performanceCount: number;
+  /** Coché « À la une sur l'accueil » dans l'admin. */
+  featured: boolean;
 };
 
 // ─── Calendar helpers ────────────────────────────────────────────────────────
@@ -381,6 +385,7 @@ export function toConcertCard(doc: ConcertDoc, now: Date = new Date()): ConcertC
     date: primary.date,
     performances: upcoming,
     performanceCount: all.length,
+    featured: doc.featured === true,
   };
 }
 

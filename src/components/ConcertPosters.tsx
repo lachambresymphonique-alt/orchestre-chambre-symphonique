@@ -24,6 +24,8 @@ type Props = {
   concerts: ConcertCard[];
   variant: ConcertPostersVariant;
   labels: ConcertPostersLabels;
+  /** Aucune affiche mise en avant (le concert à la une est affiché au-dessus). */
+  noLead?: boolean;
 };
 
 /**
@@ -39,9 +41,9 @@ type Props = {
  *  - `posters` : mur d'affiches, 1 à 3 colonnes selon l'écran ;
  *  - `strip`   : bande horizontale qui défile, une affiche à la fois.
  */
-export function ConcertPosters({ concerts, variant, labels }: Props) {
+export function ConcertPosters({ concerts, variant, labels, noLead = false }: Props) {
   if (variant === 'strip') {
-    return <ConcertStrip concerts={concerts} labels={labels} />;
+    return <ConcertStrip concerts={concerts} labels={labels} noLead={noLead} />;
   }
   return (
     <ol className="concerts-posters">
@@ -49,7 +51,7 @@ export function ConcertPosters({ concerts, variant, labels }: Props) {
         <ConcertPoster
           key={concert.id || index}
           concert={concert}
-          isLead={index === 0}
+          isLead={!noLead && index === 0}
           labels={labels}
         />
       ))}
@@ -57,7 +59,7 @@ export function ConcertPosters({ concerts, variant, labels }: Props) {
   );
 }
 
-function ConcertStrip({ concerts, labels }: Omit<Props, 'variant'>) {
+function ConcertStrip({ concerts, labels, noLead = false }: Omit<Props, 'variant'>) {
   const trackRef = useRef<HTMLOListElement>(null);
   const [overflows, setOverflows] = useState(false);
 
@@ -109,7 +111,7 @@ function ConcertStrip({ concerts, labels }: Omit<Props, 'variant'>) {
           <ConcertPoster
             key={concert.id || index}
             concert={concert}
-            isLead={index === 0}
+            isLead={!noLead && index === 0}
             labels={labels}
           />
         ))}

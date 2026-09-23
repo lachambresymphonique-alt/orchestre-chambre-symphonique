@@ -8,6 +8,7 @@ import { FadeIn } from '@/components/FadeIn';
 import { NewsletterForm } from '@/components/NewsletterForm';
 import { ExpandableText } from '@/components/ExpandableText';
 import { ConcertDates, ConcertPosters } from '@/components/ConcertPosters';
+import { ConcertFeature } from '@/components/ConcertFeature';
 import { stockImages, placeholderForMusician, directorPlaceholder } from '@/lib/unsplash';
 import { toConcertCard, type ConcertCard, type ConcertDoc } from '@/lib/concerts';
 import { renderEmphasis } from '@/lib/emphasis';
@@ -47,6 +48,10 @@ export function HomeClient({
   // first: the first one is the next date, summarised in the hero.
   const featured: ConcertCard | undefined = concerts[0];
   const hasConcerts = concerts.length > 0;
+  // Concert à la une (section Concerts) : celui coché « À la une sur l'accueil »
+  // dans l'admin (le plus proche si plusieurs), sinon le prochain concert.
+  const spotlight: ConcertCard | undefined = concerts.find((c) => c.featured) ?? concerts[0];
+  const otherConcerts = spotlight ? concerts.filter((c) => c.id !== spotlight.id) : concerts;
 
   const directorSlug = director?.slug || director?.id;
 
@@ -232,9 +237,26 @@ export function HomeClient({
 
         {hasConcerts ? (
           <FadeIn>
+          {spotlight && (
+            <ConcertFeature
+              concert={spotlight}
+              labels={{
+                featured: 'À la une',
+                booking: bookingLabelShort,
+                bookingSoon: 'Billetterie à venir',
+                cancelled: cancelledLabel,
+                tickets: 'Dates et billetterie',
+                program: 'Programme',
+              }}
+            />
+          )}
+          {otherConcerts.length > 0 && (
+          <div className="home-concerts__more">
+          <h3 className="home-concerts__more-title">Aussi à l’affiche</h3>
           {concertsLayout !== 'list' ? (
             <ConcertPosters
-              concerts={concerts}
+              concerts={otherConcerts}
+              noLead
               variant={concertsLayout}
               labels={{
                 next: nextLabel,
@@ -246,8 +268,8 @@ export function HomeClient({
             />
           ) : (
           <ol className="concerts-list">
-            {concerts.map((concert, index) => {
-              const isLead = index === 0;
+            {otherConcerts.map((concert, index) => {
+              const isLead = false;
               const cancelled = concert.status === 'cancelled';
               const multiple = concert.performances.length > 1;
               const rowClass = [
@@ -337,6 +359,8 @@ export function HomeClient({
               );
             })}
           </ol>
+          )}
+          </div>
           )}
           </FadeIn>
         ) : (

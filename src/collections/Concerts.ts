@@ -210,6 +210,17 @@ export const Concerts: CollectionConfig = {
           'Un brouillon n\'apparaît jamais sur le site. Un concert annulé reste visible jusqu\'à sa dernière représentation, barré, sans bouton de réservation.',
       },
     },
+    {
+      name: 'featured',
+      type: 'checkbox',
+      label: 'À la une sur l\'accueil',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description:
+          'Affiché en grand en tête de la section Concerts de l\'accueil : affiche, dates avec billetterie et programme. Sans concert coché, le prochain concert est mis à la une ; si plusieurs sont cochés, le plus proche.',
+      },
+    },
 
     // ── Champs dérivés des représentations (voir syncPerformances) ──────
     // `date` et `lastDate` portent le tri et les filtres de la liste et du

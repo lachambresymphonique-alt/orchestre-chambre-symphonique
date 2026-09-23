@@ -6134,3 +6134,289 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   text-decoration: line-through;
   text-decoration-thickness: 1px;
 }
+
+/* ==========================================================================
+   Concert à la une (accueil) — ConcertFeature.tsx
+   L'affiche en grand à gauche, la billetterie et le programme à droite.
+   Pas de carte : l'affiche et des filets fins suffisent (DESIGN.md).
+   ========================================================================== */
+
+.concert-feature {
+  max-width: var(--max-width-wide);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+}
+
+.concert-feature__poster {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 3 / 4;
+  max-height: 82vh;
+  overflow: hidden;
+  background: var(--paper-soft);
+}
+
+.concert-feature__backdrop {
+  filter: blur(28px) brightness(0.45);
+  transform: scale(1.15);
+}
+
+.concert-feature__img {
+  z-index: 1;
+}
+
+.concert-feature__blank {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  background: radial-gradient(circle at 50% 40%, color-mix(in oklab, var(--bordeaux-bright) 18%, transparent), transparent 60%),
+    var(--paper-soft);
+}
+
+.concert-feature__blank-day {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 12vw, 9rem);
+  line-height: 1;
+  color: var(--bordeaux);
+}
+
+.concert-feature__blank-month {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+}
+
+.concert-feature__body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 2.5vw, 2.25rem);
+  padding-top: clamp(0rem, 1.5vw, 1rem);
+}
+
+.concert-feature__eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+}
+
+.concert-feature__eyebrow > span:first-child {
+  color: var(--bordeaux-bright);
+}
+
+.concert-feature__title {
+  margin: -0.75rem 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3.2vw, 3rem);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  color: var(--bordeaux);
+  text-wrap: balance;
+}
+
+.concert-feature__block {
+  border-top: 1px solid var(--paper-rule);
+  padding-top: 1.25rem;
+}
+
+.concert-feature__label {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+}
+
+.concert-feature__dates {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.concert-feature__date {
+  display: grid;
+  grid-template-columns: 4.25rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem 1.25rem;
+  padding: 1rem 0;
+}
+
+.concert-feature__date + .concert-feature__date {
+  border-top: 1px solid color-mix(in oklab, var(--paper-rule) 70%, transparent);
+}
+
+/* Date stack (DESIGN.md) : le chiffre du jour est le visuel. */
+.concert-feature__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+}
+
+.concert-feature__day {
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  font-weight: 400;
+  color: var(--bordeaux-bright);
+  font-variant-numeric: oldstyle-nums;
+}
+
+.concert-feature__month {
+  margin-top: 0.35rem;
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+}
+
+.concert-feature__where {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.concert-feature__weekday {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+}
+
+.concert-feature__venue {
+  font-family: var(--font-body-serif);
+  font-size: 1.05rem;
+  line-height: 1.35;
+  color: var(--bordeaux);
+}
+
+.concert-feature__action {
+  justify-self: end;
+}
+
+.concert-feature__book {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.1rem;
+  border: 1px solid color-mix(in oklab, var(--bordeaux-bright) 70%, transparent);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bordeaux-bright);
+  text-decoration: none;
+  white-space: nowrap;
+  position: relative;
+  z-index: 2;
+  transition: background-color var(--d-quick) var(--ease-curtain), color var(--d-quick) var(--ease-curtain);
+}
+
+.concert-feature__book:hover,
+.concert-feature__book:focus-visible {
+  background: var(--bordeaux-bright);
+  color: var(--paper);
+}
+
+.concert-feature__book:focus-visible {
+  outline: 1px solid var(--bordeaux-bright);
+  outline-offset: 3px;
+}
+
+.concert-feature__soon {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+  white-space: nowrap;
+}
+
+.concert-feature__program {
+  font-family: var(--font-body-serif);
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--bordeaux-deep);
+  max-width: 62ch;
+  white-space: pre-line;
+}
+
+.concert-feature.is-cancelled .concert-feature__stack,
+.concert-feature.is-cancelled .concert-feature__venue {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+/* Les autres concerts, sous le concert à la une */
+.home-concerts__more {
+  max-width: var(--max-width-wide);
+  margin: clamp(4rem, 8vw, 6.5rem) auto 0;
+  padding: 0 var(--gutter);
+}
+
+.home-concerts__more-title {
+  margin: 0 0 2rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-weight: 400;
+  color: var(--bordeaux);
+}
+
+.home-concerts__more .concerts-posters,
+.home-concerts__more .concerts-strip,
+.home-concerts__more .concerts-list {
+  padding-inline: 0;
+  max-width: none;
+}
+
+.home-concerts__more .concerts-strip__track {
+  padding-inline: 0;
+}
+
+@media (max-width: 900px) {
+  .concert-feature {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .concert-feature__poster {
+    max-height: none;
+    width: min(100%, 30rem);
+  }
+}
+
+@media (max-width: 520px) {
+  .concert-feature__date {
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+  }
+
+  .concert-feature__action {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .concert-feature__day {
+    font-size: 2.2rem;
+  }
+}
