@@ -1,4 +1,6 @@
+import './concert-soloists.css';
 import Image from 'next/image';
+import Link from 'next/link';
 import type { ConcertCard } from '@/lib/concerts';
 import { ExpandableText } from './ExpandableText';
 import { describeDateRange } from './ConcertPosters';
@@ -73,6 +75,37 @@ export function ConcertFeature({ concert, labels }: { concert: ConcertCard; labe
         <h3 className="concert-feature__title" data-live-item-field="title">
           {concert.title}
         </h3>
+
+        {concert.soloists.length > 0 && (
+          <ul className="concert-feature__soloists" aria-label="Avec">
+            {concert.soloists.map((s) => (
+              <li key={s.id}>
+                <Link
+                  href={s.href}
+                  className="concert-feature__soloist"
+                  data-live-link={`/admin/collections/soloists/${s.id}`}
+                >
+                  <span className="concert-feature__soloist-photo" aria-hidden="true">
+                    {s.photo ? (
+                      <Image src={s.photo.url} alt="" fill sizes="96px" style={{ objectFit: 'cover' }} />
+                    ) : (
+                      <span className="concert-feature__soloist-initial">{s.name.charAt(0)}</span>
+                    )}
+                  </span>
+                  <span className="concert-feature__soloist-text">
+                    <span className="concert-feature__soloist-kicker">
+                      Soliste{s.instrument ? ` · ${s.instrument}` : ''}
+                    </span>
+                    <span className="concert-feature__soloist-name">{s.name}</span>
+                    <span className="concert-feature__soloist-more">
+                      Découvrir <span aria-hidden="true">→</span>
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
 
         {dates.length > 0 && (
           <section className="concert-feature__block" aria-label={labels.tickets} data-live-item-field="performances">

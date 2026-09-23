@@ -1,0 +1,57 @@
+/* Page soliste (SoloistDetail.tsx) — compléments à la fiche musicien. */
+
+.soloist-detail__website {
+  margin: 1.5rem 0 0;
+}
+
+.soloist-detail__concerts {
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+.soloist-detail__concert-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.soloist-detail__concert {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--paper-rule);
+  color: inherit;
+  text-decoration: none;
+}
+
+.soloist-detail__concert-list li:last-child .soloist-detail__concert {
+  border-bottom: 1px solid var(--paper-rule);
+}
+
+.soloist-detail__concert-when {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+}
+
+.soloist-detail__concert-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+  line-height: 1.2;
+  color: var(--bordeaux);
+  transition: color var(--d-quick) var(--ease-curtain);
+}
+
+.soloist-detail__concert-where {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--bordeaux-bright);
+}
+
+.soloist-detail__concert:hover .soloist-detail__concert-title,
+.soloist-detail__concert:focus-visible .soloist-detail__concert-title {
+  color: var(--bordeaux-bright);
+}

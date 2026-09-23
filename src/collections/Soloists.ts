@@ -15,7 +15,7 @@ export const Soloists: CollectionConfig = {
     useAsTitle: 'name',
     group: 'Contenu',
     description:
-      'Solistes invités — passés ou à venir. Sélectionnés ensuite dans Page d\'accueil › À la une.',
+      'Solistes invités — passés ou à venir. Chaque fiche a sa page sur le site (/solistes/…). Rattachez un·e soliste à un concert depuis la fiche du concert (« Soliste(s) invité·e(s) ») ; il ou elle apparaît alors sur le concert à la une. Mise en avant sur l\'accueil : Page d\'accueil › À la une.',
     defaultColumns: ['photo', 'name', 'instrument', 'order'],
   },
   defaultSort: 'order',

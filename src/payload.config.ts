@@ -146,6 +146,11 @@ export default buildConfig({
           const handle = data?.slug || data?.id;
           return handle ? `${base}/musiciens/${handle}` : `${base}/musiciens`;
         }
+        // Un·e soliste : sa page (slug, ou identifiant avant le premier enregistrement).
+        if (slug === 'soloists') {
+          const handle = data?.slug || data?.id;
+          return handle ? `${base}/solistes/${handle}` : `${base}/`;
+        }
         if (slug === 'musician-submissions') {
           const id = data?.id;
           return id ? `${base}/musiciens/apercu/${id}` : `${base}/musiciens`;
@@ -153,7 +158,7 @@ export default buildConfig({
         return `${base}${collectionMap[slug] || '/'}`;
       },
       globals: ['home-page', 'about-page', 'support-page', 'director-page', 'contact-page', 'media-page', 'musicians-page', 'musician-form', 'site-settings', 'navigation', 'theme-settings'],
-      collections: ['concerts', 'musicians', 'media-items', 'partners', 'timeline-events', 'support-tiers', 'pages', 'musician-submissions', 'posts'],
+      collections: ['concerts', 'musicians', 'media-items', 'partners', 'timeline-events', 'support-tiers', 'pages', 'musician-submissions', 'posts', 'soloists'],
       breakpoints: [
         { label: 'Mobile', name: 'mobile', width: 375, height: 667 },
         { label: 'Tablette', name: 'tablet', width: 768, height: 1024 },

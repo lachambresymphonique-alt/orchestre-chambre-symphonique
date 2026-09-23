@@ -97,6 +97,17 @@ export const Concerts: CollectionConfig = {
           'Ex : « Concerto pour violon — Beethoven ». Un seul concert par programme : ses dates et ses lieux se listent dans « Représentations », juste en dessous.',
       },
     },
+    {
+      name: 'soloists',
+      type: 'relationship',
+      relationTo: 'soloists',
+      hasMany: true,
+      label: 'Soliste(s) invité·e(s)',
+      admin: {
+        description:
+          'Optionnel. Choisissez le ou la soliste, ou créez sa fiche avec « + » (portrait, instrument, biographie) : son nom et son portrait s\'affichent sur le concert à la une, avec un lien vers sa page.',
+      },
+    },
 
     // ── Représentations ─────────────────────────────────────────────────
     {

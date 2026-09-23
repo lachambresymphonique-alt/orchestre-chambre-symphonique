@@ -54,7 +54,46 @@ export type ConcertDoc = {
   status?: ConcertStatus | null;
   /** « À la une sur l'accueil » (case de l'admin). */
   featured?: boolean | null;
+  /** Solistes invités (collection `soloists`), peuplés à depth ≥ 1 (photo : depth ≥ 2). */
+  soloists?: Array<ConcertSoloistDoc | number | string> | null;
 };
+
+export type ConcertSoloistDoc = {
+  id: string | number;
+  name?: string | null;
+  slug?: string | null;
+  instrument?: string | null;
+  photo?: { url?: string | null; alt?: string | null; sizes?: Record<string, { url?: string | null } | undefined> | null } | number | string | null;
+};
+
+/** Un·e soliste prêt·e à afficher sur une carte de concert. */
+export type ConcertSoloistView = {
+  id: string | number;
+  name: string;
+  instrument: string;
+  /** Page du ou de la soliste (/solistes/<slug>). */
+  href: string;
+  photo: { url: string; alt: string } | null;
+};
+
+/** Solistes peuplés → vues ; les références non peuplées (identifiants seuls) sont ignorées. */
+export function soloistsOf(doc: Pick<ConcertDoc, 'soloists'>): ConcertSoloistView[] {
+  const list = Array.isArray(doc.soloists) ? doc.soloists : [];
+  return list
+    .filter((s): s is ConcertSoloistDoc => !!s && typeof s === 'object' && !!(s as ConcertSoloistDoc).name)
+    .map((s) => {
+      const photo = s.photo && typeof s.photo === 'object' ? s.photo : null;
+      // Image d'origine : le format « card » est recadré en paysage, pas un portrait.
+      const url = photo?.url || null;
+      return {
+        id: s.id,
+        name: (s.name ?? '').trim(),
+        instrument: (s.instrument ?? '').trim(),
+        href: `/solistes/${s.slug || s.id}`,
+        photo: url ? { url, alt: photo?.alt || s.name || '' } : null,
+      };
+    });
+}
 
 export type ConcertDateView = {
   /** Canonical ISO instant (noon UTC of the concert day). */
@@ -105,6 +144,8 @@ export type ConcertCard = {
   performanceCount: number;
   /** Coché « À la une sur l'accueil » dans l'admin. */
   featured: boolean;
+  /** Solistes invités, dans l'ordre choisi dans l'admin. */
+  soloists: ConcertSoloistView[];
 };
 
 // ─── Calendar helpers ────────────────────────────────────────────────────────
@@ -386,6 +427,7 @@ export function toConcertCard(doc: ConcertDoc, now: Date = new Date()): ConcertC
     performances: upcoming,
     performanceCount: all.length,
     featured: doc.featured === true,
+    soloists: soloistsOf(doc),
   };
 }
 
@@ -442,7 +484,8 @@ export async function findUpcomingConcerts(
     },
     sort: 'date',
     limit: Math.max(limit * 3, 30),
-    depth: 1,
+    // depth 2 : l'affiche (1) et le portrait des solistes (2).
+    depth: 2,
   });
 
   return (res.docs as ConcertDoc[])
