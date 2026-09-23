@@ -8,7 +8,8 @@ import { DEFAULT_NAV_ITEMS, type NavLink } from '@/lib/navigation';
 
 export function Header({ items }: { items?: NavLink[] }) {
   // Menu composé dans l'admin (Réglages → Menu du site), sinon menu historique.
-  const navItems = items && items.length > 0 ? items : DEFAULT_NAV_ITEMS;
+  // Une liste vide est respectée : toutes les entrées ont été masquées.
+  const navItems = items ?? DEFAULT_NAV_ITEMS;
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();

@@ -3,7 +3,8 @@
  *
  * Le menu se compose dans l'admin (Réglages → Menu du site). Chaque entrée
  * pointe vers une page fixe du site, une page créée dans l'admin (collection
- * `pages`) ou une adresse libre. Tant que le menu n'a pas été configuré, on
+ * `pages`) ou une adresse libre, et peut être masquée sans être supprimée.
+ * Tant que le menu n'a pas été configuré, on
  * retombe sur le menu historique : les pages fixes, plus les pages de l'admin
  * cochées « Afficher dans la navigation ».
  *
@@ -50,6 +51,8 @@ export type NavigationItemDoc = {
   page?: NavPageDoc | number | string | null;
   url?: string | null;
   newTab?: boolean | null;
+  /** Masquée : conservée dans l'admin mais absente du menu du site. */
+  hidden?: boolean | null;
 };
 
 export type NavigationDoc = { items?: NavigationItemDoc[] | null } | null | undefined;
@@ -68,6 +71,7 @@ export function resolveNavItems(nav: NavigationDoc): NavLink[] {
   const links: NavLink[] = [];
 
   for (const item of items) {
+    if (item?.hidden === true) continue;
     const label = (item?.label ?? '').trim();
 
     switch (item?.type) {
@@ -102,6 +106,15 @@ export function resolveNavItems(nav: NavigationDoc): NavLink[] {
   }
 
   return links;
+}
+
+/**
+ * Le menu a-t-il été composé dans l'admin ? Oui dès qu'il contient une ligne,
+ * même masquée : un menu dont toutes les entrées sont masquées reste vide au
+ * lieu de retomber sur le menu historique.
+ */
+export function isNavConfigured(nav: NavigationDoc): boolean {
+  return Array.isArray(nav?.items) && nav.items.length > 0;
 }
 
 /** Une page de l'admin avec les anciens champs de navigation (menu historique). */

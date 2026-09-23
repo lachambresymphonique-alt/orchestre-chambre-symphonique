@@ -7,13 +7,22 @@ const isUrlLike = (value: string) =>
 /** Contexte de validation d'un champ d'une ligne du menu (ses champs frères). */
 type RowContext = { siblingData?: { type?: string } }
 
+/**
+ * Menu principal du site (Réglages → Menu du site).
+ *
+ * Écran pensé pour être lu d'un coup d'œil : les lignes sont repliées et leur
+ * titre résume l'entrée (texte, type, adresse, état) avec un bouton
+ * « Masquer / Afficher » (NavItemRowLabel) ; un compteur sous le titre donne le
+ * nombre d'entrées affichées et masquées (NavItemsSummary). Dépliée, une ligne
+ * tient en trois rangées : type, page + texte, options.
+ */
 export const Navigation: GlobalConfig = {
   slug: 'navigation',
   label: 'Menu du site',
   admin: {
     group: 'Réglages',
     description:
-      'Les entrées du menu principal, dans l\'ordre d\'affichage. Glissez-déposez pour réordonner. Une page créée dans « Pages » s\'ajoute ici pour apparaître dans le menu.',
+      'Glissez les entrées pour changer leur ordre. « Masquer » retire une entrée du menu sans la supprimer. Pensez à enregistrer.',
   },
   fields: [
     {
@@ -22,9 +31,10 @@ export const Navigation: GlobalConfig = {
       label: 'Entrées du menu',
       labels: { singular: 'Entrée', plural: 'Entrées' },
       admin: {
-        description: 'Conseil : au-delà de 6 ou 7 entrées, le menu déborde sur tablette.',
+        initCollapsed: true,
         components: {
           RowLabel: '@/components/admin/NavItemRowLabel#NavItemRowLabel',
+          Description: '@/components/admin/NavItemsSummary#NavItemsSummary',
         },
       },
       fields: [
@@ -42,60 +52,85 @@ export const Navigation: GlobalConfig = {
           admin: { layout: 'horizontal' },
         },
         {
-          name: 'builtin',
-          type: 'select',
-          label: 'Page',
-          options: BUILTIN_PAGES.map(({ value, label }) => ({ value, label })),
-          admin: { condition: (_data, siblingData) => siblingData?.type === 'builtin' },
-          validate: (value: unknown, { siblingData }: RowContext) =>
-            siblingData?.type === 'builtin' && !value ? 'Choisissez une page.' : true,
+          type: 'row',
+          fields: [
+            {
+              name: 'builtin',
+              type: 'select',
+              label: 'Page',
+              options: BUILTIN_PAGES.map(({ value, label }) => ({ value, label })),
+              admin: {
+                width: '50%',
+                condition: (_data, siblingData) => siblingData?.type === 'builtin',
+              },
+              validate: (value: unknown, { siblingData }: RowContext) =>
+                siblingData?.type === 'builtin' && !value ? 'Choisissez une page.' : true,
+            },
+            {
+              name: 'page',
+              type: 'relationship',
+              relationTo: 'pages',
+              label: 'Page (publiée)',
+              admin: {
+                width: '50%',
+                condition: (_data, siblingData) => siblingData?.type === 'page',
+              },
+              validate: (value: unknown, { siblingData }: RowContext) =>
+                siblingData?.type === 'page' && !value ? 'Choisissez une page.' : true,
+            },
+            {
+              name: 'url',
+              type: 'text',
+              label: 'Adresse',
+              admin: {
+                width: '50%',
+                placeholder: 'https://… ou /ma-page',
+                condition: (_data, siblingData) => siblingData?.type === 'custom',
+              },
+              validate: (value: unknown, { siblingData }: RowContext) => {
+                if (siblingData?.type !== 'custom') return true
+                const v = String(value ?? '').trim()
+                if (!v) return 'Indiquez l\'adresse du lien.'
+                if (!isUrlLike(v)) return 'Commencez par « / » (page du site), « https:// », « mailto: » ou « tel: ».'
+                return true
+              },
+            },
+            {
+              name: 'label',
+              type: 'text',
+              label: 'Texte affiché',
+              admin: {
+                width: '50%',
+                placeholder: 'Par défaut : le nom de la page',
+              },
+              validate: (value: unknown, { siblingData }: RowContext) =>
+                siblingData?.type === 'custom' && !String(value ?? '').trim()
+                  ? 'Indiquez le texte du lien.'
+                  : true,
+            },
+          ],
         },
         {
-          name: 'page',
-          type: 'relationship',
-          relationTo: 'pages',
-          label: 'Page',
-          admin: {
-            condition: (_data, siblingData) => siblingData?.type === 'page',
-            description: 'Seules les pages publiées apparaissent dans le menu.',
-          },
-          validate: (value: unknown, { siblingData }: RowContext) =>
-            siblingData?.type === 'page' && !value ? 'Choisissez une page.' : true,
-        },
-        {
-          name: 'url',
-          type: 'text',
-          label: 'Adresse',
-          admin: {
-            condition: (_data, siblingData) => siblingData?.type === 'custom',
-            description: 'Ex : https://www.helloasso.com/… ou /saison-2026',
-          },
-          validate: (value: unknown, { siblingData }: RowContext) => {
-            if (siblingData?.type !== 'custom') return true
-            const v = String(value ?? '').trim()
-            if (!v) return 'Indiquez l\'adresse du lien.'
-            if (!isUrlLike(v)) return 'Commencez par « / » (page du site), « https:// », « mailto: » ou « tel: ».'
-            return true
-          },
-        },
-        {
-          name: 'newTab',
-          type: 'checkbox',
-          label: 'Ouvrir dans un nouvel onglet',
-          defaultValue: false,
-          admin: { condition: (_data, siblingData) => siblingData?.type === 'custom' },
-        },
-        {
-          name: 'label',
-          type: 'text',
-          label: 'Texte affiché',
-          admin: {
-            description: 'Facultatif pour une page : si vide, le nom de la page est utilisé.',
-          },
-          validate: (value: unknown, { siblingData }: RowContext) =>
-            siblingData?.type === 'custom' && !String(value ?? '').trim()
-              ? 'Indiquez le texte du lien.'
-              : true,
+          type: 'row',
+          fields: [
+            {
+              name: 'hidden',
+              type: 'checkbox',
+              label: 'Masquer dans le menu',
+              defaultValue: false,
+              admin: { width: '50%' },
+            },
+            {
+              name: 'newTab',
+              type: 'checkbox',
+              label: 'Ouvrir dans un nouvel onglet',
+              defaultValue: false,
+              admin: {
+                width: '50%',
+                condition: (_data, siblingData) => siblingData?.type === 'custom',
+              },
+            },
+          ],
         },
       ],
     },

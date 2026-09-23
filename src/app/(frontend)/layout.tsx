@@ -5,7 +5,7 @@ import '../globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { getPayloadClient } from '@/lib/payload';
-import { legacyNavItems, resolveNavItems, type NavLink } from '@/lib/navigation';
+import { isNavConfigured, legacyNavItems, resolveNavItems, type NavLink } from '@/lib/navigation';
 
 const fraunces = Fraunces({
   variable: '--font-fraunces',
@@ -103,7 +103,8 @@ async function getNavItems(
       populate: { pages: { slug: true, title: true, _status: true } } as any,
     });
     const items = resolveNavItems(navigation as any);
-    if (items.length > 0) return items;
+    // Menu composé dans l'admin : on le respecte, même si tout y est masqué.
+    if (items.length > 0 || isNavConfigured(navigation as any)) return items;
   } catch {
     // Table du menu absente (schéma pas encore poussé) : menu historique ci-dessous.
   }

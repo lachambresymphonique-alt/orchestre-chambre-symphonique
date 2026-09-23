@@ -39,9 +39,11 @@ import { AnalyticsView as AnalyticsView_db43129b90862b042c8e58805b1c34d3 } from 
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { NavItemRowLabel as NavItemRowLabel_204443de73f46b3225ba40b2bba5389e } from '@/components/admin/NavItemRowLabel'
+import { NavItemsSummary as NavItemsSummary_83b5fd269b28c009f3d42d60454851df } from '@/components/admin/NavItemsSummary'
 
 export const importMap = {
   "@/components/admin/NavItemRowLabel#NavItemRowLabel": NavItemRowLabel_204443de73f46b3225ba40b2bba5389e,
+  "@/components/admin/NavItemsSummary#NavItemsSummary": NavItemsSummary_83b5fd269b28c009f3d42d60454851df,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
