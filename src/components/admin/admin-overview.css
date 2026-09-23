@@ -1,0 +1,283 @@
+/* ==========================================================================
+   Tableau de bord — widget « Contenu du site » (ContentOverview.tsx)
+   Cartes d'effectifs par collection, dans l'esprit du bandeau
+   « Fréquentation du site » (admin-theme.css, .lcs-visits).
+   ========================================================================== */
+
+.lcs-overview {
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--lcs-radius);
+  background: var(--theme-elevation-0);
+  padding: 1.25rem 1.5rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.lcs-overview__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.lcs-overview__icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.18), rgba(201, 168, 76, 0.06));
+  color: var(--lcs-gold-dark);
+}
+
+.lcs-overview__eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--lcs-gold-dark);
+  margin-bottom: 0.25rem;
+}
+
+.lcs-overview__sub {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--theme-elevation-500);
+}
+
+.lcs-overview__sub strong {
+  color: var(--theme-elevation-800);
+  font-weight: 600;
+}
+
+/* ---------- Groupes (Pages, Contenu, …) ---------- */
+.lcs-overview__group + .lcs-overview__group {
+  margin-top: 1.4rem;
+}
+
+.lcs-overview__group-label {
+  margin: 0 0 0.7rem;
+  padding: 0;
+  border: 0;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--theme-elevation-500);
+}
+
+.lcs-overview__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 0.85rem;
+}
+
+/* ---------- Cartes ---------- */
+.lcs-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+  min-height: 104px;
+  padding: 0.95rem 1rem 0.9rem;
+  border-radius: var(--lcs-radius-sm);
+  background: var(--theme-elevation-50);
+  border: 1px solid var(--theme-elevation-100);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.lcs-tile--wide {
+  grid-column: span 2;
+}
+
+@media (max-width: 520px) {
+  .lcs-tile--wide {
+    grid-column: auto;
+  }
+}
+
+.lcs-tile:hover,
+.lcs-tile:focus-within {
+  border-color: var(--lcs-gold);
+  box-shadow: 0 8px 22px rgba(201, 168, 76, 0.14);
+  transform: translateY(-2px);
+}
+
+.lcs-tile--alert {
+  border-color: rgba(201, 168, 76, 0.55);
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.10), var(--theme-elevation-50) 55%);
+}
+
+.lcs-tile__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+/* Le lien « liste » recouvre toute la carte (le « + » passe au-dessus). */
+.lcs-tile__main {
+  color: inherit;
+  text-decoration: none;
+  min-width: 0;
+}
+
+.lcs-tile__main::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+.lcs-tile__main:focus-visible {
+  outline: none;
+}
+
+.lcs-tile:has(.lcs-tile__main:focus-visible) {
+  box-shadow:
+    0 0 0 2px var(--theme-bg),
+    0 0 0 4px var(--lcs-gold);
+}
+
+.lcs-tile__title {
+  display: block;
+  font-family: var(--lcs-serif);
+  font-size: 1.15rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--theme-elevation-1000);
+  transition: color 0.15s ease;
+}
+
+.lcs-tile:hover .lcs-tile__title,
+.lcs-tile:focus-within .lcs-tile__title {
+  color: var(--lcs-gold-dark);
+}
+
+.lcs-tile__add {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  margin: -3px -4px 0 0;
+  border-radius: 50%;
+  border: 1px solid var(--theme-elevation-200);
+  background: var(--theme-elevation-0);
+  color: var(--theme-elevation-800);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.lcs-tile__add:hover,
+.lcs-tile__add:focus-visible {
+  background: var(--lcs-gold);
+  border-color: var(--lcs-gold);
+  color: #ffffff;
+  outline: none;
+}
+
+.lcs-tile__value {
+  font-size: 1.7rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--theme-elevation-1000);
+  margin-top: 0.15rem;
+}
+
+.lcs-tile__unit {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--theme-elevation-500);
+}
+
+.lcs-tile__hint {
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--theme-elevation-500);
+}
+
+.lcs-tile--alert .lcs-tile__hint {
+  color: var(--lcs-gold-dark);
+  font-weight: 600;
+}
+
+/* Effectifs par section (carte Musiciens) */
+.lcs-tile__breakdown {
+  margin: 0.35rem 0 0;
+  padding: 0.6rem 0 0;
+  border-top: 1px solid var(--theme-elevation-150);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.3rem 1.25rem;
+}
+
+.lcs-tile__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 12.5px;
+}
+
+.lcs-tile__row dt {
+  margin: 0;
+  color: var(--theme-elevation-800);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lcs-tile__row dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--theme-elevation-1000);
+}
+
+/* ---------- Fil d'Ariane du tableau de bord ----------
+   Payload 3.7 y met un menu « Dashboard ▾ » (Edit Dashboard / Reset Layout),
+   en anglais et sans intérêt ici : on le rend inerte et on affiche « Accueil ». */
+.step-nav .dashboard-breadcrumb-select {
+  pointer-events: none;
+}
+
+.step-nav .dashboard-breadcrumb-select .rs__indicators {
+  display: none;
+}
+
+.step-nav .dashboard-breadcrumb-select .rs__single-value,
+.step-nav .dashboard-breadcrumb-select .rs__placeholder {
+  font-size: 0;
+}
+
+.step-nav .dashboard-breadcrumb-select .rs__single-value::after,
+.step-nav .dashboard-breadcrumb-select .rs__placeholder::after {
+  content: 'Accueil';
+  font-size: 13px;
+  color: var(--theme-elevation-500);
+}
+
+/* Hors mode « édition du tableau de bord », le widget s'aligne sur les blocs
+   du dessus (Payload lui réserve 6 px de marge pour ses poignées). */
+.modular-dashboard:not(.editing) .widget {
+  padding: 0 !important; /* Payload pose ce padding en style inline */
+}
+
+/* ---------- Mode sombre ---------- */
+[data-theme='dark'] .lcs-tile--alert {
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.14), var(--theme-elevation-50) 55%);
+}

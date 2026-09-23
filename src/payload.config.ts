@@ -69,6 +69,20 @@ export default buildConfig({
         },
       },
     },
+    // Tableau de bord : nos cartes d'effectifs (ContentOverview) remplacent les
+    // cartes de collections par défaut de Payload, qui ne montraient qu'un
+    // titre et un bouton « + » par collection.
+    dashboard: {
+      widgets: [
+        {
+          slug: 'content-overview',
+          label: 'Contenu du site',
+          ComponentPath: '@/components/admin/ContentOverview#ContentOverview',
+          minWidth: 'full',
+        },
+      ],
+      defaultLayout: [{ widgetSlug: 'content-overview', width: 'full' }],
+    },
     livePreview: {
       url: ({ data, collectionConfig, globalConfig }) => {
         const base = process.env.NEXT_PUBLIC_SITE_URL || '';

@@ -33,6 +33,7 @@ import { DisplayFontField as DisplayFontField_307bdf94f3509d3afd145b42122f8531 }
 import { AdminIcon as AdminIcon_d500ae2ad98a0a33d640ae0ac1a3417c } from '@/components/admin/AdminIcon'
 import { AdminLogo as AdminLogo_b80a86fce1072afc84cd6a430a965697 } from '@/components/admin/AdminLogo'
 import { BeforeDashboard as BeforeDashboard_915324d4628771dbb8d31cdc4601c33e } from '@/components/admin/BeforeDashboard'
+import { ContentOverview as ContentOverview_fd1a60f6a06df1c7c572d2606eb412b0 } from '@/components/admin/ContentOverview'
 import { ViewSiteLink as ViewSiteLink_4825072285f9364e3016113bb30951e2 } from '@/components/admin/ViewSiteLink'
 import { HeaderSiteLink as HeaderSiteLink_67bb467c5b5fe7e595a72cdfb499f798 } from '@/components/admin/HeaderSiteLink'
 import { AnalyticsNavLink as AnalyticsNavLink_fb17e397022e83cc802d5c55b8837bc2 } from '@/components/admin/AnalyticsNavLink'
@@ -80,6 +81,7 @@ export const importMap = {
   "@/components/admin/AdminIcon#AdminIcon": AdminIcon_d500ae2ad98a0a33d640ae0ac1a3417c,
   "@/components/admin/AdminLogo#AdminLogo": AdminLogo_b80a86fce1072afc84cd6a430a965697,
   "@/components/admin/BeforeDashboard#BeforeDashboard": BeforeDashboard_915324d4628771dbb8d31cdc4601c33e,
+  "@/components/admin/ContentOverview#ContentOverview": ContentOverview_fd1a60f6a06df1c7c572d2606eb412b0,
   "@/components/admin/ViewSiteLink#ViewSiteLink": ViewSiteLink_4825072285f9364e3016113bb30951e2,
   "@/components/admin/HeaderSiteLink#HeaderSiteLink": HeaderSiteLink_67bb467c5b5fe7e595a72cdfb499f798,
   "@/components/admin/AnalyticsNavLink#AnalyticsNavLink": AnalyticsNavLink_fb17e397022e83cc802d5c55b8837bc2,

@@ -387,6 +387,33 @@ a[href$="/create"].btn:hover {
   box-shadow: 0 6px 18px rgba(160, 125, 46, 0.28);
 }
 
+/* Cartes de collections du tableau de bord Payload (widget « Collections »,
+   remplacé par ContentOverview mais toujours proposé par Payload) : leur
+   bouton « + » est aussi un lien « /create ». Il reste dans la carte, sans la
+   pastille flottante ci-dessus, et le lien invisible qui recouvre chaque carte
+   ne doit pas masquer son titre. */
+.card__actions a[href$="/create"].btn,
+.card__actions a[href$="/create"].btn:hover {
+  position: static;
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  color: var(--theme-elevation-800);
+  transform: none;
+}
+
+.card__actions a[href$="/create"].btn::before {
+  content: none;
+}
+
+.card .btn.card__click {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
 /* Variant — pill / link-like (small text buttons) */
 .btn--size-small {
   min-height: 32px;
