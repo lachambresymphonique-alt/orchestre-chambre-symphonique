@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getPayloadClient } from '@/lib/payload';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
+import { LivePreviewSync } from '@/components/LivePreviewSync';
 import { directorPlaceholder } from '@/lib/unsplash';
 import { toEmbedUrl } from '@/lib/videoEmbed';
 import { resolveDirectorPage, type DirectorPageContent } from '@/lib/directorDefaults';
@@ -120,6 +121,7 @@ export default async function DirectorPage() {
     return (
       <div className="director-page director-page--empty">
         <RefreshOnSave />
+      <LivePreviewSync />
 
         <div className="director-empty-stage">
           <div className="director-empty-stage__halo" aria-hidden />
@@ -200,9 +202,10 @@ export default async function DirectorPage() {
   return (
     <div className="director-page">
       <RefreshOnSave />
+      <LivePreviewSync />
 
       {/* === I. PORTRAIT HERO — the conductor first === */}
-      <header className="director-hero">
+      <header className="director-hero" data-live-field="hero">
         <div className="director-hero__halo" aria-hidden />
         <div className="director-hero__inner">
           <figure
@@ -262,7 +265,7 @@ export default async function DirectorPage() {
       </header>
 
       {/* === II. LE CHEF — long-form bio === */}
-      <section id="portrait" className="director-story">
+      <section id="portrait" className="director-story" data-live-field="story">
         <header className="director-story__head">
           <p className="eyebrow eyebrow--gold">{story.eyebrow}</p>
           <h2 className="director-story__title">{renderEmphasis(story.title)}</h2>
@@ -280,7 +283,7 @@ export default async function DirectorPage() {
 
       {/* === III. PARCOURS — formation, distinctions, vidéo (si renseignés) === */}
       {hasPath && (
-        <section className="director-path">
+        <section className="director-path" data-live-field="path">
           <div className="director-path__inner">
             <header className="director-path__head">
               <p className="eyebrow eyebrow--gold">{path.eyebrow}</p>
@@ -346,7 +349,7 @@ export default async function DirectorPage() {
       )}
 
       {/* === V. ENCORE — outro === */}
-      <section className="director-encore">
+      <section className="director-encore" data-live-field="encore">
         <p className="eyebrow eyebrow--gold eyebrow--centered">{encore.eyebrow}</p>
         <h2 className="director-encore__title">{renderEmphasis(encore.title)}</h2>
         <hr className="velvet-rule long centered" />

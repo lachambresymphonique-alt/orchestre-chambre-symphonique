@@ -133,7 +133,7 @@ export function ContactForm({ formToken, turnstileSiteKey, copy }: ContactFormPr
       <p className="eyebrow eyebrow--gold">{c.eyebrow || 'Écrivez-nous'}</p>
       <h2 className="contact-form__title">{renderEmphasis(c.title || '*Un mot,* une question')}</h2>
       <hr className="velvet-rule" />
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} data-live-field="form">
         {/* Pot de miel : invisible pour un humain, rempli par les robots. */}
         <div style={HONEYPOT_STYLE} aria-hidden="true">
           <label htmlFor="website">Site web</label>

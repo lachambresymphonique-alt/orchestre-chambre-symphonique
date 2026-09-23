@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { FadeIn } from '@/components/FadeIn';
 import { getPayloadClient } from '@/lib/payload';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
+import { LivePreviewSync } from '@/components/LivePreviewSync';
 import { placeholderForMusician } from '@/lib/unsplash';
 
 const getMusiciansPage = cache(async () => {
@@ -62,7 +63,11 @@ function MusicianCard({ musician, featured = false }: { musician: Musician; feat
   );
 
   return (
-    <FadeIn className={`musician-card${featured ? ' featured' : ''}`}>
+    <FadeIn
+      className={`musician-card${featured ? ' featured' : ''}`}
+      // Cliquer un musicien dans l'aperçu ouvre sa fiche dans l'admin.
+      data-live-link={id ? `/admin/collections/musicians/${id}` : undefined}
+    >
       {hasLink ? (
         <Link href={`/musiciens/${handle}`} style={{ display: 'contents' }}>
           {Inner}
@@ -77,7 +82,7 @@ function MusicianCard({ musician, featured = false }: { musician: Musician; feat
 function Section({ title, count, musicians }: { title: string; count: number; musicians: Musician[] }) {
   if (musicians.length === 0) return null;
   return (
-    <section className="section-musicians">
+    <section className="section-musicians" data-live-field="sections">
       <header className="musicians-section-head">
         <h2>{title}</h2>
         <span className="rule" aria-hidden />
@@ -121,8 +126,9 @@ export default async function Musiciens() {
   return (
     <div className="musicians-page">
       <RefreshOnSave />
+      <LivePreviewSync />
 
-      <div className="page-header">
+      <div className="page-header" data-live-field="header">
         <div className="container">
           <p className="breadcrumb">
             <Link href="/">Accueil</Link> &nbsp;/&nbsp; Musiciens

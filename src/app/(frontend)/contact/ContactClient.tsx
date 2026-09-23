@@ -51,7 +51,7 @@ export function ContactClient({ initialData, pageContent, formToken, turnstileSi
   return (
     <>
       <RefreshOnSave />
-      <div className="page-header">
+      <div className="page-header" data-live-field="header">
         <div className="container">
           <p className="breadcrumb">
             <Link href="/">Accueil</Link> / Contact

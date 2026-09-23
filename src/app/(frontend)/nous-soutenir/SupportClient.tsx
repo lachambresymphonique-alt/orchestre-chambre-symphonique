@@ -35,7 +35,7 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
 
   return (
     <>
-      <div className="page-header">
+      <div className="page-header" data-live-field="header">
         <div className="container">
           <p className="breadcrumb">
             <Link href="/">Accueil</Link> / Nous soutenir
@@ -119,7 +119,7 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
 
       {simulator.enabled !== false && <DonationSimulator config={simulator} />}
 
-      <section style={{ background: 'var(--color-bg)' }}>
+      <section style={{ background: 'var(--color-bg)' }} data-live-field="tiersHeading">
         <div className="container">
           <p className="section-subtitle" style={{ textAlign: 'center' }}>
             {tiersHeading.subtitle || 'Cercle des mécènes'}

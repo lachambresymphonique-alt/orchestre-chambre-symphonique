@@ -10,6 +10,7 @@ import { VideoCard } from '@/components/VideoCard';
 import { getPayloadClient } from '@/lib/payload';
 import { parseVideoUrl, resolveVimeoThumbnail } from '@/lib/video';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
+import { LivePreviewSync } from '@/components/LivePreviewSync';
 
 const getMediaPage = cache(async () => {
   const payload = await getPayloadClient();
@@ -209,8 +210,9 @@ export default async function Medias() {
   return (
     <>
       <RefreshOnSave />
+      <LivePreviewSync />
       {/* PAGE HEADER */}
-      <div className="page-header">
+      <div className="page-header" data-live-field="header">
         <div className="container">
           <p className="breadcrumb">
             <Link href="/">Accueil</Link> / Médias
@@ -224,7 +226,7 @@ export default async function Medias() {
       </div>
 
       {/* MEDIA CONTENT */}
-      <section style={{ background: 'var(--color-bg)' }}>
+      <section style={{ background: 'var(--color-bg)' }} data-live-field="tabs">
         <div className="container">
           <MediaTabs videos={videos} audio={audio} photos={photos} labels={page?.tabs} />
         </div>

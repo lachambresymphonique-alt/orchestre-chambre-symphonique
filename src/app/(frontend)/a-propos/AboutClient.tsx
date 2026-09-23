@@ -37,7 +37,7 @@ export function AboutClient({ initialData, timelineEvents }: AboutClientProps) {
   return (
     <div className="about-page">
       {/* PAGE HEADER */}
-      <div className="page-header">
+      <div className="page-header" data-live-field="header">
         <div className="container">
           <p className="breadcrumb">
             <Link href="/">Accueil</Link> &nbsp;/&nbsp; À propos

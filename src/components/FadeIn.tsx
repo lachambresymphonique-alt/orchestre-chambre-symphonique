@@ -1,8 +1,14 @@
 'use client';
 
-import { useEffect, useRef, ReactNode, CSSProperties } from 'react';
+import { useEffect, useRef, type ReactNode, type CSSProperties } from 'react';
 
-export function FadeIn({ children, className = '', style }: { children: ReactNode; className?: string; style?: CSSProperties }) {
+type FadeInProps = {
+  children: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+} & Omit<React.HTMLAttributes<HTMLDivElement>, 'style' | 'className' | 'children'>;
+
+export function FadeIn({ children, className = '', style, ...rest }: FadeInProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -26,7 +32,7 @@ export function FadeIn({ children, className = '', style }: { children: ReactNod
   }, []);
 
   return (
-    <div ref={ref} className={`fade-in ${className}`} style={style}>
+    <div ref={ref} className={`fade-in ${className}`} style={style} {...rest}>
       {children}
     </div>
   );
