@@ -1,7 +1,7 @@
 import { getPayloadClient } from '@/lib/payload';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { RichText } from '@payloadcms/richtext-lexical/react';
+import { FreePageContent } from '@/components/FreePageContent';
 
 type Args = {
   params: Promise<{ slug: string }>;
@@ -52,17 +52,6 @@ export default async function DynamicPage({ params }: Args) {
 
   if (!page) notFound();
 
-  return (
-    <main>
-      <section className="section">
-        <div className="container">
-          <div className="section-label">Page</div>
-          <h1 className="section-title">{page.title}</h1>
-          <div className="rich-text-content">
-            <RichText data={page.content} />
-          </div>
-        </div>
-      </section>
-    </main>
-  );
+  // Même rendu que l'aperçu en direct de l'admin (/apercu/pages).
+  return <FreePageContent title={page.title} content={page.content} />;
 }

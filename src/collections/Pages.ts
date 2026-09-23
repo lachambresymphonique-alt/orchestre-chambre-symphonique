@@ -9,11 +9,14 @@ export const Pages: CollectionConfig = {
     description:
       'Pages libres du site. Créez une page et elle sera accessible à l\'URL choisie. Pour l\'afficher dans le menu : Réglages → Menu du site.',
     defaultColumns: ['title', 'slug', 'status', 'updatedAt'],
+    // Aperçu en direct : une route dédiée affiche le contenu en cours de
+    // saisie, envoyé par l'admin (src/components/PagePreview.tsx). L'adresse
+    // est fixe et non calculée depuis le slug : Payload ne propose le bouton
+    // d'aperçu sur l'écran de création que pour une adresse fixe. Elle montre
+    // aussi les brouillons, que la page publique /[slug] ne sert pas.
+    // Prioritaire sur l'entrée « pages » du livePreview de payload.config.ts.
     livePreview: {
-      url: ({ data }) => {
-        const base = process.env.NEXT_PUBLIC_SITE_URL || '';
-        return `${base}/${data?.slug || ''}`;
-      },
+      url: '/apercu/pages',
     },
   },
   versions: {
