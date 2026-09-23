@@ -294,7 +294,16 @@ export const Posts: CollectionConfig = {
                   },
                 },
               }),
-              FixedToolbarFeature(),
+              // Tout à plat, pas de menus déroulants : paragraphe, titres,
+              // listes et citation d'abord, puis gras/italique, lien, retrait,
+              // et « Image » en dernier (libellé en toutes lettres, voir
+              // admin-article.css).
+              FixedToolbarFeature({
+                customGroups: {
+                  text: { type: 'buttons', order: 5 },
+                  add: { type: 'buttons', order: 60 },
+                },
+              }),
               InlineToolbarFeature(),
             ],
           }),

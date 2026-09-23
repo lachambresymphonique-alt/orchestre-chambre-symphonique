@@ -2,9 +2,9 @@
 
 import './admin-concerts.css';
 import { useRowLabel } from '@payloadcms/ui';
-import { describeConcertDate } from '@/lib/concerts';
+import { describeConcertDate, formatPlace } from '@/lib/concerts';
 
-type Row = { date?: string | null; time?: string | null; venue?: string | null };
+type Row = { date?: string | null; time?: string | null; venue?: string | null; city?: string | null };
 
 const capitalize = (s: string) => (s ? s.charAt(0).toLocaleUpperCase('fr-FR') + s.slice(1) : s);
 
@@ -16,7 +16,7 @@ const capitalize = (s: string) => (s ? s.charAt(0).toLocaleUpperCase('fr-FR') + 
 export function ConcertPerformanceRowLabel() {
   const { data } = useRowLabel<Row>();
   const view = describeConcertDate(data?.date ?? null, data?.time ?? null);
-  const venue = data?.venue?.trim();
+  const venue = formatPlace(data?.venue, data?.city);
 
   if (!view && !venue) {
     return (

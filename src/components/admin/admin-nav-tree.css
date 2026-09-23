@@ -1,0 +1,297 @@
+/* ==========================================================================
+   Éditeur du menu du site (Réglages → Menu du site)
+   Composant : src/components/admin/NavTree.tsx
+   Une seule liste à plat : le retrait d'une ligne dit son niveau, et le trait
+   doré qui apparaît pendant le glissement annonce où elle va tomber.
+   ========================================================================== */
+.lcs-navtree {
+  --lcs-navtree-indent: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.lcs-navtree__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.lcs-navtree__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--theme-elevation-1000);
+}
+
+.lcs-navtree__count {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: var(--theme-elevation-500);
+}
+
+.lcs-navtree__add {
+  flex: none;
+  padding: 0 14px;
+  height: 34px;
+  border: 1px solid var(--lcs-gold);
+  border-radius: var(--lcs-radius-sm, 6px);
+  background: var(--lcs-gold);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+
+.lcs-navtree__add:hover:not(:disabled) {
+  background: var(--lcs-gold-dark);
+  border-color: var(--lcs-gold-dark);
+}
+
+.lcs-navtree__add:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.lcs-navtree__help,
+.lcs-navtree__empty {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--theme-elevation-500);
+}
+
+.lcs-navtree__empty {
+  padding: 1.25rem;
+  border: 1px dashed var(--theme-elevation-200);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.lcs-navtree__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---------- Une ligne ---------- */
+.lcs-navtree__row {
+  position: relative;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 7px;
+  background: var(--theme-elevation-0);
+  transition: margin-left 140ms ease, border-color 140ms ease, opacity 140ms ease;
+}
+
+/* Le retrait est tout ce qui distingue un sous-lien de son titre. */
+.lcs-navtree__row.is-child {
+  margin-left: var(--lcs-navtree-indent);
+}
+
+.lcs-navtree__row.is-open {
+  border-color: var(--lcs-gold);
+}
+
+.lcs-navtree__row.is-hidden {
+  background: var(--theme-elevation-50);
+}
+
+.lcs-navtree__row.is-invalid {
+  border-color: var(--lcs-bordeaux);
+}
+
+.lcs-navtree__row.is-dragging {
+  opacity: 0.4;
+}
+
+/* Trait de dépôt : posé au bord de la ligne visée, décalé du niveau qu'aurait
+   la ligne déposée — le geste annonce donc l'imbrication avant le relâchement. */
+.lcs-navtree__row.is-drop-before::before,
+.lcs-navtree__row.is-drop-after::after {
+  content: '';
+  position: absolute;
+  left: var(--lcs-drop-indent, 0);
+  right: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--lcs-gold);
+  pointer-events: none;
+}
+
+.lcs-navtree__row.is-drop-before::before {
+  top: -3px;
+}
+
+.lcs-navtree__row.is-drop-after::after {
+  bottom: -3px;
+}
+
+.lcs-navtree__line {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px 4px 4px;
+}
+
+.lcs-navtree__grip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 30px;
+  flex: none;
+  color: var(--theme-elevation-400);
+  cursor: grab;
+}
+
+.lcs-navtree__row:active .lcs-navtree__grip {
+  cursor: grabbing;
+}
+
+/* ---------- Le résumé, qui déplie la ligne ---------- */
+.lcs-navtree__disclose {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 5px;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+
+.lcs-navtree__disclose:hover {
+  background: var(--theme-elevation-50);
+}
+
+.lcs-navtree__disclose:focus-visible {
+  outline: 2px solid var(--lcs-gold);
+  outline-offset: -2px;
+}
+
+.lcs-navtree__name {
+  flex: none;
+  max-width: 18rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--theme-elevation-1000);
+}
+
+.lcs-navtree__row.is-hidden .lcs-navtree__name {
+  color: var(--theme-elevation-500);
+  font-weight: 500;
+}
+
+.lcs-navtree__meta {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+  color: var(--theme-elevation-500);
+}
+
+.lcs-navtree__chevron {
+  display: inline-flex;
+  flex: none;
+  color: var(--theme-elevation-400);
+  transition: transform 140ms ease;
+}
+
+.lcs-navtree__chevron.is-open {
+  transform: rotate(180deg);
+}
+
+/* ---------- Boutons de la ligne ---------- */
+.lcs-navtree__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  flex: none;
+}
+
+.lcs-navtree__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 5px;
+  background: none;
+  color: var(--theme-elevation-600);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.lcs-navtree__icon:hover:not(:disabled) {
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-1000);
+}
+
+.lcs-navtree__icon:focus-visible {
+  outline: 2px solid var(--lcs-gold);
+  outline-offset: -2px;
+}
+
+.lcs-navtree__icon:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.lcs-navtree__icon.is-danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--lcs-bordeaux) 14%, transparent);
+  color: var(--lcs-bordeaux);
+}
+
+[data-theme='dark'] .lcs-navtree__icon.is-danger:hover:not(:disabled) {
+  background: color-mix(in srgb, #e57373 20%, transparent);
+  color: #f0a3a3;
+}
+
+/* ---------- Les champs de Payload, une fois la ligne dépliée ---------- */
+.lcs-navtree__form {
+  padding: 0.25rem 0.85rem 0.85rem;
+  border-top: 1px solid var(--theme-elevation-100);
+  margin-top: 2px;
+}
+
+/* La case « Masquer dans le menu » double le bouton œil de la ligne. */
+.lcs-navtree__form .field-type.checkbox:has(input[id$='-hidden']) {
+  display: none;
+}
+
+/* Le niveau et l'ancien tableau de sous-liens sont pilotés par la liste. */
+.lcs-navtree__form .field-type.number:has(input[id$='-depth']) {
+  display: none;
+}
+
+@media (max-width: 800px) {
+  .lcs-navtree__meta {
+    display: none;
+  }
+
+  .lcs-navtree__name {
+    max-width: none;
+    flex: 1 1 auto;
+  }
+}

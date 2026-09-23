@@ -1,0 +1,293 @@
+/* ==========================================================================
+   Ordre des sections de la page d'accueil (Pages → Page d'accueil)
+   Composant : src/components/admin/HomeSectionsField.tsx
+   Une ligne par section : poignée, position, nom et rôle, puis les actions
+   (monter, descendre, masquer, modifier). Le trait doré qui apparaît pendant
+   le glissement annonce où la section va tomber.
+   ========================================================================== */
+.lcs-hsections {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  margin-bottom: 2rem !important;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--lcs-radius, 10px);
+  background: var(--theme-elevation-50);
+}
+
+.lcs-hsections__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.lcs-hsections__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--theme-elevation-1000);
+}
+
+.lcs-hsections__help {
+  margin: 0.3rem 0 0;
+  max-width: 62ch;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--theme-elevation-500);
+}
+
+.lcs-hsections__count {
+  margin: 0.2rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--lcs-gold-dark, #a07d2e);
+  white-space: nowrap;
+}
+
+.lcs-hsections__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lcs-hsections__row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 56px;
+  padding: 0.55rem 0.65rem 0.55rem 0.5rem;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--lcs-radius-sm, 6px);
+  background: var(--theme-input-bg, #fff);
+  transition: border-color 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
+}
+
+.lcs-hsections__list .lcs-hsections__row {
+  cursor: grab;
+}
+
+.lcs-hsections__list .lcs-hsections__row:hover {
+  border-color: var(--theme-elevation-250, var(--theme-elevation-200));
+}
+
+.lcs-hsections__row--fixed {
+  padding-left: 0.65rem;
+  background: transparent;
+  border-style: dashed;
+}
+
+.lcs-hsections__row.is-hidden .lcs-hsections__text {
+  opacity: 0.5;
+}
+
+.lcs-hsections__row.is-dragged {
+  opacity: 0.4;
+}
+
+/* Trait doré : emplacement de dépôt */
+.lcs-hsections__row.drop-before::before,
+.lcs-hsections__row.drop-after::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--lcs-gold, #c9a84c);
+  pointer-events: none;
+}
+
+.lcs-hsections__row.drop-before::before {
+  top: -4px;
+}
+
+.lcs-hsections__row.drop-after::after {
+  bottom: -4px;
+}
+
+.lcs-hsections__grip {
+  flex: none;
+  display: flex;
+  color: var(--theme-elevation-400);
+}
+
+.lcs-hsections__pos {
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-800);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.lcs-hsections__row--fixed .lcs-hsections__pos {
+  background: transparent;
+  border: 1px dashed var(--theme-elevation-250, var(--theme-elevation-200));
+  color: var(--theme-elevation-500);
+}
+
+.lcs-hsections__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: opacity 140ms ease;
+}
+
+.lcs-hsections__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--theme-elevation-1000);
+}
+
+.lcs-hsections__hint {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--theme-elevation-500);
+}
+
+.lcs-hsections__badge {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--theme-elevation-150);
+  color: var(--theme-elevation-800);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.lcs-hsections__badge--soft {
+  background: transparent;
+  border: 1px solid var(--theme-elevation-200);
+  color: var(--theme-elevation-500);
+  font-weight: 500;
+}
+
+.lcs-hsections__actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.lcs-hsections__icon,
+.lcs-hsections__edit {
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: var(--lcs-radius-sm, 6px);
+  background: transparent;
+  color: var(--theme-elevation-800);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+
+.lcs-hsections__icon {
+  width: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.lcs-hsections__icon:hover:not(:disabled) {
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-1000);
+}
+
+.lcs-hsections__icon:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.lcs-hsections__icon.is-off {
+  color: var(--lcs-bordeaux, #8b1a1a);
+}
+
+.lcs-hsections__edit {
+  margin-left: 6px;
+  padding: 0 12px;
+  border-color: var(--theme-elevation-200);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.lcs-hsections__edit:hover {
+  border-color: var(--lcs-gold, #c9a84c);
+  color: var(--lcs-gold-dark, #a07d2e);
+}
+
+.lcs-hsections__icon:focus-visible,
+.lcs-hsections__edit:focus-visible {
+  outline: 2px solid var(--lcs-gold, #c9a84c);
+  outline-offset: 1px;
+}
+
+.lcs-hsections__error {
+  margin: 0.25rem 0 0;
+  font-size: 0.82rem;
+  color: var(--theme-error-500, #8b1a1a);
+}
+
+.lcs-hsections__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Réglages d'une section atteints par « Modifier » : signalés un instant */
+.lcs-hsections-flash {
+  animation: lcs-hsections-flash 1.8s ease;
+  border-radius: var(--lcs-radius-sm, 6px);
+}
+
+@keyframes lcs-hsections-flash {
+  0%,
+  40% {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--lcs-gold, #c9a84c) 55%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 3px transparent;
+  }
+}
+
+@media (max-width: 700px) {
+  .lcs-hsections__row {
+    flex-wrap: wrap;
+  }
+
+  .lcs-hsections__actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lcs-hsections-flash {
+    animation: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--lcs-gold, #c9a84c) 55%, transparent);
+  }
+}

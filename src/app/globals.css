@@ -617,7 +617,7 @@ p {
 }
 
 /* ============================================================
-   HOME — modern hero (type cathedral + portrait + next concert)
+   HOME — modern hero (type cathedral + portrait)
    ============================================================ */
 .hero-modern {
   position: relative;
@@ -627,11 +627,11 @@ p {
   padding-top: var(--header-height);
   overflow: hidden;
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
   grid-template-rows: 1fr auto;
   grid-template-areas:
     "content portrait"
-    "credit  next";
+    "credit  portrait";
   gap: clamp(1.5rem, 4vw, 3rem);
   padding-inline: var(--gutter);
   padding-bottom: clamp(2rem, 4vw, 3rem);
@@ -641,14 +641,29 @@ p {
 @media (max-width: 900px) {
   .hero-modern {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto auto;
+    grid-template-rows: auto auto auto;
     grid-template-areas:
       "portrait"
       "content"
-      "next"
       "credit";
     gap: 2rem;
     padding-bottom: 3rem;
+  }
+}
+
+/* Sans ligne de repères (liste vide dans l'admin) : pas de rangée vide, dont
+   l'écart ajouterait du vide sous le texte. */
+.hero-modern:not(:has(.hero-modern__credit)) {
+  grid-template-rows: 1fr;
+  grid-template-areas: "content portrait";
+}
+
+@media (max-width: 900px) {
+  .hero-modern:not(:has(.hero-modern__credit)) {
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "portrait"
+      "content";
   }
 }
 
@@ -688,6 +703,8 @@ p {
   padding: clamp(1.5rem, 4vw, 3rem) 0;
   max-width: 100%;
   pointer-events: none;
+  /* Le titre se dimensionne sur la largeur de cette colonne (unités cqi). */
+  container-type: inline-size;
 }
 
 .hero-modern__content > * {
@@ -696,8 +713,12 @@ p {
 
 .hero-modern__title {
   font-family: var(--font-h1);
-  font-size: clamp(4rem, 13vw, 11rem);
-  line-height: 0.86;
+  /* Se règle sur la largeur de sa colonne (cqi), pour ne pas passer sur la
+     photo : « Symphonique » et son retrait mesurent jusqu'à 6,3 em dans les
+     polices du catalogue (Lora, Raleway, Bodoni…), d'où 15 cqi. Les trois
+     polices plus larges ont leur propre taille, plus bas (data-display). */
+  font-size: clamp(2.75rem, 15cqi, 8rem);
+  line-height: 0.9;
   font-weight: 400;
   letter-spacing: -0.04em;
   margin: 1.5rem 0 1.5rem;
@@ -708,7 +729,7 @@ p {
   position: relative;
   z-index: 3;
   width: max-content;
-  max-width: none;
+  max-width: 100%;
   text-shadow: 0 0 60px oklch(10% 0.010 55 / 0.55);
 }
 
@@ -721,7 +742,8 @@ p {
   font-style: italic;
   font-weight: 400;
   color: var(--on-bordeaux-glow);
-  margin-left: clamp(1.5rem, 6vw, 5rem);
+  /* Retrait proportionnel au titre, pour que le calcul de largeur tienne. */
+  margin-left: 0.55em;
   margin-top: -0.05em;
 }
 
@@ -751,7 +773,6 @@ p {
   align-self: stretch;
   background: var(--paper-deep);
   overflow: hidden;
-  margin-top: clamp(1rem, 3vw, 2rem);
 }
 
 .hero-modern__portrait::after {
@@ -789,62 +810,6 @@ p {
 
 .velvet-mark.on-dark { background: var(--on-bordeaux-glow); }
 
-.hero-modern__next-concert {
-  grid-area: next;
-  position: relative;
-  z-index: 1;
-  border: 1px solid color-mix(in oklch, var(--on-bordeaux-glow) 30%, transparent);
-  padding: 1.4rem 1.6rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  background: oklch(20% 0.06 18 / 0.4);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  align-self: end;
-  max-width: 100%;
-}
-
-.hero-modern__next-concert .eyebrow { margin-bottom: 0.25rem; }
-
-.hero-modern__next-date {
-  display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
-}
-
-.hero-modern__next-day {
-  font-family: var(--font-h2);
-  font-style: italic;
-  font-size: clamp(2.25rem, 3vw, 2.75rem);
-  font-variation-settings: "opsz" 144, "SOFT" var(--soft-h2, 100);
-  color: var(--on-bordeaux-glow);
-  line-height: 1;
-}
-
-.hero-modern__next-month {
-  font-family: var(--font-body);
-  font-size: 0.7rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--on-bordeaux-mute);
-}
-
-.hero-modern__next-title {
-  font-family: var(--font-h3);
-  font-size: clamp(1.05rem, 1.4vw, 1.25rem);
-  line-height: 1.2;
-  color: var(--on-bordeaux);
-  font-weight: 400;
-  margin-top: 0.25rem;
-}
-
-.hero-modern__next-venue {
-  font-family: var(--font-body);
-  font-size: 0.85rem;
-  color: var(--on-bordeaux-mute);
-}
-
 .hero-modern__credit {
   grid-area: credit;
   position: relative;
@@ -863,6 +828,13 @@ p {
 }
 
 .hero-modern__credit .dot { color: var(--on-bordeaux-glow); }
+
+.hero-modern__credit-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  white-space: nowrap;
+}
 
 /* ============================================================
    STATEMENT — manifesto line full-bleed
@@ -905,6 +877,12 @@ p {
     gap: 2.5rem;
   }
 }
+/* « Sans photo » (admin) : le manifeste seul, sur une colonne plus large. */
+.home-statement__inner--text {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 64rem;
+}
+
 
 .home-statement__media {
   position: relative;
@@ -1724,6 +1702,10 @@ p {
    HOME PARTNERS
    ============================================================ */
 .home-partners {
+  /* Les logos sont ramenés à une silhouette claire pour s'accorder entre eux
+     sur le fond sombre. Sur un fond clair, redéfinir ce filtre : « none » pour
+     les couleurs d'origine, « brightness(0) » pour une silhouette noire. */
+  --partner-logo-filter: brightness(0) invert(1);
   background: var(--paper);
   padding: clamp(3rem, 6vw, 5rem) 0;
   text-align: center;
@@ -1733,6 +1715,8 @@ p {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  /* Une rangée peut mêler des logos et des noms : on les centre entre eux. */
+  align-items: center;
   gap: clamp(1.5rem, 5vw, 4rem) clamp(2rem, 5vw, 4rem);
   max-width: var(--max-width);
   margin: 0 auto;
@@ -1753,6 +1737,36 @@ p {
 .home-partners__list li:hover {
   opacity: 1;
   color: var(--velvet);
+}
+
+/* Lien vers le site du partenaire, quand il est renseigné. */
+.home-partners__link {
+  display: inline-flex;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+}
+
+.home-partners__link:focus-visible {
+  outline: 1px solid var(--velvet);
+  outline-offset: 6px;
+}
+
+.home-partners__logo {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: clamp(7rem, 13vw, 10.5rem);
+  max-height: clamp(2rem, 3.2vw, 2.75rem);
+  object-fit: contain;
+  filter: var(--partner-logo-filter);
+}
+
+/* Ambiance claire : la section reste sur papier crème (ce n'est pas un des
+   bandeaux encrés du bloc THÈME), les logos y passent donc en silhouette
+   sombre — sans quoi ils seraient blancs sur crème, donc invisibles. */
+:root[data-mode='light'] .home-partners {
+  --partner-logo-filter: brightness(0);
 }
 
 /* ============================================================
@@ -6083,6 +6097,17 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   letter-spacing: -0.02em;
 }
 
+/* Polices larges : « Symphonique » + retrait = 7,2 em (Montserrat), 6,6 em
+   (Inter), 6,5 em (DM Sans). Taille réduite d'autant pour tenir dans la colonne. */
+:root[data-display='montserrat'] .hero-modern__title {
+  font-size: clamp(2.5rem, 13cqi, 7rem);
+}
+
+:root[data-display='inter'] .hero-modern__title,
+:root[data-display='dmsans'] .hero-modern__title {
+  font-size: clamp(2.5rem, 14cqi, 7.5rem);
+}
+
 /* ==========================================================================
    REPRÉSENTATIONS — un concert donné à plusieurs dates
    Sous une même affiche, la liste des dates à venir : jour, heure, lieu et
@@ -6327,6 +6352,17 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   color: var(--bordeaux);
 }
 
+.concert-feature__city {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+  margin-top: 0.3rem;
+}
+
 .concert-feature__action {
   justify-self: end;
 }
@@ -6380,7 +6416,8 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
 }
 
 .concert-feature.is-cancelled .concert-feature__stack,
-.concert-feature.is-cancelled .concert-feature__venue {
+.concert-feature.is-cancelled .concert-feature__venue,
+.concert-feature.is-cancelled .concert-feature__city {
   text-decoration: line-through;
   text-decoration-thickness: 1px;
 }

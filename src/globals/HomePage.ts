@@ -1,13 +1,29 @@
 import type { GlobalConfig } from 'payload'
+import { validateHomeSections } from '../lib/homeSections'
 
 export const HomePage: GlobalConfig = {
   slug: 'home-page',
   label: 'Page d\'accueil',
   admin: {
     group: 'Pages',
-    description: 'Contenu de la page d\'accueil : bannière, présentation et newsletter.',
+    description:
+      'Contenu de la page d\'accueil. En tête : l\'ordre des sections, à régler par glisser-déposer ; plus bas, le contenu de chaque section.',
   },
   fields: [
+    {
+      // Ordre et visibilité des sections, sous la bannière. JSON plutôt qu'un
+      // tableau Payload : une seule colonne, et une section ajoutée plus tard
+      // au site ne demande aucune migration (voir src/lib/homeSections.ts).
+      name: 'sections',
+      type: 'json',
+      label: 'Sections de la page',
+      validate: validateHomeSections as any,
+      admin: {
+        components: {
+          Field: '@/components/admin/HomeSectionsField#HomeSectionsField',
+        },
+      },
+    },
     {
       name: 'featured',
       type: 'group',
@@ -121,8 +137,8 @@ export const HomePage: GlobalConfig = {
     {
       name: 'hero',
       type: 'group',
-      label: 'Bannière principale',
-      admin: { description: 'Grande section en haut de la page d\'accueil.' },
+      label: 'Bannière',
+      admin: { description: 'Le grand titre et la photo, toujours en haut de la page d\'accueil.' },
       fields: [
         { name: 'subtitle', type: 'text', label: 'Sur-titre', admin: { description: 'Petit texte au-dessus du titre principal.' } },
         { name: 'titleLine1', type: 'text', label: 'Titre — ligne 1' },
@@ -155,12 +171,10 @@ export const HomePage: GlobalConfig = {
           label: 'Ligne de repères (bas de bannière)',
           labels: { singular: 'Repère', plural: 'Repères' },
           maxRows: 4,
-          defaultValue: [
-            { text: 'Fondé en 2017' },
-            { text: '40 à 80 musiciens' },
-            { text: 'Direction Loïc Emmelin' },
-          ],
-          admin: { description: 'Petits mots séparés par des points, en bas à gauche de la bannière.' },
+          admin: {
+            description:
+              'Petits mots séparés par des points, en bas à gauche de la bannière. Laissez vide pour ne rien afficher ; évitez de répéter la description ou la légende de la photo.',
+          },
           fields: [{ name: 'text', type: 'text', required: true, label: 'Texte' }],
         },
       ],
@@ -169,7 +183,7 @@ export const HomePage: GlobalConfig = {
       name: 'statement',
       type: 'group',
       label: 'Section Conviction',
-      admin: { description: 'Le manifeste en grandes lettres sous la bannière, avec une photo d\'ambiance.' },
+      admin: { description: 'Le manifeste en grandes lettres, avec une photo d\'ambiance.' },
       fields: [
         { name: 'eyebrow', type: 'text', label: 'Sur-titre', defaultValue: 'Notre conviction' },
         {
@@ -186,11 +200,23 @@ export const HomePage: GlobalConfig = {
         { name: 'ctaText', type: 'text', label: 'Lien — texte', defaultValue: 'Notre histoire' },
         { name: 'ctaLink', type: 'text', label: 'Lien — page', defaultValue: '/a-propos' },
         {
+          name: 'hideImage',
+          type: 'checkbox',
+          label: 'Sans photo',
+          defaultValue: false,
+          admin: {
+            description: 'Cochée, la section n\'affiche que le manifeste, sur toute la largeur.',
+          },
+        },
+        {
           name: 'image',
           type: 'upload',
           relationTo: 'media',
           label: 'Photo d\'ambiance',
-          admin: { description: 'Si vide, une photo d\'illustration par défaut est utilisée.' },
+          admin: {
+            description: 'Si vide, une photo d\'illustration par défaut est utilisée.',
+            condition: (_data, siblingData) => !siblingData?.hideImage,
+          },
         },
       ],
     },
@@ -292,7 +318,7 @@ export const HomePage: GlobalConfig = {
       name: 'presentation',
       type: 'group',
       label: 'Section Présentation',
-      admin: { description: 'Bloc de texte avec photo, affiché sous les concerts.' },
+      admin: { description: 'Bloc de texte avec photo.' },
       fields: [
         { name: 'subtitle', type: 'text', label: 'Sur-titre' },
         { name: 'title', type: 'text', label: 'Titre' },
@@ -307,7 +333,7 @@ export const HomePage: GlobalConfig = {
       name: 'newsletter',
       type: 'group',
       label: 'Section Newsletter',
-      admin: { description: 'Bloc d\'inscription à la newsletter, en bas de page.' },
+      admin: { description: 'Bloc d\'inscription à la newsletter.' },
       fields: [
         { name: 'subtitle', type: 'text', label: 'Sur-titre' },
         { name: 'title', type: 'text', label: 'Titre' },

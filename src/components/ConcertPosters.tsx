@@ -302,7 +302,7 @@ export function ConcertDates({
             {p.date.year !== baseYear && <> {p.date.year}</>}
             {p.date.time && <> · {p.date.time}</>}
           </time>
-          {p.venue && <span className="concert-dates__venue">{p.venue}</span>}
+          {p.place && <span className="concert-dates__venue">{p.place}</span>}
           {!cancelled && p.bookingLink && (
             <a
               href={p.bookingLink}

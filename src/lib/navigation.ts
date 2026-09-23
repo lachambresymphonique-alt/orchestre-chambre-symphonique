@@ -28,6 +28,7 @@ export type NavLink = {
 /** Pages fixes du site, proposées dans l'admin. `value` est la clé enregistrée en base. */
 export const BUILTIN_PAGES = [
   { value: 'home', href: '/', label: 'Accueil' },
+  { value: 'concerts', href: '/concerts', label: 'Concerts' },
   { value: 'about', href: '/a-propos', label: 'À propos' },
   { value: 'director', href: '/directeur-artistique', label: 'Direction' },
   { value: 'musicians', href: '/musiciens', label: 'Musiciens' },
@@ -39,7 +40,7 @@ export const BUILTIN_PAGES = [
 ] as const;
 
 /** Pages proposées dans l'admin mais absentes du menu par défaut (sous-rubriques). */
-const NOT_IN_DEFAULT_MENU: ReadonlySet<string> = new Set(['projects']);
+const NOT_IN_DEFAULT_MENU: ReadonlySet<string> = new Set(['projects', 'concerts']);
 const DEFAULT_PAGES = BUILTIN_PAGES.filter((p) => !NOT_IN_DEFAULT_MENU.has(p.value));
 
 export type BuiltinPageKey = (typeof BUILTIN_PAGES)[number]['value'];
@@ -64,7 +65,13 @@ export type NavigationItemDoc = {
   newTab?: boolean | null;
   /** Masquée : conservée dans l'admin mais absente du menu du site. */
   hidden?: boolean | null;
-  /** Type « group » : les liens du sous-menu (mêmes champs, sans sous-niveau). */
+  /**
+   * 0 = entrée de premier niveau, 1 = lien rattaché à l'entrée de niveau 0 qui
+   * la précède. La liste est à plat : c'est cette profondeur qui dessine les
+   * sous-menus, et c'est elle que le glisser-déposer de l'admin modifie.
+   */
+  depth?: number | null;
+  /** Ancienne forme des sous-menus (tableau imbriqué), encore lue. */
   children?: NavigationItemDoc[] | null;
 };
 
@@ -80,29 +87,58 @@ export function isInternalHref(href: string): boolean {
  * Les entrées incomplètes, les pages non publiées ou supprimées sont ignorées.
  */
 export function resolveNavItems(nav: NavigationDoc): NavLink[] {
-  const items = Array.isArray(nav?.items) ? nav.items : [];
   const links: NavLink[] = [];
 
-  for (const item of items) {
+  for (const { item, children } of groupNavItems(nav)) {
+    // Une entrée masquée emporte ses sous-liens : le bloc entier disparaît.
     if (item?.hidden === true) continue;
 
-    if (item?.type === 'group') {
-      // Sous-menu : un titre et ses liens ; vide (tout masqué, incomplet), il disparaît.
-      const title = (item.label ?? '').trim();
-      const children = (Array.isArray(item.children) ? item.children : [])
-        .filter((child) => child?.hidden !== true)
-        .map(resolveLink)
-        .filter((link): link is NavLink => link !== null);
-      if (!title || children.length === 0) continue;
-      links.push({ href: '', label: title, children });
+    const kids = children
+      .filter((child) => child?.hidden !== true)
+      .map(resolveLink)
+      .filter((link): link is NavLink => link !== null);
+
+    // Une entrée qui a des sous-liens devient le titre du sous-menu : c'est lui
+    // qui ouvre le menu déroulant, son propre lien n'est plus atteignable.
+    if (kids.length > 0) {
+      const title = (item?.label ?? '').trim() || resolveLink(item)?.label || '';
+      if (!title) continue;
+      links.push({ href: '', label: title, children: kids });
       continue;
     }
+
+    // Un titre de sous-menu sans aucun sous-lien n'a rien à ouvrir : il disparaît.
+    if (item?.type === 'group') continue;
 
     const link = resolveLink(item);
     if (link) links.push(link);
   }
 
   return links;
+}
+
+/**
+ * Liste plate → blocs (une entrée de premier niveau et ses sous-liens).
+ *
+ * Une ligne de profondeur 1 se rattache à l'entrée de profondeur 0 qui la
+ * précède ; sans entrée au-dessus d'elle, elle remonte au premier niveau
+ * plutôt que de disparaître. Les sous-liens de l'ancienne forme (tableau
+ * `children` imbriqué) sont repris en tête.
+ */
+function groupNavItems(nav: NavigationDoc): { item: NavigationItemDoc; children: NavigationItemDoc[] }[] {
+  const items = Array.isArray(nav?.items) ? nav.items : [];
+  const groups: { item: NavigationItemDoc; children: NavigationItemDoc[] }[] = [];
+
+  for (const item of items) {
+    const nested = Array.isArray(item?.children) ? item.children : [];
+    if (item?.depth === 1 && groups.length > 0) {
+      groups[groups.length - 1].children.push(item, ...nested);
+      continue;
+    }
+    groups.push({ item, children: [...nested] });
+  }
+
+  return groups;
 }
 
 /** Une entrée simple (page du site, page de l'admin, lien libre) → lien, ou null si incomplète. */

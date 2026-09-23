@@ -23,16 +23,17 @@ import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { UnsavedChanges as UnsavedChanges_937f98f92304cb030c9bd5ab6af069f0 } from '@/components/admin/UnsavedChanges'
 import { ConcertDateCell as ConcertDateCell_a4bec657baa40be44d47c8f1a300ac27 } from '@/components/admin/ConcertDateCell'
-import { ConcertRelationSummary as ConcertRelationSummary_2ca3343c9d3df24ab3b7ab898be63c2a } from '@/components/admin/ConcertRelationSummary'
 import { ConcertPerformanceRowLabel as ConcertPerformanceRowLabel_3bdb41ae31c16bb59408a2f1f3625608 } from '@/components/admin/ConcertPerformanceRowLabel'
 import { ConcertsListNav as ConcertsListNav_2b5e84c20ff024dced76640216aaefa0 } from '@/components/admin/ConcertsListNav'
 import { MusiciansTabsNav as MusiciansTabsNav_f0bf74af169ff57631fe48d885ee464a } from '@/components/admin/MusiciansTabsNav'
+import { ConcertRelationSummary as ConcertRelationSummary_2ca3343c9d3df24ab3b7ab898be63c2a } from '@/components/admin/ConcertRelationSummary'
 import { ArticleCanvas as ArticleCanvas_d7fdcb78bc02a06a36c5d381f18d2161 } from '@/components/admin/ArticleCanvas'
 import { ArticleTextField as ArticleTextField_783e1ada3d7c421250d9c82c69e88d4c } from '@/components/admin/ArticleTextField'
 import { ArticleCoverField as ArticleCoverField_15a6e3f3df8ef585032dddb3e3a58684 } from '@/components/admin/ArticleCoverField'
 import { FixedToolbarFeatureClient as FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { PostsListNav as PostsListNav_e587839e76f5c3444fd715bac47db6a9 } from '@/components/admin/PostsListNav'
 import { PromoteSubmissionButton as PromoteSubmissionButton_8d30722c0b0e7fa1a9b8a839577f9a11 } from '@/components/admin/PromoteSubmissionButton'
+import { HomeSectionsField as HomeSectionsField_4f0be2871a168e5a6640850cd2d2a706 } from '@/components/admin/HomeSectionsField'
 import { ConcertLayoutField as ConcertLayoutField_5c2dc134ff87a1bc27aa82c9887f36fc } from '@/components/admin/ConcertLayoutField'
 import { MusicianFormCoreNote as MusicianFormCoreNote_06e40e52a38c8c46926f7949f0a13d21 } from '@/components/admin/MusicianFormRowLabel'
 import { MusicianFormChoiceRowLabel as MusicianFormChoiceRowLabel_06e40e52a38c8c46926f7949f0a13d21 } from '@/components/admin/MusicianFormRowLabel'
@@ -49,8 +50,7 @@ import { ThemeChoiceField as ThemeChoiceField_e5377ffb001fd2479a009351e0411846 }
 import { ThemeSummary as ThemeSummary_8ac0b2d77bf10bc361bf96ce288c68cb } from '@/components/admin/ThemeSummary'
 import { ColorPickerField as ColorPickerField_d572ded1c017fe858839e8cdc754e090 } from '@/components/admin/ColorPickerField'
 import { FontPreviewField as FontPreviewField_58bad2c11be57550fc4300d2f844cb48 } from '@/components/admin/FontPreviewField'
-import { NavItemsSummary as NavItemsSummary_83b5fd269b28c009f3d42d60454851df } from '@/components/admin/NavItemsSummary'
-import { NavItemRowLabel as NavItemRowLabel_204443de73f46b3225ba40b2bba5389e } from '@/components/admin/NavItemRowLabel'
+import { NavTree as NavTree_e5d9efe585f5f5de45f981bffb601b5d } from '@/components/admin/NavTree'
 import { AdminIcon as AdminIcon_d500ae2ad98a0a33d640ae0ac1a3417c } from '@/components/admin/AdminIcon'
 import { AdminLogo as AdminLogo_b80a86fce1072afc84cd6a430a965697 } from '@/components/admin/AdminLogo'
 import { HeaderSiteLink as HeaderSiteLink_67bb467c5b5fe7e595a72cdfb499f798 } from '@/components/admin/HeaderSiteLink'
@@ -91,16 +91,17 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/admin/UnsavedChanges#UnsavedChanges": UnsavedChanges_937f98f92304cb030c9bd5ab6af069f0,
   "@/components/admin/ConcertDateCell#ConcertDateCell": ConcertDateCell_a4bec657baa40be44d47c8f1a300ac27,
-  "@/components/admin/ConcertRelationSummary#ConcertRelationSummary": ConcertRelationSummary_2ca3343c9d3df24ab3b7ab898be63c2a,
   "@/components/admin/ConcertPerformanceRowLabel#ConcertPerformanceRowLabel": ConcertPerformanceRowLabel_3bdb41ae31c16bb59408a2f1f3625608,
   "@/components/admin/ConcertsListNav#ConcertsListNav": ConcertsListNav_2b5e84c20ff024dced76640216aaefa0,
   "@/components/admin/MusiciansTabsNav#MusiciansTabsNav": MusiciansTabsNav_f0bf74af169ff57631fe48d885ee464a,
+  "@/components/admin/ConcertRelationSummary#ConcertRelationSummary": ConcertRelationSummary_2ca3343c9d3df24ab3b7ab898be63c2a,
   "@/components/admin/ArticleCanvas#ArticleCanvas": ArticleCanvas_d7fdcb78bc02a06a36c5d381f18d2161,
   "@/components/admin/ArticleTextField#ArticleTextField": ArticleTextField_783e1ada3d7c421250d9c82c69e88d4c,
   "@/components/admin/ArticleCoverField#ArticleCoverField": ArticleCoverField_15a6e3f3df8ef585032dddb3e3a58684,
   "@payloadcms/richtext-lexical/client#FixedToolbarFeatureClient": FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/admin/PostsListNav#PostsListNav": PostsListNav_e587839e76f5c3444fd715bac47db6a9,
   "@/components/admin/PromoteSubmissionButton#PromoteSubmissionButton": PromoteSubmissionButton_8d30722c0b0e7fa1a9b8a839577f9a11,
+  "@/components/admin/HomeSectionsField#HomeSectionsField": HomeSectionsField_4f0be2871a168e5a6640850cd2d2a706,
   "@/components/admin/ConcertLayoutField#ConcertLayoutField": ConcertLayoutField_5c2dc134ff87a1bc27aa82c9887f36fc,
   "@/components/admin/MusicianFormRowLabel#MusicianFormCoreNote": MusicianFormCoreNote_06e40e52a38c8c46926f7949f0a13d21,
   "@/components/admin/MusicianFormRowLabel#MusicianFormChoiceRowLabel": MusicianFormChoiceRowLabel_06e40e52a38c8c46926f7949f0a13d21,
@@ -117,8 +118,7 @@ export const importMap = {
   "@/components/admin/ThemeSummary#ThemeSummary": ThemeSummary_8ac0b2d77bf10bc361bf96ce288c68cb,
   "@/components/admin/ColorPickerField#ColorPickerField": ColorPickerField_d572ded1c017fe858839e8cdc754e090,
   "@/components/admin/FontPreviewField#FontPreviewField": FontPreviewField_58bad2c11be57550fc4300d2f844cb48,
-  "@/components/admin/NavItemsSummary#NavItemsSummary": NavItemsSummary_83b5fd269b28c009f3d42d60454851df,
-  "@/components/admin/NavItemRowLabel#NavItemRowLabel": NavItemRowLabel_204443de73f46b3225ba40b2bba5389e,
+  "@/components/admin/NavTree#NavTree": NavTree_e5d9efe585f5f5de45f981bffb601b5d,
   "@/components/admin/AdminIcon#AdminIcon": AdminIcon_d500ae2ad98a0a33d640ae0ac1a3417c,
   "@/components/admin/AdminLogo#AdminLogo": AdminLogo_b80a86fce1072afc84cd6a430a965697,
   "@/components/admin/HeaderSiteLink#HeaderSiteLink": HeaderSiteLink_67bb467c5b5fe7e595a72cdfb499f798,

@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react';
 import { useFormFields } from '@payloadcms/ui';
 import { postCategory } from '@/lib/postCategories';
 import { ADMIN_FONTS_HREF } from '@/lib/theme';
+import { useToolbarLabels } from './useToolbarLabels';
 
 /**
  * Feuille Google Fonts : les polices du site (tout le catalogue d'« Apparence
@@ -22,6 +23,7 @@ type Props = {
 export function ArticleCanvasClient({ displayFont, vars }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const category = useFormFields(([fields]) => fields?.category?.value as string | undefined);
+  useToolbarLabels(ref);
 
   useEffect(() => {
     if (document.querySelector('link[data-lcs-article-fonts]')) return;

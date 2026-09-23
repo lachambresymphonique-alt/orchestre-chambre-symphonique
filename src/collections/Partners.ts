@@ -17,13 +17,19 @@ export const Partners: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
       label: 'Logo',
-      admin: { description: 'Image du logo (de préférence en SVG ou PNG transparent).' },
+      admin: {
+        description:
+          'Sur le site, le logo est affiché en clair sur le fond sombre : choisissez un SVG ou un PNG à fond transparent. Sans logo, c’est le nom du partenaire qui s’affiche, comme aujourd’hui.',
+      },
     },
     {
       name: 'url',
       type: 'text',
       label: 'Site web',
-      admin: { description: 'URL complète du site du partenaire (ex : https://...).' },
+      admin: {
+        description:
+          'Adresse du site du partenaire (ex : https://exemple.fr). Le logo ou le nom devient alors un lien qui s’ouvre dans un nouvel onglet. « exemple.fr » suffit, le https est ajouté.',
+      },
     },
     {
       name: 'order',

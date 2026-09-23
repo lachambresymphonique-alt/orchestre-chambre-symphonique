@@ -2110,3 +2110,17 @@ hr,
   line-height: 1.45;
   color: var(--theme-elevation-500);
 }
+
+/* ==========================================================================
+   Bibliothèque d'images — vignette de la liste
+   Payload rend une vignette de 40 px dans la colonne du nom de fichier ; on
+   l'agrandit pour qu'une photo se reconnaisse sans l'ouvrir.
+   ========================================================================== */
+.file__thumbnail {
+  max-width: 64px;
+  height: 64px;
+}
+
+.file__filename {
+  overflow-wrap: anywhere;
+}

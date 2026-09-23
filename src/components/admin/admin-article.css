@@ -406,7 +406,7 @@
 
 /* ---------- Le texte : la colonne de lecture du site ---------- */
 .collection-edit--posts .lcs-article--body #field-content {
-  max-width: 760px;
+  max-width: calc(760px + 3rem);
   margin-left: auto;
   margin-right: auto;
 }
@@ -452,6 +452,44 @@
   color: var(--lcs-a-cream-soft);
 }
 
+.collection-edit--posts .lcs-article--body .fixed-toolbar__group {
+  gap: 2px;
+}
+
+.collection-edit--posts .lcs-article--body .fixed-toolbar__group + .fixed-toolbar__group {
+  margin-left: 6px;
+  padding-left: 6px;
+  border-left: 1px solid var(--lcs-a-rule);
+}
+
+.collection-edit--posts .lcs-article--body .fixed-toolbar .icon {
+  color: var(--lcs-a-cream-soft);
+}
+
+.collection-edit--posts .lcs-article--body .fixed-toolbar .toolbar-popup__button:hover:not(.disabled),
+.collection-edit--posts .lcs-article--body .fixed-toolbar .toolbar-popup__button.active {
+  background-color: var(--lcs-a-paper-deep);
+}
+
+.collection-edit--posts .lcs-article--body .fixed-toolbar .toolbar-popup__button.active .icon {
+  color: var(--lcs-a-amber);
+}
+
+/* « Image » écrit en toutes lettres : l'action la plus cherchée. */
+.collection-edit--posts .lcs-article--body .fixed-toolbar .toolbar-popup__button-upload {
+  width: auto;
+  gap: 4px;
+  padding: 0 10px 0 5px;
+}
+
+.collection-edit--posts .lcs-article--body .fixed-toolbar .toolbar-popup__button-upload::after {
+  content: 'Image';
+  font-family: var(--lcs-a-sans);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--lcs-a-cream-soft);
+}
+
 .collection-edit--posts .lcs-article--body .fixed-toolbar__dropdown-items,
 .collection-edit--posts .lcs-article--body .toolbar-popup__dropdown-items {
   background: var(--lcs-a-paper-deep);
@@ -464,10 +502,42 @@
   letter-spacing: normal;
 }
 
+/* La marge gauche de 3rem est celle de Payload : elle loge les deux poignées
+   de bloc (déplacer, insérer). La supprimer les fait passer sur le texte. */
 .collection-edit--posts .lcs-article--body .ContentEditable__root {
-  padding: 2rem 0 3rem;
+  padding: 2rem 0 3rem 3rem;
   color: var(--lcs-a-cream-soft);
   line-height: 1.85;
+}
+
+/* Filet vertical de la marge : invisible, sauf pour signaler une erreur. */
+.collection-edit--posts .lcs-article--body .rich-text-lexical:not(.error) .ContentEditable__root::before {
+  border-left-color: transparent !important;
+}
+
+/* Poignées de bloc : transparentes (elles ne masquent jamais le texte) et
+   dessinées en clair, lisibles sur le fond sombre. */
+.collection-edit--posts .lcs-article--body .draggable-block-menu,
+.collection-edit--posts .lcs-article--body .add-block-menu {
+  background-color: transparent;
+}
+
+.collection-edit--posts .lcs-article--body .draggable-block-menu:hover,
+.collection-edit--posts .lcs-article--body .add-block-menu:hover {
+  background-color: var(--lcs-a-paper-deep);
+}
+
+.collection-edit--posts .lcs-article--body .draggable-block-menu .icon,
+.collection-edit--posts .lcs-article--body .add-block-menu .icon {
+  opacity: 0.55;
+}
+
+.collection-edit--posts .lcs-article--body .draggable-block-menu .icon {
+  background-image: url('data:image/svg+xml,<svg width="18" height="24" viewBox="0 0 18 24" fill="%23f3ece0" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="8" r="1"/><circle cx="11" cy="8" r="1"/><circle cx="7" cy="12" r="1"/><circle cx="11" cy="12" r="1"/><circle cx="7" cy="16" r="1"/><circle cx="11" cy="16" r="1"/></svg>');
+}
+
+.collection-edit--posts .lcs-article--body .add-block-menu .icon {
+  background-image: url('data:image/svg+xml,<svg width="18" height="24" viewBox="0 0 18 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5,12h8" stroke="%23f3ece0"/><path d="M9,16V8" stroke="%23f3ece0"/></svg>');
 }
 
 .collection-edit--posts .lcs-article--body .editor-container > .editor-scroller > .editor > .ContentEditable__root {
@@ -571,6 +641,25 @@
   color: var(--lcs-a-velvet);
 }
 
+/* L'admin Payload remet `ul, ol` à list-style: none : sans ces règles, une
+   liste saisie s'affiche comme de simples paragraphes. */
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__ul {
+  list-style: disc outside;
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__ul .LexicalEditorTheme__ul {
+  list-style-type: circle;
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__ol1 {
+  list-style: decimal outside;
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__ol2 {
+  list-style: lower-alpha outside;
+  padding-left: 1.5rem;
+}
+
 .collection-edit--posts .lcs-article--body .LexicalEditorTheme__nestedListItem {
   list-style: none;
 }
@@ -620,8 +709,7 @@
 }
 
 .collection-edit--posts .lcs-article--body #field-content > .field-description {
-  max-width: 720px;
-  margin: 0 auto;
+  margin: 0 0 0 3rem;
   padding-top: 0.75rem;
   border-top: 1px solid var(--lcs-a-rule);
 }

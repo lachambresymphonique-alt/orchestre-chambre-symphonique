@@ -17,6 +17,9 @@ export const Media: CollectionConfig = {
     useAsTitle: 'alt',
     group: 'Bibliothèque d’images',
     description: 'Toutes les photos, logos et illustrations utilisés sur le site. Vous pouvez les téléverser ici puis les sélectionner depuis n’importe quelle page.',
+    // La colonne « nom du fichier » porte la vignette de l'image : en la
+    // mettant en tête, la liste se parcourt à l'œil plutôt qu'au texte.
+    defaultColumns: ['filename', 'alt', 'updatedAt'],
   },
   fields: [
     {

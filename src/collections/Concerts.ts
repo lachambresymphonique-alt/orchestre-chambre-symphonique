@@ -159,12 +159,28 @@ export const Concerts: CollectionConfig = {
           ],
         },
         {
-          name: 'venue',
-          type: 'text',
-          required: true,
-          label: 'Lieu',
-          hooks: { beforeValidate: [trim] },
-          admin: { description: 'Salle et ville. Ex : « Basilique Notre-Dame, Beaune »' },
+          type: 'row',
+          fields: [
+            {
+              name: 'venue',
+              type: 'text',
+              required: true,
+              label: 'Lieu',
+              hooks: { beforeValidate: [trim] },
+              admin: { width: '60%', description: 'La salle. Ex : « Basilique Notre-Dame »' },
+            },
+            {
+              name: 'city',
+              type: 'text',
+              label: 'Ville',
+              hooks: { beforeValidate: [trim] },
+              admin: {
+                width: '40%',
+                placeholder: 'Beaune',
+                description: 'Affichée sous la salle, sur sa propre ligne.',
+              },
+            },
+          ],
         },
         {
           name: 'bookingLink',

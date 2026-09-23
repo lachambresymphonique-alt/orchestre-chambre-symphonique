@@ -27,7 +27,7 @@ function entryFields(nested: boolean): Field[] {
       defaultValue: 'builtin',
       options: nested
         ? TYPE_OPTIONS
-        : [...TYPE_OPTIONS, { label: 'Sous-menu (un titre et ses liens)', value: 'group' }],
+        : [...TYPE_OPTIONS, { label: 'Titre seul (ouvre un sous-menu)', value: 'group' }],
       admin: { layout: 'horizontal' },
     },
     {
@@ -116,21 +116,25 @@ function entryFields(nested: boolean): Field[] {
   ]
   if (!nested) {
     fields.push({
+      name: 'depth',
+      type: 'number',
+      label: 'Niveau',
+      defaultValue: 0,
+      min: 0,
+      max: 1,
+      // Piloté par le glisser-déposer de l'éditeur (NavTree) : 0 pour une
+      // entrée de premier niveau, 1 pour un lien rangé sous l'entrée du dessus.
+      admin: { hidden: true },
+    })
+    fields.push({
       name: 'children',
       type: 'array',
       label: 'Liens du sous-menu',
       labels: { singular: 'Lien', plural: 'Liens' },
-      admin: {
-        initCollapsed: true,
-        description:
-          'Le titre ci-dessus s\'affiche dans le menu ; ces liens s\'ouvrent au survol ou au clic. Glissez-les pour changer leur ordre.',
-        condition: (_data, siblingData) => siblingData?.type === 'group',
-        components: { RowLabel: '@/components/admin/NavItemRowLabel#NavItemRowLabel' },
-      },
-      validate: (value: unknown, { siblingData }: RowContext) =>
-        siblingData?.type === 'group' && (!Array.isArray(value) || value.length === 0)
-          ? 'Ajoutez au moins un lien au sous-menu.'
-          : true,
+      // Ancienne forme des sous-menus, remplacée par la profondeur des lignes.
+      // Conservée pour ne rien perdre de ce qui aurait été saisi : le site la
+      // lit encore (resolveNavItems), l'éditeur ne l'écrit plus.
+      admin: { hidden: true },
       fields: entryFields(true),
     })
   }
@@ -140,11 +144,11 @@ function entryFields(nested: boolean): Field[] {
 /**
  * Menu principal du site (Réglages → Menu du site).
  *
- * Écran pensé pour être lu d'un coup d'œil : les lignes sont repliées et leur
- * titre résume l'entrée (texte, type, adresse, état) avec un bouton
- * « Masquer / Afficher » (NavItemRowLabel) ; un compteur sous le titre donne le
- * nombre d'entrées affichées et masquées (NavItemsSummary). Dépliée, une ligne
- * tient en trois rangées : type, page + texte, options.
+ * Le menu est une seule liste à plat : chaque entrée porte son niveau (`depth`,
+ * 0 ou 1) et une entrée de niveau 1 se range sous celle de niveau 0 qui la
+ * précède. C'est l'éditeur NavTree qui dessine cette liste et qui pilote
+ * l'ordre et les niveaux au glisser-déposer ; déplier une ligne y affiche les
+ * champs ci-dessus, tels que Payload les rend d'habitude.
  */
 export const Navigation: GlobalConfig = {
   slug: 'navigation',
@@ -152,7 +156,7 @@ export const Navigation: GlobalConfig = {
   admin: {
     group: 'Réglages',
     description:
-      'Glissez les entrées pour changer leur ordre. « Masquer » retire une entrée du menu sans la supprimer. Pensez à enregistrer.',
+      'Glissez une entrée pour la déplacer, vers la droite pour la ranger sous celle du dessus. « Masquer » la retire du menu sans la supprimer. Pensez à enregistrer.',
   },
   fields: [
     {
@@ -163,8 +167,7 @@ export const Navigation: GlobalConfig = {
       admin: {
         initCollapsed: true,
         components: {
-          RowLabel: '@/components/admin/NavItemRowLabel#NavItemRowLabel',
-          Description: '@/components/admin/NavItemsSummary#NavItemsSummary',
+          Field: '@/components/admin/NavTree#NavTree',
         },
       },
       fields: entryFields(false),

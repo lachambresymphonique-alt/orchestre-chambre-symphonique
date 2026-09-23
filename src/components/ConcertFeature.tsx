@@ -7,8 +7,8 @@ import { describeDateRange } from './ConcertPosters';
 
 /**
  * Concert à la une de l'accueil : l'affiche en grand à gauche ; à droite le
- * titre, chaque représentation avec sa date, son lieu et son lien de
- * billetterie, puis le programme.
+ * titre, chaque représentation avec sa date, sa salle, sa ville et son lien
+ * de billetterie, puis le programme.
  *
  * Le concert à la une se choisit dans l'admin (Concerts → une fiche → case
  * « À la une sur l'accueil ») ; à défaut, c'est le prochain concert.
@@ -123,6 +123,7 @@ export function ConcertFeature({ concert, labels }: { concert: ConcertCard; labe
                       {p.date.time ? ` · ${p.date.time}` : ''}
                     </span>
                     <span className="concert-feature__venue">{p.venue}</span>
+                    {p.city && <span className="concert-feature__city">{p.city}</span>}
                   </div>
                   <div className="concert-feature__action">
                     {cancelled ? (
@@ -133,7 +134,7 @@ export function ConcertFeature({ concert, labels }: { concert: ConcertCard; labe
                         className="concert-feature__book"
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label={`${labels.booking} — ${p.date.long}, ${p.venue}`}
+                        aria-label={`${labels.booking} — ${p.date.long}, ${p.place}`}
                       >
                         {labels.booking} <span aria-hidden="true">→</span>
                       </a>

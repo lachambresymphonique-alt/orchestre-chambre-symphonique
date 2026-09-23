@@ -3,7 +3,7 @@
  *
  * A concert is one programme and one poster given at one or more
  * *performances* (« représentations »), each with a real `date` (ISO
- * instant), an optional free text `time` (« 20h30 »), a `venue` and an
+ * instant), an optional free text `time` (« 20h30 »), a `venue`, a `city` and an
  * optional `bookingLink`. The calendar day of a performance is always read in
  * Europe/Paris, whatever the timezone of the server (Vercel runs in UTC) or of
  * the editor's browser. Dates are normalised to noon UTC on save so that any
@@ -28,8 +28,17 @@ export type ConcertPerformanceDoc = {
   date?: string | Date | null;
   time?: string | null;
   venue?: string | null;
+  city?: string | null;
   bookingLink?: string | null;
 };
+
+/** « Basilique Notre-Dame, Beaune » — the venue alone when the city is unknown. */
+export function formatPlace(venue: string | null | undefined, city: string | null | undefined): string {
+  const v = venue?.trim() || '';
+  const c = city?.trim() || '';
+  if (v && c) return `${v}, ${c}`;
+  return v || c;
+}
 
 export type ConcertDoc = {
   id: string | number;
@@ -41,7 +50,7 @@ export type ConcertDoc = {
   lastDate?: string | Date | null;
   /** Derived: first performance. */
   time?: string | null;
-  /** Derived: every venue, joined with « · ». */
+  /** Derived: every place (venue and city), joined with « · ». */
   venue?: string | null;
   /** Derived: first performance. */
   bookingLink?: string | null;
@@ -122,14 +131,19 @@ export type ConcertDateView = {
 export type ConcertPerformanceView = {
   id: string;
   date: ConcertDateView;
+  /** The venue alone (« Basilique Notre-Dame »). */
   venue: string;
+  /** The city alone (« Beaune »), empty when unknown. */
+  city: string;
+  /** Venue and city on one line (« Basilique Notre-Dame, Beaune »). */
+  place: string;
   bookingLink: string | null;
 };
 
 export type ConcertCard = {
   id: string | number;
   title: string;
-  /** Venue of the performance shown in `date`. */
+  /** Venue and city of the performance shown in `date`, on one line. */
   venue: string;
   program: string;
   /** Booking link of the performance shown in `date`. */
@@ -278,6 +292,7 @@ export function performancesOf(doc: Partial<ConcertDoc>): ConcertPerformanceDoc[
         date: doc.date,
         time: doc.time ?? null,
         venue: doc.venue ?? null,
+        city: null,
         bookingLink: doc.bookingLink ?? null,
       },
     ];
@@ -295,8 +310,8 @@ export type DerivedConcertFields = {
 
 /**
  * Top-level fields kept in sync with the performances: first and last date,
- * first time and booking link, every distinct venue joined with « · » (so the
- * admin search finds a concert by any of its venues).
+ * first time and booking link, every distinct place (venue and city) joined
+ * with « · » (so the admin search finds a concert by any of its venues or cities).
  */
 export function deriveConcertFields(performances: ConcertPerformanceDoc[]): DerivedConcertFields {
   const sorted = sortPerformances(performances.filter((p) => p && parisDateKey(p.date ?? null)));
@@ -304,7 +319,7 @@ export function deriveConcertFields(performances: ConcertPerformanceDoc[]): Deri
   const last = sorted[sorted.length - 1];
   const venues: string[] = [];
   for (const p of sorted) {
-    const v = p.venue?.trim();
+    const v = formatPlace(p.venue, p.city);
     if (v && !venues.includes(v)) venues.push(v);
   }
   return {
@@ -369,10 +384,14 @@ export function describePerformance(
 ): ConcertPerformanceView | null {
   const date = describeConcertDate(perf.date ?? null, perf.time, now);
   if (!date) return null;
+  const venue = perf.venue?.trim() || '';
+  const city = perf.city?.trim() || '';
   return {
-    id: perf.id || `${date.key}-${perf.venue || ''}`,
+    id: perf.id || `${date.key}-${venue}`,
     date,
-    venue: perf.venue?.trim() || '',
+    venue,
+    city,
+    place: formatPlace(venue, city),
     bookingLink: perf.bookingLink?.trim() || null,
   };
 }
@@ -411,7 +430,7 @@ export function toConcertCard(doc: ConcertDoc, now: Date = new Date()): ConcertC
   return {
     id: doc.id,
     title: doc.title?.trim() || 'Concert',
-    venue: primary.venue,
+    venue: primary.place,
     program: doc.program?.trim() || '',
     bookingLink: primary.bookingLink,
     image: img
