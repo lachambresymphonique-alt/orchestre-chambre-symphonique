@@ -1,7 +1,7 @@
 import './admin-theme.css';
 import Link from 'next/link';
 import { getPayloadClient } from '@/lib/payload';
-import { startOfKeyIso, todayKey } from '@/lib/concerts';
+import { concertsUpcomingListUrl, startOfKeyIso, todayKey } from '@/lib/concerts';
 
 type Props = {
   searchParams?: Record<string, unknown>;
@@ -20,6 +20,7 @@ export async function ConcertsListNav({ searchParams }: Props) {
   let past = 0;
   let drafts = 0;
   let missing = 0;
+  let total = 0;
 
   try {
     const payload = await getPayloadClient();
@@ -29,11 +30,12 @@ export async function ConcertsListNav({ searchParams }: Props) {
         .then((r) => r.totalDocs ?? 0)
         .catch(() => 0);
 
-    [upcoming, past, drafts, missing] = await Promise.all([
+    [upcoming, past, drafts, missing, total] = await Promise.all([
       count({ date: { greater_than_equal: startOfToday } }),
       count({ date: { less_than: startOfToday } }),
       count({ status: { equals: 'draft' } }),
       count({ date: { exists: false } }),
+      count({}),
     ]);
   } catch {
     // Counts are decorative; never block the list view.
@@ -45,7 +47,7 @@ export async function ConcertsListNav({ searchParams }: Props) {
       key: 'upcoming',
       label: 'À venir',
       count: upcoming,
-      href: `${base}?where[and][0][date][greater_than_equal]=${encodeURIComponent(startOfToday)}&sort=date`,
+      href: concertsUpcomingListUrl(),
       hint: 'Visibles sur le site',
     },
     {
@@ -55,7 +57,9 @@ export async function ConcertsListNav({ searchParams }: Props) {
       href: `${base}?where[and][0][date][less_than]=${encodeURIComponent(startOfToday)}&sort=-date`,
       hint: 'Archive, masqués du site',
     },
-    { key: 'all', label: 'Tous', href: base },
+    // Un paramètre est nécessaire : l'adresse nue est redirigée vers « À venir »
+    // par middleware.ts, qui donne sa vue de départ à la liste.
+    { key: 'all', label: 'Tous', count: total, href: `${base}?sort=-date` },
   ];
 
   // Detect the active filter from the raw query string keys/values.

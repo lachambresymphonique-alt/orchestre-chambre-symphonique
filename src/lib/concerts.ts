@@ -231,6 +231,21 @@ export function toConcertCard(doc: ConcertDoc, now: Date = new Date()): ConcertC
   };
 }
 
+// ─── Admin ───────────────────────────────────────────────────────────────────
+
+/** Liste des concerts dans l'admin. */
+export const CONCERTS_ADMIN_LIST = '/admin/collections/concerts';
+
+/**
+ * Adresse de la vue « À venir » de la liste des concerts : même filtre que
+ * l'onglet du même nom, et vue de départ vers laquelle `middleware.ts`
+ * redirige l'adresse nue de la liste.
+ */
+export function concertsUpcomingListUrl(now: Date = new Date()): string {
+  const from = encodeURIComponent(startOfKeyIso(todayKey(now)));
+  return `${CONCERTS_ADMIN_LIST}?where[and][0][date][greater_than_equal]=${from}&sort=date`;
+}
+
 // ─── Queries ─────────────────────────────────────────────────────────────────
 
 type PayloadLike = {
