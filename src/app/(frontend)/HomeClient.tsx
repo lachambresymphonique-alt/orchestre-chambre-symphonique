@@ -169,7 +169,14 @@ export function HomeClient({
     concerts: () => (
       <>
         {/* CONCERTS — affichage choisi dans l'admin : affiches, bande ou liste */}
-        <section className="home-concerts" id="concerts" data-live-link="/admin/collections/concerts">
+        {/* data-live-field : depuis l'éditeur de la page d'accueil, un clic sélectionne la section
+            (affichage, titres, libellés) ; data-live-link : ailleurs, il ouvre les concerts. */}
+        <section
+          className="home-concerts"
+          id="concerts"
+          data-live-field="concerts"
+          data-live-link="/admin/collections/concerts"
+        >
           <header className="home-concerts__head">
             <p className="eyebrow">{concertsCfg.eyebrow || 'La saison'}</p>
             <h2 className="home-concerts__title">
@@ -533,7 +540,7 @@ export function HomeClient({
       <>
         {/* PARTNERS */}
         {partners.length > 0 && (
-          <section className="home-partners" data-live-link="/admin/collections/partners">
+          <section className="home-partners" data-live-field="partners" data-live-link="/admin/collections/partners">
             <p className="eyebrow eyebrow--centered">{partnersCfg.eyebrow || 'Avec le soutien de'}</p>
             <ul className="home-partners__list">
               {partners.map((partner: any, i: number) => {

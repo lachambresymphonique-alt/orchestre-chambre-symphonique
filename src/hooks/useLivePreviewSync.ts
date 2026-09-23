@@ -261,6 +261,20 @@ export function useLivePreviewSync(data: any) {
   useEffect(() => {
     if (!isInIframe) return;
 
+    // Sélectionne une section de l'aperçu et amène l'admin sur son champ.
+    // Faux si le formulaire ouvert n'a pas ce champ (la section appartient à une autre fiche).
+    const selectSection = (target: HTMLElement): boolean => {
+      const fieldName = target.getAttribute('data-live-field');
+      if (!fieldName) return false;
+      if (!scrollAdminToField(fieldName)) return false;
+      document.querySelectorAll<HTMLElement>('[data-live-field]').forEach((el) => {
+        el.classList.remove('live-field--selected');
+      });
+      target.classList.add('live-field--selected');
+      activeFieldRef.current = fieldName;
+      return true;
+    };
+
     const handleClick = (e: MouseEvent) => {
       const root = e.target as HTMLElement;
 
@@ -283,6 +297,15 @@ export function useLivePreviewSync(data: any) {
             first.scrollIntoView({ behavior: 'smooth', block: 'center' });
             focusFieldInput(first);
           }
+          return;
+        }
+        // Lien vers une autre fiche, mais dans une section du formulaire ouvert
+        // (ex. un concert dans la section Concerts, pendant qu'on édite la page
+        // d'accueil) : la section passe avant, on règle son affichage ici.
+        const section = root.closest<HTMLElement>('[data-live-field]');
+        if (section && section.contains(linkTarget) && selectSection(section)) {
+          e.preventDefault();
+          e.stopPropagation();
           return;
         }
         if (path) {
