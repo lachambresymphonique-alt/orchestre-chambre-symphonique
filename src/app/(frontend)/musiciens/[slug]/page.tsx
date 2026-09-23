@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getPayloadClient } from '@/lib/payload';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
-import { LivePreviewSync } from '@/components/LivePreviewSync';
-import { MusicianDetail, type Musician } from '@/components/MusicianDetail';
+import { MusicianDetailLive } from '@/components/MusicianDetailLive';
+import type { Musician } from '@/components/MusicianDetail';
 
 async function getMusician(handle: string): Promise<Musician | null> {
   const payload = await getPayloadClient();
@@ -61,8 +61,7 @@ export default async function MusicianPage({ params }: { params: Promise<{ slug:
   return (
     <>
       <RefreshOnSave />
-      <LivePreviewSync />
-      <MusicianDetail musician={m} labels={labels} />
+      <MusicianDetailLive musician={m} labels={labels} />
     </>
   );
 }
