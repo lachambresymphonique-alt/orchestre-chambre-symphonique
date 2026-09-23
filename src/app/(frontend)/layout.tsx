@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Fraunces, Inter, Source_Serif_4 } from 'next/font/google';
+import { Bodoni_Moda, Fraunces, Ibarra_Real_Nova, Inter, Source_Serif_4 } from 'next/font/google';
 import Script from 'next/script';
 import '../globals.css';
 import { Header } from '@/components/Header';
@@ -12,6 +12,23 @@ const fraunces = Fraunces({
   subsets: ['latin'],
   style: ['normal', 'italic'],
   axes: ['SOFT', 'opsz'],
+  display: 'swap',
+});
+
+// Polices de titres proposées dans « Réglages → Apparence du site ». Le
+// navigateur ne télécharge que celle qui est réellement utilisée.
+const ibarra = Ibarra_Real_Nova({
+  variable: '--font-ibarra',
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+});
+
+const bodoni = Bodoni_Moda({
+  variable: '--font-bodoni',
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  axes: ['opsz'],
   display: 'swap',
 });
 
@@ -56,6 +73,24 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
+/** Valeurs acceptées pour la typographie des titres (voir globals.css). */
+const DISPLAY_FONTS = ['fraunces-soft', 'fraunces-sharp', 'ibarra', 'bodoni'] as const;
+type DisplayFont = (typeof DISPLAY_FONTS)[number];
+
+/** Typographie choisie dans l'admin ; le dessin d'origine par défaut. */
+async function getDisplayFont(
+  payload: Awaited<ReturnType<typeof getPayloadClient>>,
+): Promise<DisplayFont> {
+  try {
+    const theme = await payload.findGlobal({ slug: 'theme-settings' as any });
+    const chosen = (theme as any)?.displayFont;
+    if (DISPLAY_FONTS.includes(chosen)) return chosen;
+  } catch {
+    // Réglage absent (schéma pas encore poussé) : dessin d'origine.
+  }
+  return 'fraunces-soft';
+}
+
 /** Menu principal : composé dans l'admin (Réglages → Menu du site), sinon menu historique. */
 async function getNavItems(
   payload: Awaited<ReturnType<typeof getPayloadClient>>,
@@ -96,9 +131,10 @@ export default async function FrontendLayout({
   children: React.ReactNode;
 }) {
   const payload = await getPayloadClient();
-  const [siteSettings, navItems] = await Promise.all([
+  const [siteSettings, navItems, displayFont] = await Promise.all([
     payload.findGlobal({ slug: 'site-settings' as any }),
     getNavItems(payload),
+    getDisplayFont(payload),
   ]);
 
   const settings = {
@@ -106,14 +142,21 @@ export default async function FrontendLayout({
     contact: (siteSettings as any).contact,
   };
 
-  const fontClasses = [fraunces.variable, inter.variable, sourceSerif.variable].join(' ');
+  const fontClasses = [
+    fraunces.variable,
+    ibarra.variable,
+    bodoni.variable,
+    inter.variable,
+    sourceSerif.variable,
+  ].join(' ');
 
   return (
     // The font variables must live on <html>: the design tokens in globals.css
     // (--font-display, --font-body…) are declared on :root and reference them.
     // Declared on <body> they were undefined at :root, which invalidated the
     // tokens and made the whole site fall back to Times.
-    <html lang="fr" className={fontClasses}>
+    // data-display : typographie des titres choisie dans l'admin.
+    <html lang="fr" className={fontClasses} data-display={displayFont}>
       <body>
         {/* Google tag (gtag.js) */}
         <Script

@@ -29,6 +29,7 @@ import { ThemePreview as ThemePreview_241328c85efc932e9142e9a487516caf } from '@
 import { ColorPickerField as ColorPickerField_d572ded1c017fe858839e8cdc754e090 } from '@/components/admin/ColorPickerField'
 import { FontPreviewField as FontPreviewField_58bad2c11be57550fc4300d2f844cb48 } from '@/components/admin/FontPreviewField'
 import { ConcertLayoutField as ConcertLayoutField_5c2dc134ff87a1bc27aa82c9887f36fc } from '@/components/admin/ConcertLayoutField'
+import { DisplayFontField as DisplayFontField_307bdf94f3509d3afd145b42122f8531 } from '@/components/admin/DisplayFontField'
 import { AdminIcon as AdminIcon_d500ae2ad98a0a33d640ae0ac1a3417c } from '@/components/admin/AdminIcon'
 import { AdminLogo as AdminLogo_b80a86fce1072afc84cd6a430a965697 } from '@/components/admin/AdminLogo'
 import { BeforeDashboard as BeforeDashboard_915324d4628771dbb8d31cdc4601c33e } from '@/components/admin/BeforeDashboard'
@@ -72,6 +73,7 @@ export const importMap = {
   "@/components/admin/ColorPickerField#ColorPickerField": ColorPickerField_d572ded1c017fe858839e8cdc754e090,
   "@/components/admin/FontPreviewField#FontPreviewField": FontPreviewField_58bad2c11be57550fc4300d2f844cb48,
   "@/components/admin/ConcertLayoutField#ConcertLayoutField": ConcertLayoutField_5c2dc134ff87a1bc27aa82c9887f36fc,
+  "@/components/admin/DisplayFontField#DisplayFontField": DisplayFontField_307bdf94f3509d3afd145b42122f8531,
   "@/components/admin/AdminIcon#AdminIcon": AdminIcon_d500ae2ad98a0a33d640ae0ac1a3417c,
   "@/components/admin/AdminLogo#AdminLogo": AdminLogo_b80a86fce1072afc84cd6a430a965697,
   "@/components/admin/BeforeDashboard#BeforeDashboard": BeforeDashboard_915324d4628771dbb8d31cdc4601c33e,

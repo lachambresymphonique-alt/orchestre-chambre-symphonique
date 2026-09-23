@@ -43,8 +43,8 @@
   --font-body:       var(--font-inter), -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
 
   /* Fraunces variation defaults */
-  --fraunces-display: "opsz" 144, "SOFT" 100;
-  --fraunces-body:    "opsz" 18, "SOFT" 70;
+  --fraunces-display: "opsz" 144, "SOFT" var(--lcs-soft, 100);
+  --fraunces-body:    "opsz" 18, "SOFT" var(--lcs-soft, 70);
 
   /* === Layout === */
   --max-width:       1240px;
@@ -452,7 +452,7 @@ p {
 
 .footer h4 {
   font-family: var(--font-display);
-  font-variation-settings: "opsz" 36, "SOFT" 80;
+  font-variation-settings: "opsz" 36, "SOFT" var(--lcs-soft, 80);
   font-style: italic;
   font-size: 1.05rem;
   font-weight: 400;
@@ -688,7 +688,7 @@ p {
   display: flex;
   flex-direction: column;
   color: var(--on-bordeaux);
-  font-variation-settings: "opsz" 144, "SOFT" 100;
+  font-variation-settings: "opsz" 144, "SOFT" var(--lcs-soft, 100);
   position: relative;
   z-index: 3;
   width: max-content;
@@ -801,7 +801,7 @@ p {
   font-family: var(--font-display);
   font-style: italic;
   font-size: clamp(2.25rem, 3vw, 2.75rem);
-  font-variation-settings: "opsz" 144, "SOFT" 100;
+  font-variation-settings: "opsz" 144, "SOFT" var(--lcs-soft, 100);
   color: var(--on-bordeaux-glow);
   line-height: 1;
 }
@@ -942,7 +942,7 @@ p {
   line-height: 1.18;
   letter-spacing: -0.022em;
   color: var(--on-bordeaux);
-  font-variation-settings: "opsz" 144, "SOFT" 100;
+  font-variation-settings: "opsz" 144, "SOFT" var(--lcs-soft, 100);
   margin: 0 0 2rem;
 }
 
@@ -1013,7 +1013,7 @@ p {
   font-family: var(--font-display);
   font-style: italic;
   font-size: clamp(4rem, 7vw, 6rem);
-  font-variation-settings: "opsz" 144, "SOFT" 100;
+  font-variation-settings: "opsz" 144, "SOFT" var(--lcs-soft, 100);
   color: var(--velvet);
   line-height: 0.9;
   letter-spacing: -0.03em;
@@ -1246,7 +1246,7 @@ p {
   font-family: var(--font-display);
   font-style: italic;
   font-size: clamp(4rem, 8vw, 7rem);
-  font-variation-settings: "opsz" 144, "SOFT" 100;
+  font-variation-settings: "opsz" 144, "SOFT" var(--lcs-soft, 100);
   color: var(--velvet);
   line-height: 0.85;
   letter-spacing: -0.04em;
@@ -1283,7 +1283,7 @@ p {
   font-style: italic;
   font-size: clamp(1.1rem, 1.6vw, 1.5rem);
   font-weight: 400;
-  font-variation-settings: "opsz" 36, "SOFT" 100;
+  font-variation-settings: "opsz" 36, "SOFT" var(--lcs-soft, 100);
   letter-spacing: -0.005em;
 }
 
@@ -1390,7 +1390,7 @@ p {
 .concert-row__day {
   font-family: var(--font-display);
   font-style: italic;
-  font-variation-settings: "opsz" 144, "SOFT" 100;
+  font-variation-settings: "opsz" 144, "SOFT" var(--lcs-soft, 100);
   font-size: clamp(2.5rem, 4vw, 3.5rem);
   line-height: 0.95;
   font-weight: 400;
@@ -1501,7 +1501,7 @@ p {
 
 .home-soloists__intro {
   font-family: var(--font-body-serif);
-  font-variation-settings: "opsz" 28, "SOFT" 90;
+  font-variation-settings: "opsz" 28, "SOFT" var(--lcs-soft, 90);
   font-style: italic;
   font-size: clamp(1.05rem, 1.4vw, 1.2rem);
   line-height: 1.55;
@@ -1587,7 +1587,7 @@ p {
 
 .home-soloist__context {
   font-family: var(--font-body-serif);
-  font-variation-settings: "opsz" 18, "SOFT" 90;
+  font-variation-settings: "opsz" 18, "SOFT" var(--lcs-soft, 90);
   font-style: italic;
   font-size: 1rem;
   line-height: 1.45;
@@ -2025,7 +2025,7 @@ button.musician-card:hover .musician-name {
 
 .musician-preview-banner em {
   font-family: var(--font-body-serif);
-  font-variation-settings: "opsz" 18, "SOFT" 90;
+  font-variation-settings: "opsz" 18, "SOFT" var(--lcs-soft, 90);
   font-style: italic;
   color: var(--bordeaux);
 }
@@ -2118,7 +2118,7 @@ button.musician-card:hover .musician-name {
 .musician-feature__tagline {
   font-family: var(--font-body-serif);
   font-style: italic;
-  font-variation-settings: "opsz" 28, "SOFT" 80;
+  font-variation-settings: "opsz" 28, "SOFT" var(--lcs-soft, 80);
   font-size: clamp(1.25rem, 1.8vw, 1.5rem);
   line-height: 1.45;
   color: var(--bordeaux);
@@ -2319,7 +2319,7 @@ button.musician-card:hover .musician-name {
 .contribute-hero__title em {
   font-style: italic;
   color: var(--velvet);
-  font-variation-settings: "opsz" 144, "SOFT" 100;
+  font-variation-settings: "opsz" 144, "SOFT" var(--lcs-soft, 100);
 }
 
 .contribute-hero__lede {
@@ -2378,7 +2378,7 @@ button.musician-card:hover .musician-name {
 .contribute-aside-list li em {
   font-family: var(--font-body-serif);
   font-style: italic;
-  font-variation-settings: "opsz" 18, "SOFT" 90;
+  font-variation-settings: "opsz" 18, "SOFT" var(--lcs-soft, 90);
   color: var(--bordeaux);
   font-size: 1.02em;
 }
@@ -2423,7 +2423,7 @@ button.musician-card:hover .musician-name {
 .contribute-act__index {
   font-family: var(--font-display);
   font-style: italic;
-  font-variation-settings: "opsz" 28, "SOFT" 100;
+  font-variation-settings: "opsz" 28, "SOFT" var(--lcs-soft, 100);
   font-size: 1.4rem;
   color: var(--velvet);
   line-height: 1;
@@ -2666,7 +2666,7 @@ button.musician-card:hover .musician-name {
 
 .contribute-dropzone__copy em {
   font-family: var(--font-body-serif);
-  font-variation-settings: "opsz" 18, "SOFT" 90;
+  font-variation-settings: "opsz" 18, "SOFT" var(--lcs-soft, 90);
   font-style: italic;
   font-size: 1.05rem;
   color: var(--bordeaux);
@@ -2692,7 +2692,7 @@ button.musician-card:hover .musician-name {
 
 .contribute-outro__line {
   font-family: var(--font-body-serif);
-  font-variation-settings: "opsz" 28, "SOFT" 100;
+  font-variation-settings: "opsz" 28, "SOFT" var(--lcs-soft, 100);
   font-style: italic;
   font-size: clamp(1.15rem, 1.6vw, 1.4rem);
   line-height: 1.45;
@@ -2762,7 +2762,7 @@ button.musician-card:hover .musician-name {
 
 .contribute-success__body {
   font-family: var(--font-body-serif);
-  font-variation-settings: "opsz" 28, "SOFT" 90;
+  font-variation-settings: "opsz" 28, "SOFT" var(--lcs-soft, 90);
   font-style: italic;
   font-size: clamp(1.1rem, 1.5vw, 1.3rem);
   line-height: 1.6;
@@ -2966,7 +2966,7 @@ button.musician-card:hover .musician-name {
 
 .director-hero__role {
   font-family: var(--font-display);
-  font-variation-settings: "opsz" 48, "SOFT" 100;
+  font-variation-settings: "opsz" 48, "SOFT" var(--lcs-soft, 100);
   font-style: italic;
   font-size: clamp(1.4rem, 2.4vw, 2rem);
   line-height: 1.2;
@@ -3035,7 +3035,7 @@ button.musician-card:hover .musician-name {
 
 .director-facts dd {
   font-family: var(--font-display);
-  font-variation-settings: "opsz" 28, "SOFT" 80;
+  font-variation-settings: "opsz" 28, "SOFT" var(--lcs-soft, 80);
   font-size: clamp(1.05rem, 1.5vw, 1.3rem);
   line-height: 1.3;
   color: var(--bordeaux);
@@ -3084,7 +3084,7 @@ button.musician-card:hover .musician-name {
 
 .director-story__title {
   font-family: var(--font-display);
-  font-variation-settings: "opsz" 80, "SOFT" 100;
+  font-variation-settings: "opsz" 80, "SOFT" var(--lcs-soft, 100);
   font-size: clamp(2rem, 3.5vw, 2.8rem);
   line-height: 1.05;
   font-weight: 400;
@@ -3116,7 +3116,7 @@ button.musician-card:hover .musician-name {
 
 .director-story__body p[data-lead] {
   font-family: var(--font-body-serif);
-  font-variation-settings: "opsz" 32, "SOFT" 90;
+  font-variation-settings: "opsz" 32, "SOFT" var(--lcs-soft, 90);
   font-style: italic;
   font-size: clamp(1.2rem, 1.6vw, 1.4rem);
   line-height: 1.55;
@@ -3160,7 +3160,7 @@ button.musician-card:hover .musician-name {
 
 .director-path__title {
   font-family: var(--font-display);
-  font-variation-settings: "opsz" 80, "SOFT" 100;
+  font-variation-settings: "opsz" 80, "SOFT" var(--lcs-soft, 100);
   font-size: clamp(2rem, 3.5vw, 2.8rem);
   line-height: 1.05;
   font-weight: 400;
@@ -3260,7 +3260,7 @@ button.musician-card:hover .musician-name {
 
 .director-signature__name {
   font-family: var(--font-display);
-  font-variation-settings: "opsz" 24, "SOFT" 80;
+  font-variation-settings: "opsz" 24, "SOFT" var(--lcs-soft, 80);
   font-size: 1.05rem;
   letter-spacing: 0.08em;
   color: var(--on-bordeaux);
@@ -3359,7 +3359,7 @@ button.musician-card:hover .musician-name {
 
 .director-encore__card-title {
   font-family: var(--font-display);
-  font-variation-settings: "opsz" 60, "SOFT" 90;
+  font-variation-settings: "opsz" 60, "SOFT" var(--lcs-soft, 90);
   font-size: clamp(1.3rem, 1.8vw, 1.55rem);
   line-height: 1.18;
   color: var(--bordeaux);
@@ -3496,7 +3496,7 @@ button.musician-card:hover .musician-name {
 
 .director-empty-stage__lede {
   font-family: var(--font-body-serif);
-  font-variation-settings: "opsz" 32, "SOFT" 90;
+  font-variation-settings: "opsz" 32, "SOFT" var(--lcs-soft, 90);
   font-style: italic;
   font-size: clamp(1.1rem, 1.6vw, 1.35rem);
   line-height: 1.55;
@@ -3585,7 +3585,7 @@ button.musician-card:hover .musician-name {
 
 .about-intro__prose p[data-lead] {
   font-family: var(--font-body-serif);
-  font-variation-settings: "opsz" 28, "SOFT" 80;
+  font-variation-settings: "opsz" 28, "SOFT" var(--lcs-soft, 80);
   font-style: italic;
   font-size: clamp(1.2rem, 1.6vw, 1.4rem);
   line-height: 1.55;
@@ -3631,7 +3631,7 @@ button.musician-card:hover .musician-name {
 .about-stats__number {
   font-family: var(--font-display);
   font-style: italic;
-  font-variation-settings: "opsz" 144, "SOFT" 100;
+  font-variation-settings: "opsz" 144, "SOFT" var(--lcs-soft, 100);
   font-size: clamp(2.5rem, 4vw, 3.5rem);
   font-weight: 400;
   color: var(--velvet);
@@ -4252,7 +4252,7 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
 
 .donation-sim__lede {
   font-family: var(--font-body-serif);
-  font-variation-settings: "opsz" 28, "SOFT" 90;
+  font-variation-settings: "opsz" 28, "SOFT" var(--lcs-soft, 90);
   font-style: italic;
   font-size: clamp(1.05rem, 1.4vw, 1.2rem);
   line-height: 1.55;
@@ -4320,7 +4320,7 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
 
 .donation-sim__audience-btn span {
   font-family: var(--font-display);
-  font-variation-settings: "opsz" 24, "SOFT" 80;
+  font-variation-settings: "opsz" 24, "SOFT" var(--lcs-soft, 80);
   text-transform: none;
   letter-spacing: 0;
   font-size: 0.75rem;
@@ -4393,7 +4393,7 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
 
 .donation-sim__amount-suffix {
   font-family: var(--font-display);
-  font-variation-settings: "opsz" 60, "SOFT" 90;
+  font-variation-settings: "opsz" 60, "SOFT" var(--lcs-soft, 90);
   font-size: clamp(1.5rem, 3vw, 2rem);
   color: var(--velvet);
   font-style: italic;
@@ -4504,7 +4504,7 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
 
 .donation-sim__costs dd {
   font-family: var(--font-display);
-  font-variation-settings: "opsz" 60, "SOFT" 90;
+  font-variation-settings: "opsz" 60, "SOFT" var(--lcs-soft, 90);
   font-size: clamp(1.5rem, 2.5vw, 2rem);
   line-height: 1.05;
   color: var(--bordeaux);
@@ -4585,7 +4585,7 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
 
 .donation-sim__impact-main h3 {
   font-family: var(--font-display);
-  font-variation-settings: "opsz" 60, "SOFT" 90;
+  font-variation-settings: "opsz" 60, "SOFT" var(--lcs-soft, 90);
   font-size: clamp(1.4rem, 2.4vw, 1.85rem);
   line-height: 1.15;
   font-weight: 400;
@@ -4651,7 +4651,7 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
 
 .donation-sim__rung-amount {
   font-family: var(--font-display);
-  font-variation-settings: "opsz" 24, "SOFT" 80;
+  font-variation-settings: "opsz" 24, "SOFT" var(--lcs-soft, 80);
   font-size: 0.9rem;
   font-weight: 500;
   font-style: italic;
@@ -5006,7 +5006,7 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
 .concert-poster__stub-day {
   font-family: var(--font-display);
   font-style: italic;
-  font-variation-settings: "opsz" 144, "SOFT" 100;
+  font-variation-settings: "opsz" 144, "SOFT" var(--lcs-soft, 100);
   font-size: 2.6rem;
   line-height: 0.85;
   color: var(--velvet);
@@ -5038,7 +5038,7 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
 .concert-poster__blank-day {
   font-family: var(--font-display);
   font-style: italic;
-  font-variation-settings: "opsz" 144, "SOFT" 100;
+  font-variation-settings: "opsz" 144, "SOFT" var(--lcs-soft, 100);
   font-size: clamp(6rem, 9vw, 9.5rem);
   line-height: 0.85;
   color: var(--velvet);
@@ -5268,4 +5268,40 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   .concerts-strip__track > .concert-poster {
     flex-basis: min(78vw, 20rem);
   }
+}
+
+/* ============================================================
+   TYPOGRAPHIE DES TITRES
+   Choisie dans l'admin : Réglages → Apparence du site.
+   La valeur arrive sur <html data-display="…"> (voir layout.tsx) ; seule la
+   police d'affichage change, le corps de texte et les tailles ne bougent pas.
+   ============================================================ */
+
+/* Fraunces, dessin d'origine : réglages déjà posés sur :root, rien à faire. */
+
+/* Fraunces sans arrondi : même police, empattements nets. Chaque règle garde
+   sa taille optique et lit l'arrondi dans --lcs-soft, dont 0 coupe l'arrondi. */
+:root[data-display='fraunces-sharp'] {
+  --lcs-soft: 0;
+}
+
+/* Ibarra Real Nova — transitionnelle chaleureuse, italique calligraphique. */
+:root[data-display='ibarra'] {
+  --font-display: var(--font-ibarra), 'Tiempos Headline', Georgia, serif;
+}
+
+/* Bodoni Moda — didone contrastée. Les axes de Fraunces laissés en place sont
+   ignorés, sauf « opsz » que Bodoni ramène à sa propre plage. */
+:root[data-display='bodoni'] {
+  --font-display: var(--font-bodoni), 'Tiempos Headline', Georgia, serif;
+}
+
+/* L'interlettrage du très grand titre est dessiné pour Fraunces : les autres
+   polices ont besoin d'un peu plus d'air. */
+:root[data-display='ibarra'] .hero-modern__title {
+  letter-spacing: -0.025em;
+}
+
+:root[data-display='bodoni'] .hero-modern__title {
+  letter-spacing: -0.02em;
 }

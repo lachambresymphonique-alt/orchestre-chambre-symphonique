@@ -81,6 +81,7 @@ export default buildConfig({
             'media-page': '/medias',
             'musicians-page': '/musiciens',
             'site-settings': '/contact',
+            'theme-settings': '/',
             navigation: '/',
           };
           return `${base}${map[globalConfig.slug] || '/'}`;
@@ -105,7 +106,7 @@ export default buildConfig({
         }
         return `${base}${collectionMap[slug] || '/'}`;
       },
-      globals: ['home-page', 'about-page', 'support-page', 'director-page', 'contact-page', 'media-page', 'musicians-page', 'site-settings', 'navigation'],
+      globals: ['home-page', 'about-page', 'support-page', 'director-page', 'contact-page', 'media-page', 'musicians-page', 'site-settings', 'navigation', 'theme-settings'],
       collections: ['concerts', 'musicians', 'media-items', 'partners', 'timeline-events', 'support-tiers', 'pages', 'musician-submissions'],
       breakpoints: [
         { label: 'Mobile', name: 'mobile', width: 375, height: 667 },

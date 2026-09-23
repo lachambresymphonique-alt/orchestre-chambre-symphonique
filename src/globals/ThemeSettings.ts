@@ -5,19 +5,34 @@ export const ThemeSettings: GlobalConfig = {
   label: 'Apparence du site',
   admin: {
     group: 'Réglages',
-    description: 'Personnalisez les couleurs, polices et le mode d\'affichage du site.',
+    description:
+      "Le style du site : pour l'instant, la typographie de tous les titres.",
   },
   fields: [
-    // Live preview of theme
     {
-      name: 'themePreviewUI',
-      type: 'ui',
+      name: 'displayFont',
+      type: 'radio',
+      label: 'Typographie des titres',
+      defaultValue: 'fraunces-soft',
+      options: [
+        { label: 'Ibarra Real Nova', value: 'ibarra' },
+        { label: 'Bodoni Moda', value: 'bodoni' },
+        { label: 'Fraunces affûté', value: 'fraunces-sharp' },
+        { label: 'Fraunces arrondi (dessin d\'origine)', value: 'fraunces-soft' },
+      ],
       admin: {
+        description:
+          "S'applique à tous les titres du site : bannière, titres de section, noms de concerts et de musiciens. Enregistrez, puis rechargez le site pour voir le résultat.",
         components: {
-          Field: '@/components/admin/ThemePreview#ThemePreview',
+          Field: '@/components/admin/DisplayFontField#DisplayFontField',
         },
       },
     },
+
+    // ── Ancien système de thème (couleurs, mode clair/sombre, polices) ──
+    // Aucune page du site ne l'a jamais lu : ces réglages n'avaient aucun
+    // effet. Ils sont masqués plutôt que supprimés pour ne rien perdre en
+    // base ; à retirer, colonnes comprises, une fois la décision prise.
     {
       name: 'mode',
       type: 'select',
@@ -25,6 +40,7 @@ export const ThemeSettings: GlobalConfig = {
       defaultValue: 'light',
       required: true,
       admin: {
+        hidden: true,
         description: 'Choisissez le theme par defaut du site.',
       },
       options: [
@@ -39,6 +55,7 @@ export const ThemeSettings: GlobalConfig = {
       label: 'Permettre aux visiteurs de changer de theme',
       defaultValue: true,
       admin: {
+        hidden: true,
         description: 'Affiche un bouton pour basculer entre les modes clair et sombre.',
       },
     },
@@ -47,6 +64,7 @@ export const ThemeSettings: GlobalConfig = {
       type: 'group',
       label: 'Couleurs',
       admin: {
+        hidden: true,
         description: 'Personnalisez la palette de couleurs du site.',
       },
       fields: [
@@ -105,6 +123,7 @@ export const ThemeSettings: GlobalConfig = {
       type: 'group',
       label: 'Theme clair',
       admin: {
+        hidden: true,
         description: 'Couleurs du mode clair.',
       },
       fields: [
@@ -172,6 +191,7 @@ export const ThemeSettings: GlobalConfig = {
       type: 'group',
       label: 'Theme sombre',
       admin: {
+        hidden: true,
         description: 'Couleurs du mode sombre.',
       },
       fields: [
@@ -239,6 +259,7 @@ export const ThemeSettings: GlobalConfig = {
       type: 'group',
       label: 'Typographie',
       admin: {
+        hidden: true,
         description: 'Polices de caracteres utilisees sur le site.',
       },
       fields: [

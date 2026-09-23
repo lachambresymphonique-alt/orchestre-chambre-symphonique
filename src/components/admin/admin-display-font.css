@@ -1,0 +1,40 @@
+/* ==========================================================================
+   Choix de la typographie des titres (Réglages → Apparence du site)
+   Composant : src/components/admin/DisplayFontField.tsx
+   Reprend les vignettes de .lcs-layout (admin-theme.css) : ici, l'aperçu est
+   le nom de l'orchestre écrit dans la police elle-même, sur fond sombre.
+   ========================================================================== */
+.lcs-layout__grid--fonts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 760px) {
+  .lcs-layout__grid--fonts {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Hauteur fixe : l'aperçu est une ligne de titre, pas une image. */
+.lcs-layout__art--type {
+  display: grid;
+  place-items: center;
+  aspect-ratio: auto;
+  height: 120px;
+  padding: 8px 12px;
+}
+
+.lcs-fontsample {
+  display: block;
+  text-align: center;
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  color: #f4ece0;
+}
+
+.lcs-fontsample em {
+  display: block;
+  font-style: italic;
+  color: #e9b872;
+}
