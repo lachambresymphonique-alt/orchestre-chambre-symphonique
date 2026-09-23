@@ -77,9 +77,10 @@ export function MusicianSubmissionForm({ formToken }: MusicianSubmissionFormProp
         </h2>
         <hr className="velvet-rule long" />
         <p className="contribute-success__body">
-          Vos informations viennent d’arriver à l’équipe. Nous les ajouterons
-          prochainement à la page Musiciens. Si nous avons besoin d’une
-          précision, nous vous écrirons à l’adresse que vous avez indiquée.
+          Vos informations viennent d’arriver à l’équipe. Votre fiche paraîtra
+          sur la page Musiciens dès qu’elle aura été relue et validée. Si nous
+          avons besoin d’une précision, nous vous écrirons à l’adresse que vous
+          avez indiquée.
         </p>
       </div>
     );

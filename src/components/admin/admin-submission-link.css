@@ -1,0 +1,150 @@
+/* ==========================================================================
+   Lien du formulaire musiciens (Musiciens → en haut de liste)
+   Composant : src/components/admin/SubmissionFormLink.tsx
+   Posé dans la même ligne que les onglets : le bouton « Créer » reste à droite.
+   ========================================================================== */
+/* Le bouton « Créer » de la liste est posé en absolu à droite de cette ligne :
+   on lui réserve sa place pour que le lien ne passe jamais dessous. */
+@media (min-width: 900px) {
+  .lcs-mtabs--with-link {
+    padding-right: 12rem;
+  }
+}
+
+.lcs-formlink {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 5px 5px 5px 12px;
+  border: 1px dashed var(--theme-elevation-200);
+  border-radius: 9px;
+  background: var(--theme-elevation-50);
+  max-width: 100%;
+}
+
+.lcs-formlink__icon {
+  display: inline-flex;
+  color: var(--lcs-gold-dark);
+}
+
+[data-theme='dark'] .lcs-formlink__icon {
+  color: var(--lcs-gold);
+}
+
+.lcs-formlink__text {
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.lcs-formlink__label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--theme-elevation-500);
+}
+
+.lcs-formlink__url {
+  font-size: 13px;
+  color: var(--theme-elevation-1000);
+  user-select: all;
+  cursor: text;
+  overflow-wrap: anywhere;
+}
+
+.lcs-formlink__copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid var(--lcs-gold);
+  border-radius: 6px;
+  background: var(--lcs-gold);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+
+.lcs-formlink__copy:hover {
+  background: var(--lcs-gold-dark);
+  border-color: var(--lcs-gold-dark);
+}
+
+.lcs-formlink__copy.is-copied {
+  background: #2f8f60;
+  border-color: #2f8f60;
+}
+
+.lcs-formlink__copy:focus-visible,
+.lcs-formlink__open:focus-visible {
+  outline: 2px solid var(--lcs-gold);
+  outline-offset: 2px;
+}
+
+.lcs-formlink__open {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--theme-elevation-800);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.lcs-formlink__open::after {
+  content: '↗';
+  margin-left: 4px;
+  font-size: 12px;
+}
+
+.lcs-formlink__open:hover {
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-1000);
+}
+
+/* Annonce aux lecteurs d'écran ; en cas d'échec, note posée sous le bloc
+   (sans décaler la mise en page). */
+.lcs-formlink__status:empty {
+  display: none;
+}
+
+.lcs-formlink__status {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 6;
+  max-width: 34rem;
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--theme-elevation-150);
+  background: var(--theme-elevation-0);
+  box-shadow: var(--lcs-shadow-soft);
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--theme-elevation-800);
+}
+
+/* « Lien copié » : le bouton le dit déjà, l'annonce reste pour les lecteurs d'écran. */
+.lcs-formlink__copy.is-copied ~ .lcs-formlink__status {
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+  box-shadow: none;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
