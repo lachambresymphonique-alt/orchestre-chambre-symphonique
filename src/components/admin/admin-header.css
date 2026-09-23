@@ -5,6 +5,13 @@
    et « Voir le site » juste avant la photo.
    Composants : HeaderSiteLink.tsx (lien) et AdminIcon.tsx (logo + nom).
    ========================================================================== */
+/* Hauteur fixe et basse : la valeur d'origine est calculée sur l'unité de base
+   de Payload et laissait trop de vide. La variable sert aussi au haut de la
+   barre latérale, donc les deux restent alignés. */
+:root {
+  --app-header-height: 48px;
+}
+
 .app-header {
   background: var(--theme-bg);
   border-bottom: 1px solid var(--theme-elevation-150);
@@ -34,8 +41,8 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 34px;
-  padding: 0 14px;
+  height: 32px;
+  padding: 0 13px;
   border: 1px solid var(--theme-elevation-150);
   border-radius: 999px;
   background: var(--theme-elevation-0);
