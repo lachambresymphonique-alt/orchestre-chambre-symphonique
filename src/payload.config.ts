@@ -50,8 +50,9 @@ export default buildConfig({
         Icon: '@/components/admin/AdminIcon#AdminIcon',
         Logo: '@/components/admin/AdminLogo#AdminLogo',
       },
+      // Barre du haut : « Voir le site » juste avant la photo du compte.
+      actions: ['@/components/admin/HeaderSiteLink#HeaderSiteLink'],
       beforeNavLinks: [
-        '@/components/admin/ViewSiteLink#ViewSiteLink',
         '@/components/admin/AnalyticsNavLink#AnalyticsNavLink',
       ],
       beforeDashboard: ['@/components/admin/BeforeDashboard#BeforeDashboard'],

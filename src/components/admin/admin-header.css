@@ -1,0 +1,86 @@
+/* ==========================================================================
+   Barre du haut de l'admin
+   Payload y place déjà le fil d'Ariane et la photo du compte ; on en fait un
+   vrai en-tête : fond plein, filet de séparation, nom de l'orchestre à gauche
+   et « Voir le site » juste avant la photo.
+   Composants : HeaderSiteLink.tsx (lien) et AdminIcon.tsx (logo + nom).
+   ========================================================================== */
+.app-header {
+  background: var(--theme-bg);
+  border-bottom: 1px solid var(--theme-elevation-150);
+}
+
+/* Le fond d'origine est transparent : on le neutralise pour garder un filet net. */
+.app-header__bg {
+  display: none;
+}
+
+.app-header__wrapper {
+  align-items: center;
+}
+
+/* Un peu d'air entre les actions et la photo du compte. */
+.app-header__actions {
+  gap: 10px;
+  align-items: center;
+}
+
+.app-header__actions-wrapper {
+  margin-right: 12px;
+}
+
+/* ---------- « Voir le site » ---------- */
+.lcs-header-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 999px;
+  background: var(--theme-elevation-0);
+  color: var(--theme-elevation-800);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+.lcs-header-link:hover {
+  background: var(--theme-elevation-100);
+  border-color: var(--lcs-gold);
+  color: var(--theme-elevation-1000);
+}
+
+.lcs-header-link:focus-visible {
+  outline: 2px solid var(--lcs-gold);
+  outline-offset: 2px;
+}
+
+.lcs-header-link svg {
+  flex-shrink: 0;
+  color: var(--lcs-gold-dark);
+}
+
+[data-theme='dark'] .lcs-header-link svg {
+  color: var(--lcs-gold);
+}
+
+/* Petits écrans : l'icône seule, le libellé encombrerait le fil d'Ariane. */
+@media (max-width: 900px) {
+  .lcs-header-link {
+    padding: 0 10px;
+  }
+
+  .lcs-header-link__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
