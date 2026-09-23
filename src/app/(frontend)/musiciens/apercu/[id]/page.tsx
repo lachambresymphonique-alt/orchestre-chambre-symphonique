@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { headers } from 'next/headers';
 import { getPayloadClient } from '@/lib/payload';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { MusicianDetail, type Musician } from '@/components/MusicianDetail';
@@ -59,6 +60,17 @@ export default async function MusicianPreviewPage({
 }) {
   const { id } = await params;
   const payload = await getPayloadClient();
+
+  // Une fiche reçue n'est publique qu'après validation (« Ajouter à la liste de
+  // musiciens »). Avant, seul un admin connecté peut la prévisualiser : c'est
+  // cette page qu'affiche l'aperçu en direct de l'admin, sur le même domaine.
+  let user: unknown = null;
+  try {
+    ({ user } = await payload.auth({ headers: await headers() }));
+  } catch {
+    user = null;
+  }
+  if (!user) notFound();
 
   let submission: any;
   try {
