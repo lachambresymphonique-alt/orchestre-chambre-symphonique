@@ -21,7 +21,10 @@ import { SLUG_PATTERN, slugify } from '../lib/slug';
 
 const trim: FieldHook = ({ value }) => (typeof value === 'string' ? value.trim() : value);
 
-const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL || '';
+// Adresses relatives : l'aperçu s'ouvre sur le domaine de l'admin, où la
+// session est connue (brouillons visibles) et où l'aperçu en direct peut
+// dialoguer avec le formulaire. Voir livePreview dans payload.config.ts.
+const siteUrl = () => '';
 
 /**
  * Quand l’adresse d’un article change, l’ancienne est conservée dans

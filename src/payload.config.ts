@@ -103,7 +103,12 @@ export default buildConfig({
     },
     livePreview: {
       url: ({ data, collectionConfig, globalConfig }) => {
-        const base = process.env.NEXT_PUBLIC_SITE_URL || '';
+        // Adresse relative : l'aperçu s'ouvre sur le même domaine que l'admin.
+        // Sur un autre domaine (ex. l'adresse Vercel donnée par
+        // NEXT_PUBLIC_SITE_URL alors que l'admin est sur www), le navigateur
+        // isole les deux pages : ni mise à jour en direct, ni clic vers le
+        // champ, ni bandeau « non enregistré ».
+        const base = '';
         if (globalConfig) {
           const map: Record<string, string> = {
             'home-page': '/',
