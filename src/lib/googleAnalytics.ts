@@ -617,7 +617,8 @@ const PAGE_LABELS: Record<string, string> = {
   '/a-propos': 'À propos',
   '/contact': 'Contact',
   '/directeur-artistique': 'Directeur artistique',
-  '/journal': 'Journal',
+  '/blog': 'Blog',
+  '/journal': 'Blog (ancienne adresse)',
   '/medias': 'Médias',
   '/musiciens': 'Musiciens',
   '/musiciens/contribuer': 'Musiciens · Contribuer',
@@ -628,8 +629,8 @@ export function pageLabel(path: string): string {
   if (PAGE_LABELS[path]) return PAGE_LABELS[path];
   const musician = path.match(/^\/musiciens\/([^/]+)$/);
   if (musician) return `Musicien · ${slugToWords(musician[1])}`;
-  const post = path.match(/^\/journal\/([^/]+)$/);
-  if (post) return `Journal · ${slugToWords(post[1])}`;
+  const post = path.match(/^\/(?:blog|journal)\/([^/]+)$/);
+  if (post) return `Blog · ${slugToWords(post[1])}`;
   const page = path.match(/^\/([^/]+)$/);
   if (page) return capitalize(slugToWords(page[1]));
   return path;

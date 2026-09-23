@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { ExpandableText } from '@/components/ExpandableText';
-import type { ConcertCard } from '@/lib/concerts';
+import type { ConcertCard, ConcertPerformanceView } from '@/lib/concerts';
 
 export type ConcertPostersVariant = 'posters' | 'strip';
 
@@ -156,7 +156,9 @@ function ConcertPoster({
   labels: ConcertPostersLabels;
 }) {
   const cancelled = concert.status === 'cancelled';
-  const linked = !cancelled && !!concert.bookingLink;
+  const multiple = concert.performances.length > 1;
+  // Plusieurs dates : chaque représentation porte son lien, l'affiche entière n'en a pas.
+  const linked = !cancelled && !multiple && !!concert.bookingLink;
   const tag = cancelled
     ? labels.cancelled
     : isLead
@@ -217,11 +219,26 @@ function ConcertPoster({
 
       <div className="concert-poster__body">
         <p className="concert-poster__when">
-          <time dateTime={concert.date.iso}>{concert.date.long}</time>
-          {concert.date.time && <> · {concert.date.time}</>}
+          {multiple ? (
+            <>{concert.performances.length} dates · {describeDateRange(concert.performances)}</>
+          ) : (
+            <>
+              <time dateTime={concert.date.iso}>{concert.date.long}</time>
+              {concert.date.time && <> · {concert.date.time}</>}
+            </>
+          )}
         </p>
         <h3 className="concert-poster__title" data-live-item-field="title">{concert.title}</h3>
-        {concert.venue && <p className="concert-poster__venue">{concert.venue}</p>}
+        {multiple ? (
+          <ConcertDates
+            performances={concert.performances}
+            cancelled={cancelled}
+            bookingLabel={labels.bookingShort}
+            className="concert-poster__dates"
+          />
+        ) : (
+          concert.venue && <p className="concert-poster__venue">{concert.venue}</p>
+        )}
         {concert.program && (
           <ExpandableText text={concert.program} lines={3} className="concert-poster__program" />
         )}
@@ -239,5 +256,63 @@ function ConcertPoster({
         )}
       </div>
     </li>
+  );
+}
+
+// ─── Plusieurs représentations ───────────────────────────────────────────────
+
+/** « du 13 au 15 juin 2025 », « du 28 avril au 2 mai 2026 » */
+export function describeDateRange(performances: ConcertPerformanceView[]): string {
+  const first = performances[0]?.date;
+  const last = performances[performances.length - 1]?.date;
+  if (!first || !last) return '';
+  if (first.key === last.key) return `${first.long}`;
+  if (first.month === last.month && first.year === last.year) {
+    return `du ${first.day} au ${last.day} ${last.month} ${last.year}`;
+  }
+  const firstYear = first.year !== last.year ? ` ${first.year}` : '';
+  return `du ${first.day} ${first.month}${firstYear} au ${last.day} ${last.month} ${last.year}`;
+}
+
+/**
+ * Les dates à venir d'un concert donné plusieurs fois : jour, heure, lieu et
+ * billetterie propres à chaque représentation. Même liste dans les trois
+ * affichages de la page d'accueil.
+ */
+export function ConcertDates({
+  performances,
+  cancelled,
+  bookingLabel,
+  className,
+}: {
+  performances: ConcertPerformanceView[];
+  cancelled: boolean;
+  bookingLabel: string;
+  className?: string;
+}) {
+  const baseYear = performances[0]?.date.year;
+  return (
+    <ul className={`concert-dates${className ? ` ${className}` : ''}`}>
+      {performances.map((p) => (
+        <li key={p.id} className="concert-dates__item">
+          <time dateTime={p.date.iso} className="concert-dates__when">
+            {p.date.weekday} {p.date.day} {p.date.month}
+            {p.date.year !== baseYear && <> {p.date.year}</>}
+            {p.date.time && <> · {p.date.time}</>}
+          </time>
+          {p.venue && <span className="concert-dates__venue">{p.venue}</span>}
+          {!cancelled && p.bookingLink && (
+            <a
+              href={p.bookingLink}
+              className="concert-dates__link link-arrow"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {bookingLabel} →
+            </a>
+          )}
+        </li>
+      ))}
+    </ul>
   );
 }

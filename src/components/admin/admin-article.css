@@ -1,0 +1,637 @@
+/* ==========================================================================
+   Article (collection « posts ») — le formulaire ressemble à l’article publié
+   --------------------------------------------------------------------------
+   Rattaché à `.collection-edit--posts`, la racine de l’écran d’édition.
+   Deux groupes sans nom (voir collections/Posts.ts) portent la classe
+   `.lcs-article` : le bandeau (rubrique, date, titre, chapeau) et le corps
+   (couverture, texte). Les champs Payload qu’ils contiennent reçoivent les
+   variables de thème sombres pour se fondre dans la page ; tout ce qui suit
+   (galerie, SEO) et la colonne latérale gardent l’habillage clair de l’admin.
+   Les polices sont chargées par ArticleCanvasClient.tsx.
+   ========================================================================== */
+
+.collection-edit--posts {
+  /* Typographie du site (voir globals.css) */
+  --lcs-a-display: 'Fraunces', 'Tiempos Headline', Georgia, serif;
+  --lcs-a-serif: 'Source Serif 4', 'Source Serif Pro', Georgia, serif;
+  --lcs-a-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  --lcs-a-soft: 100;
+  --lcs-a-display-settings: 'opsz' 144, 'SOFT' var(--lcs-a-soft);
+
+  /* Surfaces et encres du site */
+  --lcs-a-paper: oklch(10% 0.01 55);
+  --lcs-a-paper-soft: oklch(14% 0.016 55);
+  --lcs-a-paper-deep: oklch(19% 0.024 50);
+  --lcs-a-rule: oklch(28% 0.028 55);
+  --lcs-a-cream: oklch(95% 0.025 75);
+  --lcs-a-cream-soft: oklch(90% 0.025 70);
+  --lcs-a-mute: oklch(68% 0.025 60);
+  --lcs-a-glow: oklch(82% 0.11 70);
+  --lcs-a-amber: oklch(78% 0.155 65);
+  --lcs-a-velvet: oklch(62% 0.205 45);
+
+  /* Débord de la couverture sur le bandeau */
+  --lcs-a-overlap: clamp(2rem, 6vw, 4.5rem);
+  --lcs-a-gutter: clamp(1.5rem, 5vw, 4rem);
+}
+
+/* Typographie des titres choisie dans « Apparence du site » */
+.collection-edit--posts[data-display='fraunces-sharp'] {
+  --lcs-a-soft: 0;
+}
+
+.collection-edit--posts[data-display='ibarra'] {
+  --lcs-a-display: 'Ibarra Real Nova', 'Tiempos Headline', Georgia, serif;
+}
+
+.collection-edit--posts[data-display='bodoni'] {
+  --lcs-a-display: 'Bodoni Moda', 'Tiempos Headline', Georgia, serif;
+}
+
+/* ---------- Les deux groupes « article » : pleine largeur, sans cadre ---------- */
+.collection-edit--posts .document-fields__fields > .lcs-article {
+  color-scheme: dark;
+  margin: 0 calc(-1 * var(--main-gutter-h-right, 0px)) 0 calc(-1 * var(--main-gutter-h-left, 0px)) !important;
+  padding: 0 var(--lcs-a-gutter);
+  border-radius: 0;
+  color: var(--lcs-a-cream-soft);
+  font-family: var(--lcs-a-sans);
+
+  /* Variables Payload redéfinies en sombre : les champs (liste déroulante,
+     calendrier, relations, barre d’outils) adoptent d’eux-mêmes la page. */
+  --theme-elevation-0: var(--lcs-a-paper);
+  --theme-elevation-50: oklch(14% 0.016 55);
+  --theme-elevation-100: oklch(19% 0.024 50);
+  --theme-elevation-150: oklch(24% 0.026 55);
+  --theme-elevation-200: oklch(28% 0.028 55);
+  --theme-elevation-250: oklch(33% 0.028 55);
+  --theme-elevation-300: oklch(38% 0.028 55);
+  --theme-elevation-350: oklch(43% 0.028 55);
+  --theme-elevation-400: oklch(48% 0.027 60);
+  --theme-elevation-450: oklch(53% 0.027 60);
+  --theme-elevation-500: oklch(58% 0.026 60);
+  --theme-elevation-550: oklch(63% 0.026 60);
+  --theme-elevation-600: oklch(68% 0.025 60);
+  --theme-elevation-650: oklch(72% 0.025 65);
+  --theme-elevation-700: oklch(76% 0.025 65);
+  --theme-elevation-750: oklch(80% 0.025 65);
+  --theme-elevation-800: oklch(85% 0.025 70);
+  --theme-elevation-850: oklch(88% 0.025 70);
+  --theme-elevation-900: oklch(91% 0.025 72);
+  --theme-elevation-950: oklch(93% 0.025 75);
+  --theme-elevation-1000: var(--lcs-a-cream);
+  --theme-bg: var(--theme-elevation-0);
+  --theme-input-bg: oklch(16% 0.018 55);
+  --theme-text: var(--lcs-a-cream-soft);
+  --theme-border-color: var(--theme-elevation-150);
+  --theme-overlay: rgba(5, 5, 5, 0.75);
+  --theme-success-500: var(--lcs-a-amber);
+  --theme-success-750: var(--lcs-a-glow);
+}
+
+.collection-edit--posts .lcs-article > .group-field__wrap {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.collection-edit--posts .lcs-article > .group-field__wrap > .group-field__header {
+  display: none;
+}
+
+/* Bandeau */
+.collection-edit--posts .document-fields__fields > .lcs-article--hero {
+  position: relative;
+  margin-top: calc(-1.5 * var(--base)) !important;
+  padding-top: clamp(2rem, 4vw, 3rem);
+  padding-bottom: calc(2.25rem + var(--lcs-a-overlap));
+  background:
+    radial-gradient(ellipse 60% 60% at 80% 20%, oklch(82% 0.11 70 / 0.16), transparent 60%),
+    radial-gradient(ellipse 50% 70% at 10% 90%, oklch(58% 0.195 45 / 0.28), transparent 65%),
+    var(--lcs-a-paper-soft);
+}
+
+/* Corps */
+.collection-edit--posts .document-fields__fields > .lcs-article--body {
+  padding-top: 0;
+  padding-bottom: clamp(2.5rem, 5vw, 4rem);
+  background: var(--lcs-a-paper);
+}
+
+/* Les compléments (galerie, SEO) respirent après la page sombre */
+.collection-edit--posts .document-fields__fields > .lcs-article--body + .field-type {
+  margin-top: calc(var(--base) * 1.5);
+}
+
+/* ---------- Habillage commun des champs dans la page sombre ---------- */
+.collection-edit--posts .lcs-article .render-fields > .field-type {
+  margin-bottom: 1.25rem;
+}
+
+.collection-edit--posts .lcs-article .field-label,
+.collection-edit--posts .lcs-article label.field-label,
+.collection-edit--posts .lcs-article .group-field__title,
+.collection-edit--posts .lcs-article .group-field__header h3 {
+  font-family: var(--lcs-a-sans);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--lcs-a-glow);
+  margin-bottom: 0.4rem;
+}
+
+.collection-edit--posts .lcs-article .field-label .required,
+.collection-edit--posts .lcs-article .required {
+  color: var(--lcs-a-amber);
+}
+
+.collection-edit--posts .lcs-article .field-description {
+  font-family: var(--lcs-a-sans);
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--lcs-a-mute);
+}
+
+.collection-edit--posts .lcs-article input[type='text'],
+.collection-edit--posts .lcs-article textarea:not(.lcs-text__input),
+.collection-edit--posts .lcs-article .rs__control,
+.collection-edit--posts .lcs-article .date-time-picker__input-wrapper input {
+  font-family: var(--lcs-a-sans) !important;
+  color: var(--lcs-a-cream) !important;
+  background: var(--theme-input-bg) !important;
+  border-color: var(--lcs-a-rule) !important;
+}
+
+.collection-edit--posts .lcs-article .rs__single-value,
+.collection-edit--posts .lcs-article .rs__input-container,
+.collection-edit--posts .lcs-article .rs__multi-value__label {
+  color: var(--lcs-a-cream);
+}
+
+.collection-edit--posts .lcs-article .rs__menu {
+  background: var(--lcs-a-paper-deep);
+  color: var(--lcs-a-cream);
+  border: 1px solid var(--lcs-a-rule);
+}
+
+.collection-edit--posts .lcs-article .lcs-article__error {
+  margin: 0.5rem 0 0;
+  font-family: var(--lcs-a-sans);
+  font-size: 0.8rem;
+  color: oklch(78% 0.14 25);
+}
+
+.lcs-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- Fil d’Ariane ---------- */
+.collection-edit--posts .lcs-article__crumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.75rem !important;
+  font-family: var(--lcs-a-sans);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--lcs-a-mute);
+}
+
+.collection-edit--posts .lcs-article__crumb-sep {
+  opacity: 0.6;
+}
+
+/* ---------- Rubrique · date ---------- */
+.collection-edit--posts .lcs-article__meta > .row__fields {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1rem 2rem;
+}
+
+.collection-edit--posts .lcs-article__meta > .row__fields > .field-type {
+  flex: 0 1 auto;
+  width: auto !important;
+  min-width: 15rem;
+  margin-bottom: 0;
+}
+
+/* ---------- Titre et chapeau, écrits « sur » la page ---------- */
+.collection-edit--posts .lcs-text {
+  position: relative;
+}
+
+/* admin-theme.css impose cadre, fond et 14px à tout textarea (!important) :
+   on le contredit avec la même force, la spécificité fait le reste. */
+.collection-edit--posts .lcs-text__input {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0;
+  resize: none;
+  overflow: hidden;
+  background: transparent !important;
+  color: inherit;
+  box-shadow: none !important;
+  transition: box-shadow 0.15s ease !important;
+}
+
+.collection-edit--posts .lcs-text__input:focus,
+.collection-edit--posts .lcs-text__input:focus-visible {
+  outline: 0 !important;
+  border: 0 !important;
+  box-shadow: -0.75rem 0 0 -0.7rem var(--lcs-a-velvet) !important;
+}
+
+.collection-edit--posts .lcs-text__input::placeholder {
+  color: var(--lcs-a-mute);
+  opacity: 0.55;
+}
+
+.collection-edit--posts .lcs-text--title {
+  margin-top: 0.5rem !important;
+}
+
+.collection-edit--posts .lcs-text--title .lcs-text__input {
+  font-family: var(--lcs-a-display) !important;
+  font-variation-settings: var(--lcs-a-display-settings);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2.2rem, 4.2vw, 3.6rem) !important;
+  line-height: 1.02;
+  letter-spacing: -0.022em;
+  color: var(--lcs-a-cream) !important;
+  max-width: 20ch;
+}
+
+.collection-edit--posts .lcs-text--lede .lcs-text__input {
+  font-family: var(--lcs-a-serif) !important;
+  font-size: clamp(1.1rem, 1.5vw, 1.3rem) !important;
+  line-height: 1.55;
+  color: var(--lcs-a-mute) !important;
+  max-width: 56ch;
+}
+
+.collection-edit--posts .lcs-text__count {
+  display: block;
+  margin-top: 0.35rem;
+  font-family: var(--lcs-a-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--lcs-a-mute);
+  opacity: 0.7;
+}
+
+/* ---------- Personne interviewée / Le projet ---------- */
+.collection-edit--posts .lcs-article--hero .group-field .group-field__wrap {
+  border: 0;
+  border-left: 1px solid var(--lcs-a-velvet);
+  border-radius: 0;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  margin-top: 1.5rem;
+  background: transparent;
+  box-shadow: none;
+}
+
+.collection-edit--posts .lcs-article--hero .group-field .group-field__header {
+  margin-bottom: 0.75rem;
+}
+
+/* ---------- Couverture ---------- */
+.collection-edit--posts .lcs-cover {
+  position: relative;
+  z-index: 1;
+  margin: calc(-1 * var(--lcs-a-overlap)) 0 clamp(2.5rem, 5vw, 4rem) !important;
+}
+
+.collection-edit--posts .lcs-cover__frame {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 21 / 9;
+  overflow: hidden;
+  background: var(--lcs-a-paper-deep);
+  box-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.6);
+}
+
+.collection-edit--posts .lcs-cover__frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.collection-edit--posts .lcs-cover__frame--empty {
+  box-shadow: none;
+  outline: 1px dashed oklch(40% 0.03 60);
+  outline-offset: -1px;
+}
+
+.collection-edit--posts .lcs-cover__empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.collection-edit--posts .lcs-cover__empty p {
+  margin: 0;
+  max-width: 34ch;
+  font-family: var(--lcs-a-serif);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--lcs-a-mute);
+}
+
+.collection-edit--posts .lcs-cover__eyebrow {
+  font-family: var(--lcs-a-sans);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--lcs-a-glow);
+}
+
+.collection-edit--posts .lcs-cover__buttons,
+.collection-edit--posts .lcs-cover__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.collection-edit--posts .lcs-cover__buttons {
+  margin-top: 0.75rem;
+}
+
+.collection-edit--posts .lcs-cover__actions {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  margin: 0;
+  padding: 0.35rem;
+  border-radius: 6px;
+  background: oklch(14% 0.016 55 / 0.82);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.collection-edit--posts .lcs-cover__frame:hover .lcs-cover__actions,
+.collection-edit--posts .lcs-cover__frame:focus-within .lcs-cover__actions {
+  opacity: 1;
+}
+
+.collection-edit--posts .lcs-cover .btn {
+  margin: 0;
+}
+
+/* ---------- Le texte : la colonne de lecture du site ---------- */
+.collection-edit--posts .lcs-article--body #field-content {
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.collection-edit--posts .lcs-article--body #field-content > .field-label,
+.collection-edit--posts .lcs-article--body #field-content > label.field-label {
+  display: none;
+}
+
+.collection-edit--posts .lcs-article--body .rich-text-lexical {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  font-size: inherit !important;
+}
+
+.collection-edit--posts .lcs-article--body .rich-text-lexical.error > .rich-text-lexical__wrap {
+  background: transparent;
+  border: 0;
+  box-shadow: -0.75rem 0 0 -0.7rem oklch(62% 0.2 30);
+}
+
+/* Barre d’outils fixe : collée sous la barre de commandes, en verre sombre */
+.collection-edit--posts .lcs-article--body .fixed-toolbar {
+  top: var(--doc-controls-height);
+  border: 1px solid var(--lcs-a-rule);
+  border-radius: 8px;
+  transform: none;
+  background: oklch(14% 0.016 55 / 0.92);
+  backdrop-filter: blur(10px);
+}
+
+.collection-edit--posts .lcs-article--body .fixed-toolbar::before {
+  display: none;
+}
+
+.collection-edit--posts .lcs-article--body .fixed-toolbar .toolbar-popup__button,
+.collection-edit--posts .lcs-article--body .fixed-toolbar .toolbar-popup__dropdown {
+  color: var(--lcs-a-cream-soft);
+}
+
+.collection-edit--posts .lcs-article--body .fixed-toolbar .toolbar-popup__dropdown-label {
+  color: var(--lcs-a-cream-soft);
+}
+
+.collection-edit--posts .lcs-article--body .fixed-toolbar__dropdown-items,
+.collection-edit--posts .lcs-article--body .toolbar-popup__dropdown-items {
+  background: var(--lcs-a-paper-deep);
+}
+
+/* Le corps de texte tel qu’il est lu : Inter, 1.08rem, interligne 1.85 */
+.collection-edit--posts .lcs-article--body .rich-text-lexical .editor-container {
+  font-family: var(--lcs-a-sans);
+  font-size: 1.08rem;
+  letter-spacing: normal;
+}
+
+.collection-edit--posts .lcs-article--body .ContentEditable__root {
+  padding: 2rem 0 3rem;
+  color: var(--lcs-a-cream-soft);
+  line-height: 1.85;
+}
+
+.collection-edit--posts .lcs-article--body .editor-container > .editor-scroller > .editor > .ContentEditable__root {
+  padding-top: 2rem;
+}
+
+.collection-edit--posts .lcs-article--body .rich-text-lexical .LexicalEditorTheme__placeholder,
+.collection-edit--posts .lcs-article--body .editor-container > .editor-scroller > .editor > div > .LexicalEditorTheme__placeholder {
+  top: 2rem;
+  font-family: var(--lcs-a-serif);
+  font-style: italic;
+  font-size: 1.08rem;
+  line-height: 1.85;
+  color: var(--lcs-a-mute);
+  opacity: 0.7;
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__paragraph {
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  margin: 0 0 1.25rem;
+}
+
+/* Lettrine sur le premier paragraphe, comme sur le site */
+.collection-edit--posts .lcs-article--body .ContentEditable__root > .LexicalEditorTheme__paragraph:first-child::first-letter {
+  font-family: var(--lcs-a-display);
+  font-variation-settings: var(--lcs-a-display-settings);
+  font-size: 3.6em;
+  float: left;
+  line-height: 0.85;
+  margin: 0.06em 0.16em 0 -0.04em;
+  color: var(--lcs-a-velvet);
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__h2,
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__h3,
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__h4 {
+  font-family: var(--lcs-a-display);
+  font-variation-settings: var(--lcs-a-display-settings);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--lcs-a-cream);
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__h2 {
+  font-style: italic;
+  font-size: 2.25rem;
+  line-height: 1.1;
+  margin: 2.5rem 0 1rem;
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__h3 {
+  font-size: 1.5rem;
+  line-height: 1.2;
+  margin: 2rem 0 0.75rem;
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__h4 {
+  font-size: 1.2rem;
+  line-height: 1.3;
+  margin: 1.75rem 0 0.5rem;
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__textBold {
+  font-weight: 600;
+  color: var(--lcs-a-cream);
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__link {
+  color: var(--lcs-a-amber);
+  border-bottom: 1px solid var(--lcs-a-amber);
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__quote {
+  font-family: var(--lcs-a-display);
+  font-variation-settings: 'opsz' 40, 'SOFT' var(--lcs-a-soft);
+  font-style: italic;
+  font-size: clamp(1.3rem, 1.8vw, 1.6rem);
+  line-height: 1.45;
+  color: var(--lcs-a-cream);
+  margin: 2rem 0;
+  padding: 0.25rem 0 0.25rem 1.5rem;
+  border-inline-start: 1px solid var(--lcs-a-velvet);
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__ul,
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__ol1 {
+  margin: 0 0 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__listItem {
+  font-size: inherit;
+  color: inherit;
+  margin: 0 0 0.45rem 0;
+  padding-left: 0.25rem;
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__listItem::marker {
+  color: var(--lcs-a-velvet);
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__nestedListItem {
+  list-style: none;
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__hr {
+  width: 4rem !important;
+  margin: 2.75rem 0;
+  padding: 0;
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__hr::after {
+  height: 1px;
+  background: var(--lcs-a-velvet);
+  opacity: 0.7;
+}
+
+/* Images insérées : une figure pleine colonne, sans cadre */
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__upload {
+  margin: 2.5rem 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__upload__card {
+  box-shadow: none;
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__upload img,
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__upload svg {
+  border-radius: 0;
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__upload__contents--landscape img,
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__upload__contents--landscape svg {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__upload__contents--portrait img,
+.collection-edit--posts .lcs-article--body .LexicalEditorTheme__upload__contents--portrait svg {
+  max-height: none;
+  min-height: 0;
+  max-width: 60%;
+}
+
+.collection-edit--posts .lcs-article--body #field-content > .field-description {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--lcs-a-rule);
+}
+
+@media (max-width: 768px) {
+  .collection-edit--posts .lcs-text--title .lcs-text__input {
+    font-size: 2rem !important;
+  }
+
+  .collection-edit--posts .lcs-cover__frame {
+    aspect-ratio: 16 / 10;
+  }
+}

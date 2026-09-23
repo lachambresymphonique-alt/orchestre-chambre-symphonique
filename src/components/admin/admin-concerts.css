@@ -1,0 +1,37 @@
+/* ==========================================================================
+   Concerts — représentations
+   Cellule « Représentations » de la liste (ConcertDateCell) et en-tête de
+   chaque ligne de la liste des représentations d'un concert
+   (ConcertPerformanceRowLabel). Les pastilles d'état viennent de
+   admin-theme.css (.lcs-badge).
+   ========================================================================== */
+
+/* ---------- Cellule de la liste : deuxième ligne, lieux et nombre de dates ---------- */
+.lcs-datecell__meta {
+  display: block;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--theme-elevation-500);
+  margin-top: 2px;
+}
+
+/* ---------- En-tête d'une représentation (ligne repliée ou ouverte) ---------- */
+.lcs-perf-label {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--theme-elevation-800);
+}
+
+.lcs-perf-label strong {
+  font-weight: 600;
+  color: var(--theme-elevation-1000);
+}
+
+.lcs-perf-label__venue {
+  color: var(--theme-elevation-500);
+}
+
+.lcs-perf-label--empty {
+  font-style: italic;
+  color: var(--theme-elevation-500);
+}

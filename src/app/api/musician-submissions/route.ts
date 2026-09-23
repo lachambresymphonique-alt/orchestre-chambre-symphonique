@@ -9,16 +9,31 @@ import {
   turnstileConfigured,
   verifyTurnstile,
 } from '@/lib/antispam';
+import {
+  TEXT_FIELD_KEYS,
+  allQuestions,
+  resolveMusicianForm,
+  type ResolvedMusicianForm,
+  type ResolvedQuestion,
+} from '@/lib/musicianForm';
 
-const ALLOWED_SECTIONS = new Set(['direction', 'cordes', 'vents', 'claviers']);
-const ALLOWED_PHOTO_MIMETYPES = new Set([
-  'image/png',
-  'image/jpeg',
-  'image/webp',
-]);
+/**
+ * Réception des fiches musiciens envoyées depuis /musiciens/contribuer.
+ *
+ * Les questions posées sont réglées dans l'admin (global « Formulaire
+ * musiciens »). Cette route lit la même configuration que le formulaire :
+ * une question retirée n'est plus enregistrée même si elle est envoyée à la
+ * main, et une question marquée obligatoire est exigée ici aussi — un contrôle
+ * côté navigateur ne protège rien.
+ */
+
+const ALLOWED_PHOTO_MIMETYPES = new Set(['image/png', 'image/jpeg', 'image/webp']);
 const MAX_PHOTO_BYTES = 10 * 1024 * 1024; // 10 MB
 /** Garde-fou contre les envois massifs ; largement au-dessus d'une fiche normale. */
 const MAX_FIELD_LENGTH = 10_000;
+
+/** Champs dont la valeur s'écrit sur plusieurs lignes dans l'e-mail d'alerte. */
+const MULTILINE_KEYS = new Set(['bio', 'formation', 'concours']);
 
 function badRequest(error: string) {
   return NextResponse.json({ error }, { status: 400 });
@@ -27,6 +42,15 @@ function badRequest(error: string) {
 function clientIp(req: NextRequest): string | null {
   const forwarded = req.headers.get('x-forwarded-for');
   return forwarded?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || null;
+}
+
+async function loadForm(payload: Awaited<ReturnType<typeof getPayloadClient>>) {
+  try {
+    return resolveMusicianForm(await payload.findGlobal({ slug: 'musician-form' as any }));
+  } catch {
+    // Global jamais enregistré ou table absente : formulaire d'origine.
+    return resolveMusicianForm(null);
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -70,75 +94,82 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const firstName = get('firstName');
-    const lastName = get('lastName');
-    const email = get('email');
-    const role = get('role');
-    if (!firstName || !lastName || !email || !role) {
-      return badRequest('Le prénom, le nom, l\'e-mail et le rôle sont obligatoires.');
-    }
-
-    const textFields = [
-      'firstName', 'lastName', 'email', 'phone', 'instagram', 'role', 'instrument',
-      'bio', 'inspiringSymphony', 'favoriteWork', 'favoriteComposer', 'formation',
-      'concours', 'videoUrl',
-    ];
-    if (textFields.some((key) => get(key).length > MAX_FIELD_LENGTH)) {
-      return badRequest('Un des champs est trop long.');
-    }
-
-    const fullName = `${firstName} ${lastName}`.trim();
-    const rawInstagram = get('instagram');
-    const instagram = rawInstagram
-      ? rawInstagram.replace(/^https?:\/\/(www\.)?instagram\.com\//i, '@').replace(/^([^@])/, '@$1')
-      : undefined;
-
-    const submissionData: Record<string, unknown> = {
-      firstName,
-      lastName,
-      name: fullName,
-      email,
-      phone: get('phone') || undefined,
-      instagram,
-      role,
-      instrument: get('instrument') || undefined,
-      bio: get('bio') || undefined,
-      inspiringSymphony: get('inspiringSymphony') || undefined,
-      favoriteWork: get('favoriteWork') || undefined,
-      favoriteComposer: get('favoriteComposer') || undefined,
-      formation: get('formation') || undefined,
-      concours: get('concours') || undefined,
-      videoUrl: get('videoUrl') || undefined,
-      status: 'nouveau',
-    };
-    const section = get('section');
-    if (section && ALLOWED_SECTIONS.has(section)) {
-      submissionData.section = section;
-    }
-
     // La collection refuse les créations anonymes via l'API publique (REST/GraphQL) ;
     // ici on passe par l'API locale, hors contrôle d'accès.
     const payload = await getPayloadClient();
+    const form: ResolvedMusicianForm = await loadForm(payload);
+    const questions: ResolvedQuestion[] = allQuestions(form);
 
-    // Optional photo upload
+    if (TEXT_FIELD_KEYS.some((key) => get(key).length > MAX_FIELD_LENGTH)) {
+      return badRequest('Un des champs est trop long.');
+    }
+
     const photoFile = formData.get('photo');
-    if (photoFile && photoFile instanceof File && photoFile.size > 0) {
-      if (!ALLOWED_PHOTO_MIMETYPES.has(photoFile.type)) {
+    const hasPhoto = photoFile instanceof File && photoFile.size > 0;
+
+    // 3. Questions obligatoires, telles que réglées dans l'admin.
+    for (const question of questions) {
+      if (!question.required) continue;
+      const answered = question.kind === 'photo' ? hasPhoto : get(question.key) !== '';
+      if (!answered) {
+        return badRequest(`La question « ${question.label} » est obligatoire.`);
+      }
+    }
+
+    const firstName = get('firstName');
+    const lastName = get('lastName');
+    const fullName = `${firstName} ${lastName}`.trim();
+
+    // 4. Réponses conservées : uniquement celles que le formulaire demande.
+    const submissionData: Record<string, unknown> = { name: fullName, status: 'nouveau' };
+    let sectionLabel = '';
+
+    for (const question of questions) {
+      if (question.kind === 'photo') continue;
+
+      if (question.kind === 'section') {
+        const value = get(question.key);
+        const choice = question.choices?.find((c) => c.value === value);
+        if (choice) {
+          submissionData.section = choice.value;
+          sectionLabel = choice.label;
+        }
+        continue;
+      }
+
+      const value = get(question.key);
+      if (!value) continue;
+
+      if (question.key === 'instagram') {
+        submissionData.instagram = value
+          .replace(/^https?:\/\/(www\.)?instagram\.com\//i, '@')
+          .replace(/^([^@])/, '@$1');
+        continue;
+      }
+
+      submissionData[question.key] = value;
+    }
+
+    // 5. Photo, si la question est posée.
+    const photoAsked = questions.some((q) => q.kind === 'photo');
+    if (photoAsked && hasPhoto) {
+      const file = photoFile as File;
+      if (!ALLOWED_PHOTO_MIMETYPES.has(file.type)) {
         return badRequest('Format de photo non accepté. Utilisez JPG, PNG ou WebP.');
       }
-      if (photoFile.size > MAX_PHOTO_BYTES) {
+      if (file.size > MAX_PHOTO_BYTES) {
         return badRequest('Photo trop volumineuse (max 10 Mo).');
       }
 
-      const buffer = Buffer.from(await photoFile.arrayBuffer());
+      const buffer = Buffer.from(await file.arrayBuffer());
       const media = await payload.create({
         collection: 'media' as any,
         data: { alt: `Photo — ${fullName}` } as any,
         file: {
-          name: photoFile.name || 'photo.jpg',
+          name: file.name || 'photo.jpg',
           data: buffer,
-          mimetype: photoFile.type,
-          size: photoFile.size,
+          mimetype: file.type,
+          size: file.size,
         },
         overrideAccess: true,
       });
@@ -162,39 +193,30 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      // L'e-mail reprend les questions du formulaire, dans le même ordre.
+      const lines: string[] = ['Nouvelle fiche reçue via le formulaire musicien :', ''];
+      for (const question of questions) {
+        if (question.kind === 'photo') {
+          lines.push(`${question.label} : ${submissionData.photo ? 'oui (téléversée)' : 'non fournie'}`);
+          continue;
+        }
+        const value =
+          question.kind === 'section' ? sectionLabel : (submissionData[question.key] as string);
+        if (!value) continue;
+        lines.push(
+          MULTILINE_KEYS.has(question.key)
+            ? `${question.label} :\n${value}\n`
+            : `${question.label} : ${value}`,
+        );
+      }
+
       const to = process.env.CONTACT_EMAIL || process.env.SMTP_USER;
       await transporter.sendMail({
         from: `"La Chambre Symphonique" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
         to,
-        replyTo: email,
+        replyTo: get('email') || undefined,
         subject: `[Fiche musicien] ${fullName}`,
-        text: [
-          `Nouvelle fiche reçue via le formulaire musicien :`,
-          ``,
-          `Prénom : ${firstName}`,
-          `Nom : ${lastName}`,
-          `E-mail : ${email}`,
-          submissionData.phone ? `Téléphone : ${submissionData.phone}` : null,
-          submissionData.instagram ? `Instagram : ${submissionData.instagram}` : null,
-          `Rôle : ${role}`,
-          submissionData.instrument ? `Instrument : ${submissionData.instrument}` : null,
-          submissionData.section ? `Section : ${submissionData.section}` : null,
-          submissionData.photo ? `Photo : oui (téléversée)` : `Photo : non fournie`,
-          ``,
-          submissionData.bio ? `Biographie :\n${submissionData.bio}` : null,
-          ``,
-          submissionData.inspiringSymphony ? `Symphonie qui a donné envie : ${submissionData.inspiringSymphony}` : null,
-          submissionData.favoriteWork ? `Œuvre préférée : ${submissionData.favoriteWork}` : null,
-          submissionData.favoriteComposer ? `Compositeur préféré : ${submissionData.favoriteComposer}` : null,
-          ``,
-          submissionData.formation ? `Formation :\n${submissionData.formation}` : null,
-          ``,
-          submissionData.concours ? `Concours :\n${submissionData.concours}` : null,
-          ``,
-          submissionData.videoUrl ? `Vidéo : ${submissionData.videoUrl}` : null,
-        ]
-          .filter(Boolean)
-          .join('\n'),
+        text: lines.join('\n'),
       });
     }
 

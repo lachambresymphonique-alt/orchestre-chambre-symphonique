@@ -4,6 +4,7 @@ import Script from 'next/script';
 import '../globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { PageViewTracker } from '@/components/PageViewTracker';
 import { getPayloadClient } from '@/lib/payload';
 import { isNavConfigured, legacyNavItems, resolveNavItems, type NavLink } from '@/lib/navigation';
 
@@ -176,6 +177,8 @@ export default async function FrontendLayout({
         <Header items={navItems} />
         {children}
         <Footer settings={settings} />
+        {/* Compteur de visites interne (voir /admin/statistiques) */}
+        <PageViewTracker />
       </body>
     </html>
   );

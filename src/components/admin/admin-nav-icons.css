@@ -1,0 +1,267 @@
+/* ==========================================================================
+   Barre latérale de l'admin — icônes et couleurs par thématique
+   Chaque entrée du menu reçoit une icône, chaque groupe une couleur : le
+   regard trouve « Concerts » ou « Réglages » sans relire toute la liste.
+
+   Tout tient en CSS, sans remplacer le composant Nav de Payload, grâce aux
+   identifiants qu'il pose lui-même :
+     - un groupe            → #nav-group-<libellé du groupe>
+     - une collection       → #nav-<slug>
+     - un global            → #nav-global-<slug>
+   Ajouter une collection sans l'inscrire ici reste propre : elle hérite de
+   la couleur de son groupe et d'une pastille neutre (--lcs-nav-icon-defaut).
+   ========================================================================== */
+
+.nav {
+  /* Repli quand une entrée n'appartient à aucun groupe connu. */
+  --lcs-nav-accent: var(--theme-elevation-500);
+  --lcs-nav-accent-rgb: 142 131 105;
+  --lcs-nav-icon-defaut: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='3.4'/%3E%3C/svg%3E");
+}
+
+/* ---------- Une couleur par thématique ---------- */
+
+/* Pages : Bleu ardoise — les pages du site */
+[id="nav-group-Pages"] {
+  --lcs-nav-accent: #4C6FA5;
+  --lcs-nav-accent-rgb: 76 111 165;
+}
+[data-theme='dark'] [id="nav-group-Pages"] {
+  --lcs-nav-accent: #93B4E2;
+  --lcs-nav-accent-rgb: 147 180 226;
+}
+
+/* Contenu : Or de la marque — ce qui nourrit les pages */
+[id="nav-group-Contenu"] {
+  --lcs-nav-accent: #A07D2E;
+  --lcs-nav-accent-rgb: 160 125 46;
+}
+[data-theme='dark'] [id="nav-group-Contenu"] {
+  --lcs-nav-accent: #E8D48B;
+  --lcs-nav-accent-rgb: 232 212 139;
+}
+
+/* Bibliothèque d’images : Prune — les fichiers */
+[id="nav-group-Bibliothèque d’images"] {
+  --lcs-nav-accent: #7A4C8F;
+  --lcs-nav-accent-rgb: 122 76 143;
+}
+[data-theme='dark'] [id="nav-group-Bibliothèque d’images"] {
+  --lcs-nav-accent: #C79BDC;
+  --lcs-nav-accent-rgb: 199 155 220;
+}
+
+/* Messages reçus : Vert — ce qui arrive du public */
+[id="nav-group-Messages reçus"] {
+  --lcs-nav-accent: #2F8F60;
+  --lcs-nav-accent-rgb: 47 143 96;
+}
+[data-theme='dark'] [id="nav-group-Messages reçus"] {
+  --lcs-nav-accent: #6FCB9C;
+  --lcs-nav-accent-rgb: 111 203 156;
+}
+
+/* Réglages : Gris — la mécanique du site */
+[id="nav-group-Réglages"] {
+  --lcs-nav-accent: #6E6A60;
+  --lcs-nav-accent-rgb: 110 106 96;
+}
+[data-theme='dark'] [id="nav-group-Réglages"] {
+  --lcs-nav-accent: #A3A0B8;
+  --lcs-nav-accent-rgb: 163 160 184;
+}
+
+/* ---------- Titre du groupe : gras, pastille et flèche de sa couleur ---------- */
+.nav .nav-group__toggle {
+  font-weight: 700;
+  color: var(--theme-elevation-800);
+}
+
+.nav .nav-group__label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.nav .nav-group__label::before {
+  content: '';
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  /* Cale la pastille sur la première ligne quand le titre en occupe deux
+     (« Bibliothèque d'images »). */
+  margin-top: 3px;
+  margin-top: calc((1lh - 7px) / 2);
+  border-radius: 2px;
+  background: var(--lcs-nav-accent);
+}
+
+/* La flèche de repli : lisible en permanence, à la couleur du groupe. */
+.nav .nav-group__indicator {
+  opacity: 1;
+}
+
+.nav .nav-group__indicator svg .stroke {
+  stroke: var(--lcs-nav-accent);
+  stroke-width: 1.6;
+}
+
+.nav .nav-group__toggle:hover .nav-group__indicator svg .stroke,
+.nav .nav-group__toggle:focus-visible .nav-group__indicator svg .stroke {
+  stroke: var(--lcs-nav-accent);
+}
+
+/* ---------- Icône de chaque entrée ---------- */
+.nav .nav__link::before {
+  content: '';
+  flex: 0 0 auto;
+  width: 17px;
+  height: 17px;
+  margin-inline-end: 10px;
+  /* Sur un libellé qui passe sur deux lignes (« Candidatures musiciens »),
+     l'icône reste sur la première ligne au lieu de se centrer sur les deux.
+     La seconde règle affine le calage là où l'unité lh est comprise. */
+  align-self: flex-start;
+  margin-top: 6px;
+  margin-top: calc((1lh - 17px) / 2);
+  background-color: var(--lcs-nav-accent);
+  opacity: 0.75;
+  -webkit-mask: var(--lcs-nav-icon, var(--lcs-nav-icon-defaut)) center / 17px 17px no-repeat;
+  mask: var(--lcs-nav-icon, var(--lcs-nav-icon-defaut)) center / 17px 17px no-repeat;
+  transition: opacity 0.15s ease;
+}
+
+.nav .nav__link:hover::before,
+.nav .nav__link:focus-visible::before {
+  opacity: 1;
+}
+
+/* ---------- Entrée courante : la couleur de sa thématique ----------
+   Payload marque l'entrée ouverte par un .nav__link-indicator (il n'y a plus
+   de classe .active depuis la v3) ; les deux sélecteurs couvrent les deux
+   conventions. */
+.nav .nav__link:has(.nav__link-indicator),
+.nav .nav__link.active,
+.nav .nav__link[aria-current='page'] {
+  background: rgb(var(--lcs-nav-accent-rgb) / 0.12);
+  color: var(--lcs-nav-accent);
+  font-weight: 600;
+  box-shadow: inset 2px 0 0 var(--lcs-nav-accent);
+}
+
+.nav .nav__link:has(.nav__link-indicator)::before,
+.nav .nav__link.active::before,
+.nav .nav__link[aria-current='page']::before {
+  opacity: 1;
+}
+
+/* La barre intérieure ci-dessus remplace le trait que Payload place dans la
+   marge : on masque le sien pour ne pas avoir deux repères. */
+.nav .nav__link .nav__link-indicator {
+  display: none;
+}
+
+[data-theme='dark'] .nav .nav__link:has(.nav__link-indicator),
+[data-theme='dark'] .nav .nav__link.active,
+[data-theme='dark'] .nav .nav__link[aria-current='page'] {
+  background: rgb(var(--lcs-nav-accent-rgb) / 0.16);
+}
+
+/* ---------- L'icône de chaque entrée ---------- */
+
+/* Pages */
+#nav-pages {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 3H7.5A1.5 1.5 0 0 0 6 4.5v15A1.5 1.5 0 0 0 7.5 21h9a1.5 1.5 0 0 0 1.5-1.5V7z'/%3E%3Cpath d='M14 3v4h4'/%3E%3Cpath d='M9 12.5h6'/%3E%3Cpath d='M9 16h4'/%3E%3C/svg%3E");
+}
+#nav-global-home-page {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 10.5 12 4l8 6.5'/%3E%3Cpath d='M6.2 9.6V20h11.6V9.6'/%3E%3Cpath d='M10 20v-4.6h4V20'/%3E%3C/svg%3E");
+}
+#nav-global-about-page {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 7.2C10.5 5.9 8.4 5.2 6 5.2H3.5v12.4H6c2.4 0 4.5.7 6 2 1.5-1.3 3.6-2 6-2h2.5V5.2H18c-2.4 0-4.5.7-6 2z'/%3E%3Cpath d='M12 7.2v12.4'/%3E%3C/svg%3E");
+}
+#nav-global-support-page {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20s-7.2-4.3-7.2-9.2A3.9 3.9 0 0 1 12 8.2a3.9 3.9 0 0 1 7.2 2.6c0 4.9-7.2 9.2-7.2 9.2z'/%3E%3C/svg%3E");
+}
+#nav-global-director-page {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='3.3'/%3E%3Cpath d='M5.4 20a6.6 6.6 0 0 1 13.2 0'/%3E%3C/svg%3E");
+}
+#nav-global-contact-page {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 4.5H4v11.2h4v4.3l5.2-4.3H20z'/%3E%3Cpath d='M8.5 8.8h7'/%3E%3Cpath d='M8.5 12h4.5'/%3E%3C/svg%3E");
+}
+#nav-global-media-page {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.4'/%3E%3Cpath d='M10.4 8.8 15.2 12l-4.8 3.2z'/%3E%3C/svg%3E");
+}
+#nav-global-musicians-page {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='4' width='7' height='7' rx='1.6'/%3E%3Crect x='13' y='4' width='7' height='7' rx='1.6'/%3E%3Crect x='4' y='13' width='7' height='7' rx='1.6'/%3E%3Crect x='13' y='13' width='7' height='7' rx='1.6'/%3E%3C/svg%3E");
+}
+#nav-global-musician-form {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.2 3.8h5.6v3H9.2z'/%3E%3Cpath d='M15 5.4h2A1.6 1.6 0 0 1 18.6 7v12.4A1.6 1.6 0 0 1 17 21H7a1.6 1.6 0 0 1-1.6-1.6V7A1.6 1.6 0 0 1 7 5.4h2'/%3E%3Cpath d='M9 11.4h6'/%3E%3Cpath d='M9 15h4'/%3E%3C/svg%3E");
+}
+
+/* Contenu */
+#nav-concerts {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.2 17.6V5.8L19 4v11.4'/%3E%3Ccircle cx='6.6' cy='17.8' r='2.6'/%3E%3Ccircle cx='16.4' cy='15.6' r='2.6'/%3E%3C/svg%3E");
+}
+#nav-musicians {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8.2' r='3.1'/%3E%3Cpath d='M3.2 19.4a5.8 5.8 0 0 1 11.6 0'/%3E%3Cpath d='M16.2 5.6a3 3 0 0 1 0 5.6'/%3E%3Cpath d='M17.6 13.4a5.4 5.4 0 0 1 3.2 5'/%3E%3C/svg%3E");
+}
+#nav-soloists {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m12 3.8 2.6 5.2 5.8.8-4.2 4.1 1 5.7-5.2-2.7-5.2 2.7 1-5.7L3.6 9.8l5.8-.8z'/%3E%3C/svg%3E");
+}
+#nav-media-items {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.4' y='5' width='17.2' height='14' rx='2'/%3E%3Cpath d='M8.2 5v14'/%3E%3Cpath d='M15.8 5v14'/%3E%3Cpath d='M3.4 12h17.2'/%3E%3C/svg%3E");
+}
+#nav-posts {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16.6 19.4H5.6a1.6 1.6 0 0 1-1.6-1.6V4.6h12.6z'/%3E%3Cpath d='M16.6 8.4h2.4a1.6 1.6 0 0 1 1.6 1.6v7.8a1.6 1.6 0 0 1-3.2 0'/%3E%3Cpath d='M7 8.4h6.6'/%3E%3Cpath d='M7 11.8h6.6'/%3E%3Cpath d='M7 15.2h4'/%3E%3C/svg%3E");
+}
+#nav-partners {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4.6' y='3.6' width='8.8' height='16.8' rx='1.3'/%3E%3Cpath d='M13.4 9.4h4.4a1.6 1.6 0 0 1 1.6 1.6v9.4'/%3E%3Cpath d='M7.4 7.4h3'/%3E%3Cpath d='M7.4 11.2h3'/%3E%3Cpath d='M7.4 15h3'/%3E%3Cpath d='M3.4 20.4h17.2'/%3E%3C/svg%3E");
+}
+#nav-timeline-events {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 7.6V12l3 1.8'/%3E%3Cpath d='M4.2 9.4A8.4 8.4 0 1 1 3.6 12'/%3E%3Cpath d='m3 6.4.8 3.2 3.2-.7'/%3E%3C/svg%3E");
+}
+#nav-support-tiers {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m12 3.4 8.4 4.4-8.4 4.4-8.4-4.4z'/%3E%3Cpath d='m4.2 12.2 7.8 4.1 7.8-4.1'/%3E%3Cpath d='m4.2 16.4 7.8 4.1 7.8-4.1'/%3E%3C/svg%3E");
+}
+
+/* Bibliothèque d’images */
+#nav-media {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.4' y='4.6' width='17.2' height='14.8' rx='2'/%3E%3Ccircle cx='9' cy='10' r='1.8'/%3E%3Cpath d='m4.6 17.6 4.8-4.8 3.4 3.4 2.6-2.6 4.6 4.6'/%3E%3C/svg%3E");
+}
+
+/* Messages reçus */
+#nav-contact-submissions {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.2' y='5.4' width='17.6' height='13.2' rx='2'/%3E%3Cpath d='m4.2 7 7.8 5.8L19.8 7'/%3E%3C/svg%3E");
+}
+#nav-musician-submissions {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='10' cy='8.2' r='3.2'/%3E%3Cpath d='M3.6 19.6a6.4 6.4 0 0 1 12.8 0'/%3E%3Cpath d='M18.8 8.4v5'/%3E%3Cpath d='M16.3 10.9h5'/%3E%3C/svg%3E");
+}
+
+/* Réglages */
+#nav-users {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='15' r='3.6'/%3E%3Cpath d='m11.6 12.4 6.8-6.8'/%3E%3Cpath d='m15.4 8.6 2 2'/%3E%3Cpath d='m18.4 5.6 2 2'/%3E%3C/svg%3E");
+}
+#nav-global-site-settings {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7.6h8.2'/%3E%3Cpath d='M17 7.6h3'/%3E%3Ccircle cx='14.6' cy='7.6' r='2.2'/%3E%3Cpath d='M4 16.4h4.6'/%3E%3Cpath d='M13.4 16.4h6.6'/%3E%3Ccircle cx='11' cy='16.4' r='2.2'/%3E%3C/svg%3E");
+}
+#nav-global-theme-settings {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.4a8.6 8.6 0 1 0 0 17.2c1.1 0 1.9-.8 1.9-1.8 0-.9-.6-1.4-.6-2.1 0-.8.7-1.5 1.5-1.5h1.5a4.1 4.1 0 0 0 4.1-4.1c0-4.3-3.9-7.7-8.4-7.7z'/%3E%3Ccircle cx='8.2' cy='11.4' r='1.15'/%3E%3Ccircle cx='12' cy='7.8' r='1.15'/%3E%3Ccircle cx='15.8' cy='10.4' r='1.15'/%3E%3C/svg%3E");
+}
+#nav-global-navigation {
+  --lcs-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.2 6.2h15.6'/%3E%3Cpath d='M8.6 11.4h11.2'/%3E%3Cpath d='M8.6 16.6h11.2'/%3E%3Cpath d='M4.6 6.2v10.4'/%3E%3C/svg%3E");
+}
+
+/* ---------- Raccourci « Accueil » (tableau de bord) ----------
+   Même bouton que « Statistiques » et « Google Analytics », mais premier de
+   la série : il reprend la marge haute de « Voir le site ». */
+.lcs-nav-stats.lcs-nav-home {
+  margin-top: 0.5rem;
+}
+
+/* ---------- Écrans étroits : la barre se replie, on garde les icônes ---------- */
+@media (max-width: 1024px) {
+  .nav .nav__link::before {
+    margin-inline-end: 9px;
+  }
+}
+

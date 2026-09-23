@@ -8,6 +8,13 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  async redirects() {
+    return [
+      // Le blog de l'orchestre vit sous /blog ; /journal, son ancien nom, y renvoie.
+      { source: '/journal', destination: '/blog', permanent: true },
+      { source: '/journal/:slug', destination: '/blog/:slug', permanent: true },
+    ];
+  },
   images: {
     remotePatterns: [
       {

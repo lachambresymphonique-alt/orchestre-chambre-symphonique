@@ -31,8 +31,8 @@ export async function ConcertsListNav({ searchParams }: Props) {
         .catch(() => 0);
 
     [upcoming, past, drafts, missing, total] = await Promise.all([
-      count({ date: { greater_than_equal: startOfToday } }),
-      count({ date: { less_than: startOfToday } }),
+      count({ lastDate: { greater_than_equal: startOfToday } }),
+      count({ lastDate: { less_than: startOfToday } }),
       count({ status: { equals: 'draft' } }),
       count({ date: { exists: false } }),
       count({}),
@@ -54,7 +54,7 @@ export async function ConcertsListNav({ searchParams }: Props) {
       key: 'past',
       label: 'Passés',
       count: past,
-      href: `${base}?where[and][0][date][less_than]=${encodeURIComponent(startOfToday)}&sort=-date`,
+      href: `${base}?where[and][0][lastDate][less_than]=${encodeURIComponent(startOfToday)}&sort=-date`,
       hint: 'Archive, masqués du site',
     },
     // Un paramètre est nécessaire : l'adresse nue est redirigée vers « À venir »
@@ -97,7 +97,7 @@ export async function ConcertsListNav({ searchParams }: Props) {
       </div>
 
       <p className="lcs-mtabs__note">
-        Un concert reste sur le site jusqu&rsquo;à sa date puis disparaît automatiquement le lendemain.
+        Un concert reste sur le site jusqu&rsquo;à sa dernière représentation, puis disparaît automatiquement le lendemain.
         {drafts > 0 && (
           <>
             {' '}
@@ -112,7 +112,7 @@ export async function ConcertsListNav({ searchParams }: Props) {
             {missing} concert{missing > 1 ? 's' : ''} sans date
           </Link>
           {' '}
-          — {missing > 1 ? 'ils n\'apparaissent' : 'il n\'apparaît'} pas sur le site tant qu&rsquo;une date n&rsquo;est pas renseignée.
+          — {missing > 1 ? 'ils n\'apparaissent' : 'il n\'apparaît'} pas sur le site tant qu&rsquo;aucune représentation n&rsquo;est datée.
         </p>
       )}
     </nav>

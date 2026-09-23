@@ -22,7 +22,7 @@ export function Header({ items }: { items?: NavLink[] }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
-  // Actif sur la page et sur ses sous-pages (/journal/mon-article, /musiciens/…).
+  // Actif sur la page et sur ses sous-pages (/blog/mon-article, /musiciens/…).
   const isActive = (href: string) =>
     pathname === href || (href !== '/' && pathname.startsWith(`${href}/`));
 

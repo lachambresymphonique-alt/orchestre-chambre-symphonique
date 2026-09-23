@@ -1,28 +1,51 @@
 /**
  * Concert dates — helpers shared by the public site, the admin and scripts.
  *
- * A concert is stored with a real `date` (ISO instant) plus an optional free
- * text `time` (« 20h30 »). The calendar day of a concert is always read in
+ * A concert is one programme and one poster given at one or more
+ * *performances* (« représentations »), each with a real `date` (ISO
+ * instant), an optional free text `time` (« 20h30 »), a `venue` and an
+ * optional `bookingLink`. The calendar day of a performance is always read in
  * Europe/Paris, whatever the timezone of the server (Vercel runs in UTC) or of
  * the editor's browser. Dates are normalised to noon UTC on save so that any
  * viewer between UTC-11 and UTC+11 sees the same day.
  *
- * A concert is « past » from the day after its date (Paris time) and is then
- * no longer shown on the public site.
+ * For sorting, filtering and older readers, the concert also carries derived
+ * top-level fields kept in sync by a collection hook (see Concerts.ts):
+ * `date` (first performance), `lastDate` (last performance), `time`, `venue`
+ * (every venue, joined) and `bookingLink` (first performance's link).
+ *
+ * A concert is « past » from the day after its *last* performance (Paris time)
+ * and is then no longer shown on the public site. Meanwhile, only the
+ * performances still to come are listed.
  */
 
 export const CONCERT_TIMEZONE = 'Europe/Paris';
 
 export type ConcertStatus = 'published' | 'draft' | 'cancelled';
 
-export type ConcertDoc = {
-  id: string | number;
-  title?: string | null;
+export type ConcertPerformanceDoc = {
+  id?: string | null;
   date?: string | Date | null;
   time?: string | null;
   venue?: string | null;
-  program?: string | null;
   bookingLink?: string | null;
+};
+
+export type ConcertDoc = {
+  id: string | number;
+  title?: string | null;
+  performances?: ConcertPerformanceDoc[] | null;
+  /** Derived: first performance. */
+  date?: string | Date | null;
+  /** Derived: last performance. */
+  lastDate?: string | Date | null;
+  /** Derived: first performance. */
+  time?: string | null;
+  /** Derived: every venue, joined with « · ». */
+  venue?: string | null;
+  /** Derived: first performance. */
+  bookingLink?: string | null;
+  program?: string | null;
   image?:
     | { url?: string | null; alt?: string | null; width?: number | null; height?: number | null }
     | number
@@ -54,15 +77,30 @@ export type ConcertDateView = {
   isPast: boolean;
 };
 
+/** One performance, ready to render (no Intl on the client → no hydration drift). */
+export type ConcertPerformanceView = {
+  id: string;
+  date: ConcertDateView;
+  venue: string;
+  bookingLink: string | null;
+};
+
 export type ConcertCard = {
   id: string | number;
   title: string;
+  /** Venue of the performance shown in `date`. */
   venue: string;
   program: string;
+  /** Booking link of the performance shown in `date`. */
   bookingLink: string | null;
   image: { url: string; alt: string; width: number | null; height: number | null } | null;
   status: ConcertStatus;
+  /** Next performance (today or later) — or the last one once all have passed. */
   date: ConcertDateView;
+  /** Performances still to come (today or later), soonest first. */
+  performances: ConcertPerformanceView[];
+  /** Every performance, past ones included. */
+  performanceCount: number;
 };
 
 // ─── Calendar helpers ────────────────────────────────────────────────────────
@@ -141,11 +179,96 @@ export function isValidConcertTime(value: string): boolean {
   return Number(m[1]) <= 23 && Number(m[2]) <= 59;
 }
 
-/** Minutes since midnight, for sorting concerts on the same day. */
+/** Minutes since midnight, for sorting performances on the same day. */
 function timeToMinutes(time: string | null | undefined): number {
   if (!time) return 24 * 60; // unknown time sorts last within the day
   const m = time.match(/^(\d{1,2})h(\d{2})$/);
   return m ? Number(m[1]) * 60 + Number(m[2]) : 24 * 60;
+}
+
+// ─── Booking link ────────────────────────────────────────────────────────────
+
+/** Field validator: full http(s) URL, or empty. */
+export function validateBookingLink(value: string | null | undefined): true | string {
+  if (!value) return true;
+  try {
+    const url = new URL(value);
+    if (url.protocol === 'https:' || url.protocol === 'http:') return true;
+  } catch {
+    /* fallthrough */
+  }
+  return 'Indiquez une adresse complète commençant par https://';
+}
+
+// ─── Performances ────────────────────────────────────────────────────────────
+
+/** Soonest first; on the same day, by time (unknown time last). Undated rows last. */
+export function comparePerformances(a: ConcertPerformanceDoc, b: ConcertPerformanceDoc): number {
+  const ka = parisDateKey(a.date ?? null);
+  const kb = parisDateKey(b.date ?? null);
+  if (ka !== kb) {
+    if (!ka) return 1;
+    if (!kb) return -1;
+    return ka < kb ? -1 : 1;
+  }
+  return timeToMinutes(a.time) - timeToMinutes(b.time);
+}
+
+export function sortPerformances<T extends ConcertPerformanceDoc>(list: T[]): T[] {
+  return [...list].sort(comparePerformances);
+}
+
+/**
+ * The concert's performances, sorted. A document saved before performances
+ * existed (only the old single date) still yields one performance, built
+ * from its top-level fields, so nothing disappears before the data migration.
+ */
+export function performancesOf(doc: Partial<ConcertDoc>): ConcertPerformanceDoc[] {
+  const rows = Array.isArray(doc.performances) ? doc.performances : [];
+  const dated = rows.filter((p) => p && parisDateKey(p.date ?? null));
+  if (dated.length > 0) return sortPerformances(dated);
+  if (parisDateKey(doc.date ?? null)) {
+    return [
+      {
+        date: doc.date,
+        time: doc.time ?? null,
+        venue: doc.venue ?? null,
+        bookingLink: doc.bookingLink ?? null,
+      },
+    ];
+  }
+  return [];
+}
+
+export type DerivedConcertFields = {
+  date: string | Date | null;
+  lastDate: string | Date | null;
+  time: string | null;
+  venue: string | null;
+  bookingLink: string | null;
+};
+
+/**
+ * Top-level fields kept in sync with the performances: first and last date,
+ * first time and booking link, every distinct venue joined with « · » (so the
+ * admin search finds a concert by any of its venues).
+ */
+export function deriveConcertFields(performances: ConcertPerformanceDoc[]): DerivedConcertFields {
+  const sorted = sortPerformances(performances.filter((p) => p && parisDateKey(p.date ?? null)));
+  const first = sorted[0];
+  const last = sorted[sorted.length - 1];
+  const venues: string[] = [];
+  for (const p of sorted) {
+    const v = p.venue?.trim();
+    if (v && !venues.includes(v)) venues.push(v);
+  }
+  return {
+    date: first?.date ?? null,
+    lastDate: last?.date ?? null,
+    time: normalizeConcertTime(first?.time ?? null) || null,
+    venue: venues.length ? venues.join(' · ') : null,
+    bookingLink: first?.bookingLink?.trim() || null,
+  };
 }
 
 // ─── Formatting ──────────────────────────────────────────────────────────────
@@ -195,29 +318,57 @@ export function describeConcertDate(
   };
 }
 
-export function isPastConcert(doc: Pick<ConcertDoc, 'date'>, now: Date = new Date()): boolean {
-  const key = parisDateKey(doc.date ?? null);
+export function describePerformance(
+  perf: ConcertPerformanceDoc,
+  now: Date = new Date(),
+): ConcertPerformanceView | null {
+  const date = describeConcertDate(perf.date ?? null, perf.time, now);
+  if (!date) return null;
+  return {
+    id: perf.id || `${date.key}-${perf.venue || ''}`,
+    date,
+    venue: perf.venue?.trim() || '',
+    bookingLink: perf.bookingLink?.trim() || null,
+  };
+}
+
+/** True once every performance is over (Paris time). */
+export function isPastConcert(
+  doc: Pick<ConcertDoc, 'date' | 'lastDate' | 'performances' | 'time' | 'venue' | 'bookingLink'>,
+  now: Date = new Date(),
+): boolean {
+  const list = performancesOf(doc);
+  const last = list[list.length - 1];
+  const key = parisDateKey((last?.date ?? doc.lastDate ?? doc.date) ?? null);
   return !!key && key < todayKey(now);
 }
 
+/** By first performance — the order of the admin list. */
 export function compareConcerts(a: ConcertDoc, b: ConcertDoc): number {
-  const ka = parisDateKey(a.date ?? null) || '';
-  const kb = parisDateKey(b.date ?? null) || '';
-  if (ka !== kb) return ka < kb ? -1 : 1;
-  return timeToMinutes(a.time) - timeToMinutes(b.time);
+  const pa = performancesOf(a)[0] ?? {};
+  const pb = performancesOf(b)[0] ?? {};
+  return comparePerformances(pa, pb);
 }
 
 /** Server-side view model handed to client components (no Intl on the client → no hydration drift). */
 export function toConcertCard(doc: ConcertDoc, now: Date = new Date()): ConcertCard | null {
-  const date = describeConcertDate(doc.date ?? null, doc.time, now);
-  if (!date) return null;
+  const all = performancesOf(doc)
+    .map((p) => describePerformance(p, now))
+    .filter((p): p is ConcertPerformanceView => p !== null);
+  if (all.length === 0) return null;
+
+  const today = todayKey(now);
+  const upcoming = all.filter((p) => p.date.key >= today);
+  // Once everything is over (admin previews, archives), fall back to the last performance.
+  const primary = upcoming[0] ?? all[all.length - 1];
+
   const img = doc.image && typeof doc.image === 'object' && doc.image.url ? doc.image : null;
   return {
     id: doc.id,
     title: doc.title?.trim() || 'Concert',
-    venue: doc.venue?.trim() || '',
+    venue: primary.venue,
     program: doc.program?.trim() || '',
-    bookingLink: doc.bookingLink?.trim() || null,
+    bookingLink: primary.bookingLink,
     image: img
       ? {
           url: img.url as string,
@@ -227,7 +378,9 @@ export function toConcertCard(doc: ConcertDoc, now: Date = new Date()): ConcertC
         }
       : null,
     status: doc.status === 'draft' || doc.status === 'cancelled' ? doc.status : 'published',
-    date,
+    date: primary.date,
+    performances: upcoming,
+    performanceCount: all.length,
   };
 }
 
@@ -239,11 +392,12 @@ export const CONCERTS_ADMIN_LIST = '/admin/collections/concerts';
 /**
  * Adresse de la vue « À venir » de la liste des concerts : même filtre que
  * l'onglet du même nom, et vue de départ vers laquelle `middleware.ts`
- * redirige l'adresse nue de la liste.
+ * redirige l'adresse nue de la liste. Un concert reste « à venir » jusqu'à
+ * sa dernière représentation.
  */
 export function concertsUpcomingListUrl(now: Date = new Date()): string {
   const from = encodeURIComponent(startOfKeyIso(todayKey(now)));
-  return `${CONCERTS_ADMIN_LIST}?where[and][0][date][greater_than_equal]=${from}&sort=date`;
+  return `${CONCERTS_ADMIN_LIST}?where[and][0][lastDate][greater_than_equal]=${from}&sort=date`;
 }
 
 // ─── Queries ─────────────────────────────────────────────────────────────────
@@ -253,8 +407,9 @@ type PayloadLike = {
 };
 
 /**
- * Concerts to show on the public site: today and later (Paris time), not drafts,
- * soonest first. Cancelled concerts are kept so visitors are informed.
+ * Concerts to show on the public site: at least one performance today or
+ * later (Paris time), not drafts, soonest next performance first. Cancelled
+ * concerts are kept so visitors are informed.
  */
 export async function findUpcomingConcerts(
   payload: PayloadLike,
@@ -270,7 +425,13 @@ export async function findUpcomingConcerts(
     collection: 'concerts',
     where: {
       and: [
-        { date: { greater_than_equal: from } },
+        {
+          or: [
+            { lastDate: { greater_than_equal: from } },
+            // Documents saved before `lastDate` existed (not migrated yet).
+            { and: [{ lastDate: { exists: false } }, { date: { greater_than_equal: from } }] },
+          ],
+        },
         { status: { not_equals: 'draft' } },
       ],
     },
@@ -280,12 +441,11 @@ export async function findUpcomingConcerts(
   });
 
   return (res.docs as ConcertDoc[])
-    .filter((d) => {
-      const key = parisDateKey(d.date ?? null);
-      return !!key && key >= today;
-    })
-    .sort(compareConcerts)
-    .slice(0, limit)
     .map((d) => toConcertCard(d, now))
-    .filter((c): c is ConcertCard => c !== null);
+    .filter((c): c is ConcertCard => c !== null && c.performances.length > 0)
+    .sort((a, b) => {
+      if (a.date.key !== b.date.key) return a.date.key < b.date.key ? -1 : 1;
+      return timeToMinutes(a.date.time) - timeToMinutes(b.date.time);
+    })
+    .slice(0, limit);
 }

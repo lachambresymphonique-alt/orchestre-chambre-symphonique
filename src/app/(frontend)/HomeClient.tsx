@@ -7,7 +7,7 @@ import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FadeIn } from '@/components/FadeIn';
 import { NewsletterForm } from '@/components/NewsletterForm';
 import { ExpandableText } from '@/components/ExpandableText';
-import { ConcertPosters } from '@/components/ConcertPosters';
+import { ConcertDates, ConcertPosters } from '@/components/ConcertPosters';
 import { stockImages, placeholderForMusician, directorPlaceholder } from '@/lib/unsplash';
 import { toConcertCard, type ConcertCard, type ConcertDoc } from '@/lib/concerts';
 import { renderEmphasis } from '@/lib/emphasis';
@@ -249,6 +249,7 @@ export function HomeClient({
             {concerts.map((concert, index) => {
               const isLead = index === 0;
               const cancelled = concert.status === 'cancelled';
+              const multiple = concert.performances.length > 1;
               const rowClass = [
                 'concert-row',
                 isLead ? 'concert-row--lead' : '',
@@ -299,7 +300,16 @@ export function HomeClient({
                       </div>
                       <div className="concert-row__body">
                         <h3 className="concert-row__title" data-live-item-field="title">{concert.title}</h3>
-                        <p className="concert-row__venue">{concert.venue}</p>
+                        {multiple ? (
+                          <ConcertDates
+                            performances={concert.performances}
+                            cancelled={cancelled}
+                            bookingLabel={bookingLabelShort}
+                            className="concert-row__dates"
+                          />
+                        ) : (
+                          <p className="concert-row__venue">{concert.venue}</p>
+                        )}
                         {concert.program && (
                           <ExpandableText
                             text={concert.program}
@@ -311,7 +321,7 @@ export function HomeClient({
                       <div className="concert-row__action">
                         {cancelled ? (
                           <span className="concert-badge concert-badge--cancelled">{cancelledLabel}</span>
-                        ) : concert.bookingLink ? (
+                        ) : multiple ? null : concert.bookingLink ? (
                           <a
                             href={concert.bookingLink}
                             className={isLead ? 'btn-filled' : 'link-arrow'}

@@ -19,6 +19,8 @@ import { Pages } from './collections/Pages';
 import { ContactSubmissions } from './collections/ContactSubmissions';
 import { MusicianSubmissions } from './collections/MusicianSubmissions';
 import { Soloists } from './collections/Soloists';
+import { Posts } from './collections/Posts';
+import { PageViews } from './collections/PageViews';
 
 import { SiteSettings } from './globals/SiteSettings';
 import { HomePage } from './globals/HomePage';
@@ -28,6 +30,7 @@ import { DirectorPage } from './globals/DirectorPage';
 import { ContactPage } from './globals/ContactPage';
 import { MediaPage } from './globals/MediaPage';
 import { MusiciansPage } from './globals/MusiciansPage';
+import { MusicianForm } from './globals/MusicianForm';
 import { ThemeSettings } from './globals/ThemeSettings';
 import { Navigation } from './globals/Navigation';
 import { unsavedChangesPlugin } from './lib/unsavedChangesPlugin';
@@ -54,8 +57,12 @@ export default buildConfig({
       // Barre du haut : « Voir le site » juste avant la photo du compte.
       actions: ['@/components/admin/HeaderSiteLink#HeaderSiteLink'],
       beforeNavLinks: [
+        '@/components/admin/DashboardNavLink#DashboardNavLink',
+        '@/components/admin/StatsNavLink#StatsNavLink',
         '@/components/admin/AnalyticsNavLink#AnalyticsNavLink',
       ],
+      // Entrée « Créer une page » : se replace au bas du groupe Pages.
+      afterNavLinks: ['@/components/admin/NewPageNavLink#NewPageNavLink'],
       beforeDashboard: ['@/components/admin/BeforeDashboard#BeforeDashboard'],
       views: {
         // Google Analytics : /admin/google-analytics (voir src/lib/googleAnalytics.ts)
@@ -66,6 +73,16 @@ export default buildConfig({
           meta: {
             title: 'Google Analytics',
             description: 'Fréquentation du site mesurée par Google Analytics.',
+          },
+        },
+        // Statistiques de visite : /admin/statistiques (voir src/lib/stats.ts)
+        statistiques: {
+          Component: '@/components/admin/StatsView#StatsView',
+          path: '/statistiques',
+          exact: true,
+          meta: {
+            title: 'Statistiques de visite',
+            description: 'Fréquentation du site : visiteurs, pages vues, provenances.',
           },
         },
       },
@@ -96,6 +113,7 @@ export default buildConfig({
             'contact-page': '/contact',
             'media-page': '/medias',
             'musicians-page': '/musiciens',
+            'musician-form': '/musiciens/contribuer',
             'site-settings': '/contact',
             'theme-settings': '/',
             navigation: '/',
@@ -110,6 +128,7 @@ export default buildConfig({
           'timeline-events': '/a-propos',
           'support-tiers': '/nous-soutenir',
           pages: `/${data?.slug || ''}`,
+          posts: `/blog/${data?.slug || ''}`,
         };
         const slug = collectionConfig?.slug || '';
         // The conductor's fiche feeds the Direction page: preview it there.
@@ -128,8 +147,8 @@ export default buildConfig({
         }
         return `${base}${collectionMap[slug] || '/'}`;
       },
-      globals: ['home-page', 'about-page', 'support-page', 'director-page', 'contact-page', 'media-page', 'musicians-page', 'site-settings', 'navigation', 'theme-settings'],
-      collections: ['concerts', 'musicians', 'media-items', 'partners', 'timeline-events', 'support-tiers', 'pages', 'musician-submissions'],
+      globals: ['home-page', 'about-page', 'support-page', 'director-page', 'contact-page', 'media-page', 'musicians-page', 'musician-form', 'site-settings', 'navigation', 'theme-settings'],
+      collections: ['concerts', 'musicians', 'media-items', 'partners', 'timeline-events', 'support-tiers', 'pages', 'musician-submissions', 'posts'],
       breakpoints: [
         { label: 'Mobile', name: 'mobile', width: 375, height: 667 },
         { label: 'Tablette', name: 'tablet', width: 768, height: 1024 },
@@ -146,6 +165,8 @@ export default buildConfig({
     Musicians,
     Soloists,
     MediaItems,
+    // Blog (articles : projets passés, entretiens, actualités)
+    Posts,
     Partners,
     TimelineEvents,
     SupportTiers,
@@ -154,6 +175,8 @@ export default buildConfig({
     // Messages reçus
     ContactSubmissions,
     MusicianSubmissions,
+    // Statistiques de visite (masquée : alimentée par /api/visite, lue par /admin/statistiques)
+    PageViews,
     // Réglages
     Users,
   ],
@@ -167,6 +190,7 @@ export default buildConfig({
     ContactPage,
     MediaPage,
     MusiciansPage,
+    MusicianForm,
     // Réglages
     SiteSettings,
     ThemeSettings,
@@ -176,6 +200,18 @@ export default buildConfig({
   i18n: {
     supportedLanguages: { fr },
     fallbackLanguage: 'fr',
+    // La traduction française de Payload n'a qu'un libellé pour toutes les
+    // collections : d'où le « Créer un(e) nouveau ou nouvelle ». On le
+    // remplace par des formules justes quel que soit le genre du contenu.
+    translations: {
+      fr: {
+        general: {
+          createNew: 'Créer',
+          createNewLabel: 'Créer : {{label}}',
+          creatingNewLabel: 'Création : {{label}}',
+        },
+      },
+    },
   },
 
   editor: lexicalEditor(),

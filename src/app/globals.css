@@ -4927,6 +4927,766 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
 }
 
 /* ============================================================
+   BLOG — liste des articles (/blog)
+   Lead éditorial (dernier article en grand) puis rangées datées,
+   comme la programmation : pas de grille de cartes identiques.
+   ============================================================ */
+.journal {
+  padding: clamp(3rem, 6vw, 5rem) 0 clamp(5rem, 9vw, 7rem);
+}
+
+.journal__inner {
+  max-width: var(--max-width-wide);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+/* Rubriques — onglets soulignés, pas de pilules */
+.journal-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 clamp(1.5rem, 3vw, 2.75rem);
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  border-bottom: 1px solid var(--paper-rule);
+}
+
+.journal-filters a {
+  position: relative;
+  display: inline-block;
+  padding: 0 0 1rem;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+  transition: color var(--d-quick) var(--ease-curtain);
+}
+
+.journal-filters a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--velvet);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--d-medium) var(--ease-curtain);
+}
+
+.journal-filters a:hover,
+.journal-filters a.is-active {
+  color: var(--bordeaux);
+}
+
+.journal-filters a:hover::after,
+.journal-filters a.is-active::after {
+  transform: scaleX(1);
+}
+
+/* Lead — le dernier article, image large + titre */
+.journal-lead {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: clamp(2rem, 4.5vw, 4.5rem);
+  align-items: center;
+  margin-bottom: clamp(3rem, 6vw, 5rem);
+}
+
+@media (max-width: 900px) {
+  .journal-lead {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+}
+
+.journal-lead__media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  margin: 0;
+  overflow: hidden;
+  background: var(--paper-deep);
+}
+
+.journal-lead__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, oklch(10% 0.010 55 / 0.35), transparent 45%);
+  pointer-events: none;
+}
+
+.journal-lead__media img,
+.journal-row__media img {
+  transition: transform var(--d-slow) var(--ease-curtain);
+}
+
+.journal-lead:hover .journal-lead__media img {
+  transform: scale(1.03);
+}
+
+.journal-lead__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.1rem;
+}
+
+.journal-lead__title {
+  font-family: var(--font-display);
+  font-variation-settings: var(--fraunces-display);
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -0.024em;
+  color: var(--bordeaux);
+  margin: 0;
+  max-width: 16ch;
+}
+
+.journal-lead__excerpt {
+  font-family: var(--font-body-serif);
+  font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+  line-height: 1.6;
+  color: var(--rose-shadow);
+  max-width: 50ch;
+  margin: 0;
+}
+
+.journal-lead:hover .link-arrow {
+  border-bottom-color: var(--bordeaux-bright);
+  gap: 0.85rem;
+}
+
+/* Sans image : bloc velours + halo de bougie (jamais un gris) */
+.journal-placeholder {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 48%, oklch(82% 0.110 70 / 0.22), transparent 58%),
+    var(--paper-deep);
+}
+
+/* Rangées datées */
+.journal-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.journal-row {
+  border-top: 1px solid var(--paper-rule);
+}
+
+.journal-row:last-child {
+  border-bottom: 1px solid var(--paper-rule);
+}
+
+.journal-row__link {
+  display: grid;
+  grid-template-columns: minmax(6rem, 7.5rem) minmax(0, 1fr) minmax(9rem, 13rem);
+  gap: clamp(1.5rem, 3vw, 3rem);
+  align-items: center;
+  padding: clamp(1.5rem, 3vw, 2.25rem) 0;
+  transition: background var(--d-quick) var(--ease-curtain);
+}
+
+.journal-row__link:hover {
+  background: var(--paper-soft);
+}
+
+.journal-row__date {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.journal-row__day {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-variation-settings: "opsz" 144, "SOFT" var(--lcs-soft, 100);
+  font-size: clamp(2.25rem, 3.5vw, 3rem);
+  line-height: 0.95;
+  font-weight: 400;
+  color: var(--velvet);
+}
+
+.journal-row__month {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+}
+
+.journal-row__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.journal-row__kicker {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--velvet);
+  margin: 0;
+}
+
+.journal-row__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.2vw, 1.85rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+  color: var(--bordeaux);
+  margin: 0;
+  transition: color var(--d-quick) var(--ease-curtain);
+}
+
+.journal-row__link:hover .journal-row__title {
+  color: var(--bordeaux-bright);
+}
+
+.journal-row__excerpt {
+  font-family: var(--font-body-serif);
+  font-size: 1.02rem;
+  line-height: 1.6;
+  color: var(--rose-shadow);
+  margin: 0.15rem 0 0;
+  max-width: 60ch;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.journal-row__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--paper-deep);
+}
+
+.journal-row__link:hover .journal-row__media img {
+  transform: scale(1.04);
+}
+
+@media (max-width: 700px) {
+  .journal-row__link {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+  .journal-row__media {
+    order: -1;
+    aspect-ratio: 16 / 9;
+  }
+  .journal-row__date {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+  .journal-row__day {
+    font-size: 1.75rem;
+  }
+}
+
+/* Pagination */
+.journal-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.journal-pagination__page {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+  font-feature-settings: "tnum";
+}
+
+/* État vide */
+.journal-empty {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: clamp(3rem, 8vw, 6rem) 0;
+  text-align: center;
+}
+
+.journal-empty__title {
+  font-family: var(--font-display);
+  font-variation-settings: var(--fraunces-display);
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.022em;
+  color: var(--bordeaux);
+  margin: 0.75rem 0 1.25rem;
+}
+
+.journal-empty__title em {
+  font-style: italic;
+  color: var(--velvet);
+}
+
+.journal-empty p {
+  font-family: var(--font-body-serif);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--rose-shadow);
+  margin: 0 auto;
+  max-width: 44ch;
+}
+
+.journal-empty .velvet-rule {
+  margin: 2rem auto;
+}
+
+/* ============================================================
+   BLOG — article (/blog/[slug])
+   Bandeau drenché (rubrique, date, titre, chapeau), image de
+   couverture qui déborde sur le corps, colonne de lecture, galerie,
+   dates du projet, « lire aussi ».
+   ============================================================ */
+.post-page {
+  --post-overlap: clamp(3rem, 8vw, 7rem);
+}
+
+.post-hero {
+  position: relative;
+  background: var(--paper-soft);
+  color: var(--on-bordeaux);
+  padding-top: clamp(8rem, 14vw, 12rem);
+}
+
+.post-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 60% at 80% 20%, oklch(82% 0.110 70 / 0.18), transparent 60%),
+    radial-gradient(ellipse 50% 70% at 10% 90%, oklch(58% 0.195 45 / 0.30), transparent 65%);
+  pointer-events: none;
+}
+
+.post-hero__inner {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--gutter) clamp(3rem, 6vw, 5rem);
+}
+
+.post-hero--with-cover .post-hero__inner {
+  padding-bottom: calc(clamp(3rem, 6vw, 5rem) + var(--post-overlap));
+}
+
+.post-hero .breadcrumb {
+  margin-bottom: 2rem;
+}
+
+.post-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.85rem;
+  margin: 0 0 1.5rem;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--on-bordeaux-glow);
+}
+
+.post-hero__meta time,
+.post-hero__meta .dot {
+  color: var(--on-bordeaux-mute);
+}
+
+.post-hero__title {
+  font-family: var(--font-display);
+  font-variation-settings: var(--fraunces-display);
+  font-style: italic;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.024em;
+  color: var(--on-bordeaux);
+  max-width: 18ch;
+  margin: 0 0 1.5rem;
+}
+
+.post-hero__lede {
+  font-family: var(--font-body-serif);
+  font-size: clamp(1.15rem, 1.7vw, 1.4rem);
+  line-height: 1.55;
+  color: var(--on-bordeaux-mute);
+  max-width: 52ch;
+  margin: 0;
+}
+
+.post-hero__guest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 1.25rem;
+  margin: 2rem 0 0;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--on-bordeaux-mute);
+}
+
+.post-hero__guest em {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.35rem;
+  color: var(--on-bordeaux);
+}
+
+.post-hero__guest .link-arrow {
+  font-size: 0.7rem;
+}
+
+/* Couverture — déborde du bandeau sur le corps de l’article */
+.post-cover {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max-width-wide);
+  margin: calc(-1 * var(--post-overlap)) auto 0;
+  padding: 0 var(--gutter);
+}
+
+.post-cover__frame {
+  position: relative;
+  aspect-ratio: 21 / 9;
+  overflow: hidden;
+  background: var(--paper-deep);
+}
+
+@media (max-width: 700px) {
+  .post-cover__frame {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+/* Corps — colonne de lecture */
+.post-body {
+  padding: clamp(3.5rem, 7vw, 6rem) var(--gutter) clamp(2rem, 5vw, 4rem);
+}
+
+.post-prose {
+  font-size: 1.08rem;
+  line-height: 1.85;
+}
+
+/* Lettrine sur le premier paragraphe */
+.post-prose > p:first-child::first-letter {
+  font-family: var(--font-display);
+  font-variation-settings: var(--fraunces-display);
+  font-size: 3.6em;
+  float: left;
+  line-height: 0.85;
+  margin: 0.06em 0.16em 0 -0.04em;
+  color: var(--velvet);
+}
+
+/* Images insérées dans le texte */
+.post-figure {
+  margin: 2.5rem 0;
+}
+
+.post-figure img {
+  width: 100%;
+  height: auto;
+  margin: 0;
+}
+
+@media (min-width: 1000px) {
+  /* Légère sortie de colonne, façon magazine */
+  .post-prose .post-figure {
+    margin-inline: -5rem;
+  }
+}
+
+.post-figure figcaption,
+.post-cover figcaption,
+.post-gallery figcaption {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--rose-mute);
+  margin-top: 0.65rem;
+}
+
+/* Texte riche — compléments (s’appliquent aussi aux pages libres) */
+.rich-text-content ul,
+.rich-text-content ol {
+  margin: 0 0 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.rich-text-content ul { list-style: disc; }
+.rich-text-content ol { list-style: decimal; }
+
+.rich-text-content li {
+  margin: 0 0 0.45rem;
+  padding-left: 0.25rem;
+}
+
+.rich-text-content li::marker {
+  color: var(--velvet);
+}
+
+.rich-text-content h4 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  margin: 1.75rem 0 0.5rem;
+}
+
+.rich-text-content strong {
+  font-weight: 600;
+  color: var(--bordeaux);
+}
+
+.rich-text-content hr {
+  border: none;
+  width: 4rem;
+  height: 1px;
+  background: var(--velvet);
+  opacity: 0.7;
+  margin: 2.75rem 0;
+}
+
+.rich-text-content blockquote {
+  font-family: var(--font-display);
+  font-variation-settings: "opsz" 40, "SOFT" var(--lcs-soft, 90);
+  font-style: italic;
+  font-size: clamp(1.3rem, 1.8vw, 1.6rem);
+  line-height: 1.45;
+  color: var(--bordeaux);
+  margin: 2rem 0;
+  padding: 0.25rem 0 0.25rem 1.5rem;
+}
+
+.rich-text-content img,
+.rich-text-content picture {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 2rem 0;
+}
+
+/* Sections secondaires : galerie, dates du projet */
+.post-section__head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.post-section__head .velvet-rule {
+  margin: 0;
+  width: 3rem;
+}
+
+.post-gallery {
+  max-width: var(--max-width-wide);
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4rem) var(--gutter);
+}
+
+.post-gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.post-gallery__grid figure {
+  margin: 0;
+}
+
+.post-gallery__grid figure:first-child {
+  grid-column: span 2;
+}
+
+.post-gallery__frame {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--paper-deep);
+}
+
+.post-gallery__grid figure:first-child .post-gallery__frame {
+  aspect-ratio: 16 / 9;
+}
+
+@media (max-width: 640px) {
+  .post-gallery__grid figure:first-child {
+    grid-column: auto;
+  }
+  .post-gallery__grid figure:first-child .post-gallery__frame {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+.post-concerts {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4rem) var(--gutter);
+}
+
+.post-concerts__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.post-concert {
+  display: grid;
+  grid-template-columns: minmax(8rem, 11rem) minmax(0, 1fr);
+  gap: clamp(1rem, 3vw, 2.5rem);
+  align-items: baseline;
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--paper-rule);
+}
+
+.post-concert:last-child {
+  border-bottom: 1px solid var(--paper-rule);
+}
+
+@media (max-width: 600px) {
+  .post-concert {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+}
+
+.post-concert__date {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+  line-height: 1.1;
+  color: var(--velvet);
+}
+
+.post-concert__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 1.6vw, 1.4rem);
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--bordeaux);
+  margin: 0 0 0.2rem;
+}
+
+.post-concert__venue {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--bordeaux-bright);
+  margin: 0;
+}
+
+/* Pied : lire aussi, retour au blog */
+.post-foot {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4rem) var(--gutter) clamp(5rem, 9vw, 7rem);
+}
+
+.post-foot > .velvet-rule {
+  margin: 0 0 2.5rem;
+}
+
+.post-related {
+  margin-bottom: 3rem;
+}
+
+.post-related__list {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.post-related__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  height: 100%;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  background: var(--paper-soft);
+  border: 1px solid var(--paper-rule);
+  overflow: hidden;
+  transition: border-color var(--d-quick) var(--ease-curtain),
+              background var(--d-quick) var(--ease-curtain),
+              transform var(--d-quick) var(--ease-curtain);
+}
+
+.post-related__card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--velvet);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--d-medium) var(--ease-curtain);
+}
+
+.post-related__card:hover {
+  border-color: var(--velvet);
+  background: var(--paper-deep);
+  transform: translateY(-3px);
+}
+
+.post-related__card:hover::after {
+  transform: scaleX(1);
+}
+
+.post-related__kicker {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--velvet);
+}
+
+.post-related__title {
+  flex: 1;
+  font-family: var(--font-display);
+  font-variation-settings: "opsz" 60, "SOFT" var(--lcs-soft, 90);
+  font-size: clamp(1.2rem, 1.7vw, 1.45rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+  color: var(--bordeaux);
+}
+
+.post-related__date {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: var(--rose-mute);
+}
+
+/* ============================================================
    CONCERTS — « Affiches » : mur d'affiches et bande défilante
    Affichage choisi dans l'admin (Page d'accueil → Section Concerts).
    Composant : src/components/ConcertPosters.tsx
@@ -5304,4 +6064,73 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
 
 :root[data-display='bodoni'] .hero-modern__title {
   letter-spacing: -0.02em;
+}
+
+/* ==========================================================================
+   REPRÉSENTATIONS — un concert donné à plusieurs dates
+   Sous une même affiche, la liste des dates à venir : jour, heure, lieu et
+   billetterie propres à chaque représentation. Partagée par les trois
+   affichages de la page d'accueil (affiches, bande, liste).
+   ========================================================================== */
+
+.concert-dates {
+  list-style: none;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.concert-dates__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.75rem;
+  row-gap: 0.15rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.concert-dates__item:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.concert-dates__when {
+  flex-basis: 100%;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+}
+
+.concert-dates__venue {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--bordeaux-bright);
+}
+
+.concert-dates__link {
+  margin-left: auto;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  /* Au-dessus du lien étendu de l'affiche, comme le bouton « Lire la suite » */
+  position: relative;
+  z-index: 2;
+}
+
+.concert-row__dates {
+  margin-top: 0.4rem;
+  max-width: 60ch;
+}
+
+/* Une affiche annulée garde ses dates, sans billetterie */
+.concert-poster.is-cancelled .concert-dates__when,
+.concert-row.is-cancelled .concert-dates__when {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
 }

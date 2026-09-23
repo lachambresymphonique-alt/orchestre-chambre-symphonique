@@ -38,49 +38,48 @@ async function seed() {
   console.log('Creating concerts...')
   const concerts = [
     {
-      date: '2025-06-13T12:00:00.000Z',
-      time: '20h30',
       title: 'Grande Messe en ut mineur — Mozart',
-      venue: 'Abbaye Saint-Philibert, Tournus',
       program: 'Mozart, Messe en ut mineur K.427 — Avec le Chœur Opus 71, dir. Christian Garneret',
-      bookingLink: 'https://www.helloasso.com/associations/la-chambre-symphonique',
       status: 'published' as const,
+      performances: [
+        {
+          date: '2025-06-13T12:00:00.000Z',
+          time: '20h30',
+          venue: 'Abbaye Saint-Philibert, Tournus',
+          bookingLink: 'https://www.helloasso.com/associations/la-chambre-symphonique',
+        },
+        {
+          date: '2025-06-14T12:00:00.000Z',
+          time: '20h30',
+          venue: 'Église Saint-Cosme, Chalon-sur-Saône',
+          bookingLink: 'https://www.helloasso.com/associations/la-chambre-symphonique',
+        },
+        {
+          date: '2025-06-15T12:00:00.000Z',
+          time: '17h00',
+          venue: 'Basilique Notre-Dame, Beaune',
+          bookingLink: 'https://www.helloasso.com/associations/la-chambre-symphonique',
+        },
+      ],
     },
     {
-      date: '2025-06-14T12:00:00.000Z',
-      time: '20h30',
-      title: 'Grande Messe en ut mineur — Mozart',
-      venue: 'Église Saint-Cosme, Chalon-sur-Saône',
-      program: 'Mozart, Messe en ut mineur K.427 — Avec le Chœur Opus 71, dir. Christian Garneret',
-      bookingLink: 'https://www.helloasso.com/associations/la-chambre-symphonique',
-      status: 'published' as const,
-    },
-    {
-      date: '2025-06-15T12:00:00.000Z',
-      time: '17h00',
-      title: 'Grande Messe en ut mineur — Mozart',
-      venue: 'Basilique Notre-Dame, Beaune',
-      program: 'Mozart, Messe en ut mineur K.427 — Avec le Chœur Opus 71, dir. Christian Garneret',
-      bookingLink: 'https://www.helloasso.com/associations/la-chambre-symphonique',
-      status: 'published' as const,
-    },
-    {
-      date: '2025-08-08T12:00:00.000Z',
-      time: '20h30',
       title: 'Mouvements Symphoniques — Musiques pour la danse',
-      venue: 'La Commanderie, Dôle',
       program: 'Debussy — Prélude à l\'après-midi d\'un faune, Prokofiev — Roméo et Juliette Suite n°2, Ravel — Valse & Boléro',
-      bookingLink: 'https://www.helloasso.com/associations/la-chambre-symphonique',
       status: 'published' as const,
-    },
-    {
-      date: '2025-08-10T12:00:00.000Z',
-      time: '18h00',
-      title: 'Mouvements Symphoniques — Musiques pour la danse',
-      venue: 'Église de Saint-Marcel, Cluny — Grandes Heures de Cluny',
-      program: 'Debussy — Prélude à l\'après-midi d\'un faune, Prokofiev — Roméo et Juliette Suite n°2, Ravel — Valse & Boléro',
-      bookingLink: 'https://www.grandesheuresdecluny.com',
-      status: 'published' as const,
+      performances: [
+        {
+          date: '2025-08-08T12:00:00.000Z',
+          time: '20h30',
+          venue: 'La Commanderie, Dôle',
+          bookingLink: 'https://www.helloasso.com/associations/la-chambre-symphonique',
+        },
+        {
+          date: '2025-08-10T12:00:00.000Z',
+          time: '18h00',
+          venue: 'Église de Saint-Marcel, Cluny — Grandes Heures de Cluny',
+          bookingLink: 'https://www.grandesheuresdecluny.com',
+        },
+      ],
     },
   ]
 

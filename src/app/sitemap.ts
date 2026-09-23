@@ -14,6 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: 'directeur-artistique', priority: 0.7, changeFrequency: 'monthly' as const },
     { path: 'musiciens', priority: 0.7, changeFrequency: 'monthly' as const },
     { path: 'medias', priority: 0.7, changeFrequency: 'weekly' as const },
+    { path: 'blog', priority: 0.7, changeFrequency: 'weekly' as const },
     { path: 'nous-soutenir', priority: 0.6, changeFrequency: 'monthly' as const },
     { path: 'contact', priority: 0.6, changeFrequency: 'yearly' as const },
   ].map(({ path, priority, changeFrequency }) => ({
@@ -23,11 +24,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority,
   }));
 
-  // Routes dynamiques issues du CMS (pages libres publiées + fiches musiciens).
+  // Routes dynamiques issues du CMS (pages libres publiées, fiches musiciens, articles du blog).
   let dynamicRoutes: MetadataRoute.Sitemap = [];
   try {
     const payload = await getPayloadClient();
-    const [pages, musicians] = await Promise.all([
+    const [pages, musicians, posts] = await Promise.all([
       payload.find({
         collection: 'pages' as any,
         where: { _status: { equals: 'published' } } as any,
@@ -39,6 +40,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         limit: 500,
         depth: 0,
       }),
+      payload
+        .find({
+          collection: 'posts' as any,
+          where: {
+            and: [
+              { _status: { equals: 'published' } },
+              { publishedAt: { less_than_equal: new Date().toISOString() } },
+            ],
+          } as any,
+          limit: 500,
+          depth: 0,
+        })
+        .catch(() => ({ docs: [] as any[] })),
     ]);
 
     const pageRoutes = (pages.docs as any[])
@@ -59,7 +73,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.4,
       }));
 
-    dynamicRoutes = [...pageRoutes, ...musicianRoutes];
+    const postRoutes = (posts.docs as any[])
+      .filter((p) => p.slug)
+      .map((p) => ({
+        url: `${BASE_URL}/blog/${p.slug}`,
+        lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.5,
+      }));
+
+    dynamicRoutes = [...pageRoutes, ...musicianRoutes, ...postRoutes];
   } catch {
     // Base de données indisponible (ex. au build) : on renvoie au moins les routes statiques.
   }

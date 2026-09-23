@@ -52,6 +52,7 @@ export function Footer({ settings: initialSettings }: FooterProps) {
               <Link href="/a-propos">À propos</Link>
               <Link href="/musiciens">Musiciens</Link>
               <Link href="/medias">Médias</Link>
+              <Link href="/blog">Blog</Link>
               <Link href="/nous-soutenir">Nous soutenir</Link>
               <Link href="/contact">Contact</Link>
             </div>

@@ -2,6 +2,7 @@
 
 import './admin-submission-link.css';
 import { useEffect, useRef, useState } from 'react';
+import { copyText } from '@/lib/clipboard';
 
 type Props = {
   /**
@@ -29,26 +30,7 @@ export function SubmissionFormLink({ url }: Props) {
 
   const copy = async () => {
     const full = /^https?:\/\//.test(url) ? url : `${window.location.origin}${url}`;
-    let ok = false;
-    try {
-      await navigator.clipboard.writeText(full);
-      ok = true;
-    } catch {
-      // Repli pour les navigateurs sans API presse-papiers (ou page non sécurisée).
-      const field = document.createElement('textarea');
-      field.value = full;
-      field.setAttribute('readonly', '');
-      field.style.position = 'fixed';
-      field.style.opacity = '0';
-      document.body.appendChild(field);
-      field.select();
-      try {
-        ok = document.execCommand('copy');
-      } catch {
-        ok = false;
-      }
-      field.remove();
-    }
+    const ok = await copyText(full);
     setState(ok ? 'copied' : 'error');
     // Copie refusée : l'adresse est sélectionnée, il ne reste qu'à faire Cmd/Ctrl + C.
     if (!ok && urlRef.current) window.getSelection()?.selectAllChildren(urlRef.current);

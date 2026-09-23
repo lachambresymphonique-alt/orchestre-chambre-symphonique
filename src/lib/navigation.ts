@@ -27,6 +27,7 @@ export const BUILTIN_PAGES = [
   { value: 'director', href: '/directeur-artistique', label: 'Direction' },
   { value: 'musicians', href: '/musiciens', label: 'Musiciens' },
   { value: 'medias', href: '/medias', label: 'Médias' },
+  { value: 'journal', href: '/blog', label: 'Blog' },
   { value: 'support', href: '/nous-soutenir', label: 'Nous soutenir' },
   { value: 'contact', href: '/contact', label: 'Contact' },
 ] as const;
@@ -126,7 +127,7 @@ export type LegacyNavPage = {
 };
 
 /**
- * Menu historique : pages fixes (ordre 1 à 7) puis pages de l'admin cochées
+ * Menu historique : pages fixes (ordre 1 à 8) puis pages de l'admin cochées
  * « Afficher dans la navigation », insérées selon leur « Ordre dans le menu ».
  */
 export function legacyNavItems(pages: LegacyNavPage[]): NavLink[] {

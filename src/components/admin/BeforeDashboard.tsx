@@ -1,5 +1,8 @@
 import './admin-theme.css';
 import Link from 'next/link';
+import type { Payload } from 'payload';
+import { getPayloadClient } from '@/lib/payload';
+import { formatCount, getVisitSummary, plural, type VisitSummary } from '@/lib/stats';
 
 type Shortcut = {
   href: string;
@@ -59,6 +62,13 @@ const ImageIcon = () => (
   </svg>
 );
 
+const PenIcon = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+    <path {...stroke} d="M4 20l4-1 10.5-10.5a2.1 2.1 0 00-3-3L5 16l-1 4z" />
+    <path {...stroke} d="M13.5 7.5l3 3" />
+  </svg>
+);
+
 const ArrowIcon = () => (
   <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" style={{ marginLeft: 4 }}>
     <path {...stroke} d="M3 8h10M9 4l4 4-4 4" />
@@ -102,6 +112,13 @@ const shortcuts: Shortcut[] = [
     hint: 'Gérer',
   },
   {
+    href: '/admin/collections/posts/create',
+    title: 'Nouvel article',
+    description: 'Écrire un retour sur un projet, un entretien ou une actualité pour le blog.',
+    icon: <PenIcon />,
+    hint: 'Écrire',
+  },
+  {
     href: '/admin/collections/contact-submissions',
     title: 'Messages reçus',
     description: 'Consulter les messages envoyés via le formulaire de contact.',
@@ -117,7 +134,17 @@ const shortcuts: Shortcut[] = [
   },
 ];
 
-export function BeforeDashboard() {
+type Props = { payload?: Payload };
+
+export async function BeforeDashboard({ payload }: Props) {
+  // Fréquentation : décorative, ne doit jamais bloquer le tableau de bord.
+  let visits: VisitSummary | null = null;
+  try {
+    visits = await getVisitSummary(payload ?? (await getPayloadClient()));
+  } catch (error) {
+    console.error('Tableau de bord : fréquentation indisponible', error);
+  }
+
   return (
     <div className="lcs-dashboard-intro">
       <section className="lcs-welcome">
@@ -131,6 +158,8 @@ export function BeforeDashboard() {
           le contenu et les paramètres.
         </p>
       </section>
+
+      {visits && <VisitsStrip visits={visits} />}
 
       <div className="lcs-tip">
         <span className="lcs-tip__icon" aria-hidden="true">
@@ -160,5 +189,58 @@ export function BeforeDashboard() {
         ))}
       </nav>
     </div>
+  );
+}
+
+// ─── Bandeau « Fréquentation du site » ───────────────────────────────────────
+
+const ChartIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+    <path {...stroke} d="M4 19h16" />
+    <path {...stroke} d="M7 15V9" />
+    <path {...stroke} d="M12 15V5" />
+    <path {...stroke} d="M17 15v-4" />
+  </svg>
+);
+
+function VisitsStrip({ visits }: { visits: VisitSummary }) {
+  const tiles = [
+    { label: 'Aujourd’hui', totals: visits.today },
+    { label: '7 derniers jours', totals: visits.last7 },
+    { label: '30 derniers jours', totals: visits.last30 },
+  ];
+
+  return (
+    <section className="lcs-visits" aria-label="Fréquentation du site">
+      <div className="lcs-visits__head">
+        <div className="lcs-visits__intro">
+          <span className="lcs-visits__icon" aria-hidden="true">
+            <ChartIcon />
+          </span>
+          <div>
+            <div className="lcs-visits__eyebrow">Fréquentation du site</div>
+            <p className="lcs-visits__sub">
+              Visiteurs comptés une fois par jour, hors administrateurs connectés.
+            </p>
+          </div>
+        </div>
+        <Link href="/admin/statistiques" className="lcs-visits__link">
+          Voir les statistiques
+          <ArrowIcon />
+        </Link>
+      </div>
+      <div className="lcs-visits__tiles">
+        {tiles.map((t) => (
+          <div key={t.label} className="lcs-visits__tile">
+            <div className="lcs-visits__label">{t.label}</div>
+            <div className="lcs-visits__value">
+              {formatCount(t.totals.visitors)}{' '}
+              <span className="lcs-visits__unit">{t.totals.visitors > 1 ? 'visiteurs' : 'visiteur'}</span>
+            </div>
+            <div className="lcs-visits__hint">{plural(t.totals.views, 'page vue', 'pages vues')}</div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

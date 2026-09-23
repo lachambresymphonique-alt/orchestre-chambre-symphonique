@@ -2,14 +2,21 @@
 
 import { useState, FormEvent, useRef, ChangeEvent, CSSProperties } from 'react';
 import { Turnstile } from '@/components/Turnstile';
+import {
+  allQuestions,
+  layoutQuestions,
+  type ResolvedMusicianForm,
+  type ResolvedQuestion,
+} from '@/lib/musicianForm';
 
-const SECTIONS = [
-  { value: 'cordes', label: 'Cordes' },
-  { value: 'vents', label: 'Vents' },
-  { value: 'claviers', label: 'Claviers & percussions' },
-  { value: 'direction', label: 'Direction artistique' },
-  { value: '', label: 'Je laisse l’équipe décider' },
-] as const;
+/**
+ * Formulaire « Compléter ma fiche musicien ».
+ *
+ * Les questions, leur ordre et leurs libellés viennent du global
+ * « Formulaire musiciens » (Pages → Formulaire musiciens), résolus côté
+ * serveur par `resolveMusicianForm`. Ce composant ne connaît que la forme
+ * résolue : il affiche ce qu'on lui donne.
+ */
 
 // Pot de miel : hors écran (pas `display: none`, que certains robots détectent),
 // inaccessible au clavier et aux lecteurs d'écran.
@@ -22,14 +29,25 @@ const HONEYPOT_STYLE: CSSProperties = {
   overflow: 'hidden',
 };
 
+const ROMAN = ['i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x'];
+
+const INPUT_TYPES: Record<string, string> = {
+  text: 'text',
+  email: 'email',
+  tel: 'tel',
+  url: 'url',
+};
+
 type MusicianSubmissionFormProps = {
   /** Jeton signé côté serveur : prouve que la page a été chargée et mesure le temps de remplissage. */
   formToken: string;
   /** Clé publique Cloudflare Turnstile ; `null` quand le captcha n'est pas configuré. */
   turnstileSiteKey: string | null;
+  /** Questions à poser, telles que réglées dans l'admin. */
+  form: ResolvedMusicianForm;
 };
 
-export function MusicianSubmissionForm({ formToken, turnstileSiteKey }: MusicianSubmissionFormProps) {
+export function MusicianSubmissionForm({ formToken, turnstileSiteKey, form }: MusicianSubmissionFormProps) {
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
   const [section, setSection] = useState<string>('');
@@ -53,15 +71,38 @@ export function MusicianSubmissionForm({ formToken, turnstileSiteKey }: Musician
     setPhotoName(file ? file.name : '');
   };
 
+  /** Première question obligatoire restée vide, pour le signaler avant l'envoi. */
+  const firstMissing = (data: FormData): ResolvedQuestion | null => {
+    for (const question of allQuestions(form)) {
+      if (!question.required) continue;
+      const value = data.get(question.key);
+      const empty =
+        question.kind === 'photo'
+          ? !(value instanceof File && value.size > 0)
+          : typeof value !== 'string' || value.trim() === '';
+      if (empty) return question;
+    }
+    return null;
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (waitingForCaptcha) return;
+    const formEl = e.currentTarget;
+    const fd = new FormData(formEl);
+    if (turnstileToken) fd.append('turnstileToken', turnstileToken);
+
+    const missing = firstMissing(fd);
+    if (missing) {
+      setErrorMsg(`Merci de renseigner « ${missing.label} ».`);
+      setStatus('error');
+      const field = formEl.querySelector<HTMLElement>(`[name="${missing.key}"]`);
+      field?.focus();
+      return;
+    }
+
     setStatus('sending');
     setErrorMsg('');
-
-    const form = e.currentTarget;
-    const fd = new FormData(form);
-    if (turnstileToken) fd.append('turnstileToken', turnstileToken);
 
     try {
       const res = await fetch('/api/musician-submissions', {
@@ -75,11 +116,11 @@ export function MusicianSubmissionForm({ formToken, turnstileSiteKey }: Musician
       }
 
       setStatus('success');
-      form.reset();
+      formEl.reset();
       setSection('');
       setPhotoName('');
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Une erreur est survenue.');
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : 'Une erreur est survenue.');
       setStatus('error');
       renewCaptcha();
       setTimeout(() => setStatus('idle'), 6000);
@@ -89,218 +130,78 @@ export function MusicianSubmissionForm({ formToken, turnstileSiteKey }: Musician
   if (status === 'success') {
     return (
       <div className="contribute-success">
-        <p className="eyebrow eyebrow--gold">Bien reçu</p>
+        <p className="eyebrow eyebrow--gold">{form.success.eyebrow}</p>
         <h2 className="contribute-success__title">
-          <em>Merci</em> pour votre fiche.
+          <em>{form.success.titleItalic}</em>
+          {form.success.title ? ` ${form.success.title}` : ''}
         </h2>
         <hr className="velvet-rule long" />
-        <p className="contribute-success__body">
-          Vos informations viennent d’arriver à l’équipe. Votre fiche paraîtra
-          sur la page Musiciens dès qu’elle aura été relue et validée. Si nous
-          avons besoin d’une précision, nous vous écrirons à l’adresse que vous
-          avez indiquée.
-        </p>
+        <p className="contribute-success__body">{form.success.body}</p>
       </div>
     );
   }
 
-  return (
-    <form className="contribute-form" onSubmit={handleSubmit} noValidate>
-      {/* Anti-robots : jeton signé (vérifié par l'API) et pot de miel. */}
-      <input type="hidden" name="formToken" value={formToken} />
-      <div style={HONEYPOT_STYLE} aria-hidden="true">
-        <label htmlFor="website">Site web</label>
-        <input type="text" id="website" name="website" tabIndex={-1} autoComplete="off" />
-      </div>
+  const renderQuestion = (question: ResolvedQuestion) => {
+    const label = (
+      <>
+        {question.label}
+        {question.required && (
+          <>
+            {' '}
+            <span aria-hidden>·</span> <em>requis</em>
+          </>
+        )}
+      </>
+    );
 
-      {/* ============ ACT 1 — L’essentiel ============ */}
-      <fieldset className="contribute-act">
-        <legend className="contribute-act__legend">
-          <span className="contribute-act__index">i.</span>
-          <span className="eyebrow eyebrow--gold">L’essentiel</span>
-        </legend>
-        <hr className="velvet-rule" />
-        <p className="contribute-act__lede">
-          Trois champs suffisent pour ouvrir une fiche. Le reste se complète à
-          votre rythme.
-        </p>
-
-        <div className="contribute-row">
-          <div className="form-group">
-            <label htmlFor="firstName">Prénom <span aria-hidden>·</span> <em>requis</em></label>
-            <input type="text" id="firstName" name="firstName" autoComplete="given-name" required />
-          </div>
-          <div className="form-group">
-            <label htmlFor="lastName">Nom <span aria-hidden>·</span> <em>requis</em></label>
-            <input type="text" id="lastName" name="lastName" autoComplete="family-name" required />
-          </div>
-        </div>
-
-        <div className="contribute-row">
-          <div className="form-group">
-            <label htmlFor="email">E-mail <span aria-hidden>·</span> <em>requis</em></label>
-            <input type="email" id="email" name="email" autoComplete="email" required />
-            <p className="form-hint">Privé — pour vous joindre, jamais affiché.</p>
-          </div>
-          <div className="form-group">
-            <label htmlFor="phone">Téléphone</label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              autoComplete="tel"
-              placeholder="06 12 34 56 78"
-            />
-            <p className="form-hint">Privé — pour vous joindre rapidement.</p>
-          </div>
-        </div>
-
-        <div className="contribute-row">
-          <div className="form-group">
-            <label htmlFor="role">Rôle / fonction <span aria-hidden>·</span> <em>requis</em></label>
-            <input
-              type="text"
-              id="role"
-              name="role"
-              placeholder="Violoniste · Cheffe de pupitre · Premier hautbois…"
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="instrument">Instrument</label>
-            <input
-              type="text"
-              id="instrument"
-              name="instrument"
-              placeholder="Violon · Hautbois · Piano…"
-            />
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label>Section</label>
-          <div className="contribute-pills" role="radiogroup" aria-label="Section">
-            {SECTIONS.map((s) => {
-              const active = section === s.value;
-              const id = `section-${s.value || 'tbd'}`;
+    if (question.kind === 'section') {
+      const choices = question.choices ?? [];
+      return (
+        <div className="form-group" key={question.key}>
+          <label>{label}</label>
+          <div className="contribute-pills" role="radiogroup" aria-label={question.label}>
+            {choices.map((choice) => {
+              const active = section === choice.value;
               return (
-                <label key={id} className={`contribute-pill${active ? ' is-active' : ''}`}>
+                <label
+                  key={choice.value}
+                  className={`contribute-pill${active ? ' is-active' : ''}`}
+                >
                   <input
                     type="radio"
-                    name="section"
-                    value={s.value}
-                    id={id}
+                    name={question.key}
+                    value={choice.value}
+                    id={`section-${choice.value}`}
                     checked={active}
-                    onChange={() => setSection(s.value)}
+                    onChange={() => setSection(choice.value)}
                   />
-                  <span>{s.label}</span>
+                  <span>{choice.label}</span>
                 </label>
               );
             })}
+            {question.undecidedLabel && (
+              <label className={`contribute-pill${section === '' ? ' is-active' : ''}`}>
+                <input
+                  type="radio"
+                  name={question.key}
+                  value=""
+                  id="section-tbd"
+                  checked={section === ''}
+                  onChange={() => setSection('')}
+                />
+                <span>{question.undecidedLabel}</span>
+              </label>
+            )}
           </div>
+          {question.hint && <p className="form-hint">{question.hint}</p>}
         </div>
-      </fieldset>
+      );
+    }
 
-      {/* ============ ACT 2 — À propos de vous ============ */}
-      <fieldset className="contribute-act">
-        <legend className="contribute-act__legend">
-          <span className="contribute-act__index">ii.</span>
-          <span className="eyebrow eyebrow--gold">À propos de vous</span>
-        </legend>
-        <hr className="velvet-rule" />
-        <p className="contribute-act__lede">
-          Ce que vous diriez si on vous tendait le micro pendant l’entracte. On
-          peut tout retravailler ensemble.
-        </p>
-
-        <div className="form-group">
-          <label htmlFor="bio">Biographie</label>
-          <textarea
-            id="bio"
-            name="bio"
-            rows={6}
-            placeholder="Quelques paragraphes : parcours, répertoire favori, projets en cours…"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="inspiringSymphony">La symphonie qui t’a donné envie de faire de la musique</label>
-          <input
-            type="text"
-            id="inspiringSymphony"
-            name="inspiringSymphony"
-            placeholder="Ex : 9ᵉ symphonie de Beethoven, Symphonie fantastique de Berlioz…"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="favoriteWork">L’œuvre que tu préfères</label>
-          <input
-            type="text"
-            id="favoriteWork"
-            name="favoriteWork"
-            placeholder="Ex : Concerto pour violon op. 35, Le Sacre du printemps…"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="favoriteComposer">Compositeur</label>
-          <input
-            type="text"
-            id="favoriteComposer"
-            name="favoriteComposer"
-            placeholder="Ex : Brahms, Ravel, Chostakovitch…"
-          />
-        </div>
-      </fieldset>
-
-      {/* ============ ACT 3 — Votre parcours ============ */}
-      <fieldset className="contribute-act">
-        <legend className="contribute-act__legend">
-          <span className="contribute-act__index">iii.</span>
-          <span className="eyebrow eyebrow--gold">Votre parcours</span>
-        </legend>
-        <hr className="velvet-rule" />
-        <p className="contribute-act__lede">
-          Une ligne par entrée. Inutile d’être exhaustif — choisissez ce qui
-          compte pour vous aujourd’hui.
-        </p>
-
-        <div className="form-group">
-          <label htmlFor="formation">Formation</label>
-          <textarea
-            id="formation"
-            name="formation"
-            rows={4}
-            placeholder={'CNSMD de Lyon, 2018\nMaster class avec Anne-Sophie Mutter, 2020'}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="concours">Concours et distinctions</label>
-          <textarea
-            id="concours"
-            name="concours"
-            rows={4}
-            placeholder={'Premier prix, Concours Long-Thibaud, 2019\nFinaliste, Concours Reine Elisabeth, 2021'}
-          />
-        </div>
-      </fieldset>
-
-      {/* ============ ACT 4 — Image & son ============ */}
-      <fieldset className="contribute-act">
-        <legend className="contribute-act__legend">
-          <span className="contribute-act__index">iv.</span>
-          <span className="eyebrow eyebrow--gold">Image &amp; son</span>
-        </legend>
-        <hr className="velvet-rule" />
-        <p className="contribute-act__lede">
-          Un portrait, une captation. On retravaillera la photo au tirage du
-          site si nécessaire.
-        </p>
-
-        <div className="form-group">
-          <label htmlFor="photo">Portrait</label>
+    if (question.kind === 'photo') {
+      return (
+        <div className="form-group" key={question.key}>
+          <label htmlFor={question.key}>{label}</label>
           <div
             className={`contribute-dropzone${photoName ? ' has-file' : ''}`}
             onClick={() => fileInputRef.current?.click()}
@@ -312,19 +213,28 @@ export function MusicianSubmissionForm({ formToken, turnstileSiteKey }: Musician
             }}
             role="button"
             tabIndex={0}
-            aria-label="Choisir une photo"
+            aria-label={question.label}
           >
             <input
               ref={fileInputRef}
               type="file"
-              id="photo"
-              name="photo"
+              id={question.key}
+              name={question.key}
               accept="image/png,image/jpeg,image/webp"
               onChange={handleFileChange}
               className="contribute-dropzone__input"
             />
             <span className="contribute-dropzone__icon" aria-hidden>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                viewBox="0 0 24 24"
+                width="22"
+                height="22"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.25"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <rect x="3" y="5" width="18" height="14" rx="1.5" />
                 <circle cx="8.5" cy="10" r="1.6" />
                 <path d="M21 16l-5.5-5.5L7 19" />
@@ -338,52 +248,88 @@ export function MusicianSubmissionForm({ formToken, turnstileSiteKey }: Musician
                 </>
               ) : (
                 <>
-                  <em>Déposez votre portrait</em>
-                  <span className="contribute-dropzone__hint">JPG, PNG ou WebP — 10&nbsp;Mo max.</span>
+                  <em>{question.placeholder || 'Déposez votre portrait'}</em>
+                  {question.hint && (
+                    <span className="contribute-dropzone__hint">{question.hint}</span>
+                  )}
                 </>
               )}
             </span>
           </div>
         </div>
+      );
+    }
 
-        <div className="form-group">
-          <label htmlFor="videoUrl">Lien vidéo</label>
-          <input
-            type="url"
-            id="videoUrl"
-            name="videoUrl"
-            placeholder="https://youtu.be/… · https://vimeo.com/…"
+    if (question.kind === 'textarea') {
+      return (
+        <div className="form-group" key={question.key}>
+          <label htmlFor={question.key}>{label}</label>
+          <textarea
+            id={question.key}
+            name={question.key}
+            rows={question.rows ?? 4}
+            placeholder={question.placeholder || undefined}
           />
-          <p className="form-hint">Une captation publique, YouTube ou Vimeo.</p>
+          {question.hint && <p className="form-hint">{question.hint}</p>}
         </div>
+      );
+    }
 
-        <div className="form-group">
-          <label htmlFor="instagram">Instagram</label>
-          <input
-            type="text"
-            id="instagram"
-            name="instagram"
-            autoComplete="off"
-            placeholder="@votre_compte"
-          />
-          <p className="form-hint">
-            Si vous souhaitez le partager — c’est principalement sur Instagram que
-            nous mettons en avant les musiciens.
-          </p>
-        </div>
-      </fieldset>
+    return (
+      <div className="form-group" key={question.key}>
+        <label htmlFor={question.key}>{label}</label>
+        <input
+          type={INPUT_TYPES[question.kind] || 'text'}
+          id={question.key}
+          name={question.key}
+          autoComplete={question.autoComplete || 'off'}
+          placeholder={question.placeholder || undefined}
+        />
+        {question.hint && <p className="form-hint">{question.hint}</p>}
+      </div>
+    );
+  };
 
-      {/* ============ Outro ============ */}
-      <div className="contribute-outro">
+  return (
+    <form className="contribute-form" onSubmit={handleSubmit} noValidate>
+      {/* Anti-robots : jeton signé (vérifié par l'API) et pot de miel. */}
+      <input type="hidden" name="formToken" value={formToken} />
+      <div style={HONEYPOT_STYLE} aria-hidden="true">
+        <label htmlFor="website">Site web</label>
+        <input type="text" id="website" name="website" tabIndex={-1} autoComplete="off" />
+      </div>
+
+      {form.parts.map((part, index) => (
+        <fieldset className="contribute-act" key={`${part.title}-${index}`} data-live-field="parts">
+          <legend className="contribute-act__legend">
+            <span className="contribute-act__index">{ROMAN[index] ?? index + 1}.</span>
+            <span className="eyebrow eyebrow--gold">{part.title}</span>
+          </legend>
+          <hr className="velvet-rule" />
+          {part.lede && <p className="contribute-act__lede">{part.lede}</p>}
+
+          {layoutQuestions(part.questions).map((row, rowIndex) =>
+            row.length > 1 ? (
+              <div className="contribute-row" key={`row-${rowIndex}`}>
+                {row.map(renderQuestion)}
+              </div>
+            ) : (
+              renderQuestion(row[0])
+            ),
+          )}
+        </fieldset>
+      ))}
+
+      <div className="contribute-outro" data-live-field="outro">
         <p className="contribute-outro__line">
-          <em>Merci d’avance.</em> Nous lisons chaque envoi à la main.
+          <em>Merci d’avance.</em> {form.outro.line}
         </p>
         <hr className="velvet-rule long" />
 
         {status === 'error' && (
           <p className="contribute-outro__error" role="alert">
-            <em>{errorMsg || 'Une erreur est survenue.'}</em> Merci de réessayer
-            ou de nous écrire directement.
+            <em>{errorMsg || 'Une erreur est survenue.'}</em> Merci de réessayer ou de nous écrire
+            directement.
           </p>
         )}
 
@@ -416,14 +362,14 @@ export function MusicianSubmissionForm({ formToken, turnstileSiteKey }: Musician
           className="btn-filled"
           disabled={status === 'sending' || waitingForCaptcha}
         >
-          {status === 'sending' ? 'Envoi…' : 'Envoyer ma fiche'}
+          {status === 'sending' ? 'Envoi…' : form.outro.submitLabel}
           <span aria-hidden>→</span>
         </button>
 
         <p className="contribute-outro__fallback">
-          Bloqué ?{' '}
+          {form.outro.fallback}{' '}
           <a href="mailto:contact@lachambresymphonique.fr?subject=Ma%20fiche%20musicien">
-            Écrivez-nous
+            {form.outro.fallbackLinkLabel}
           </a>{' '}
           et nous reprenons à la main.
         </p>

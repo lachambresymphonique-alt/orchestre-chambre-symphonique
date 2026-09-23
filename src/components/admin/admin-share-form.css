@@ -1,0 +1,132 @@
+/* ==========================================================================
+   Partager le formulaire musiciens (Formulaire musiciens → en-tête)
+   Composant : src/components/admin/ShareFormButton.tsx
+   Reprend la mise en page des modales de Payload (fond flouté, contenu centré)
+   pour que la fenêtre ne détonne pas dans l'admin.
+   ========================================================================== */
+/* Le bouton de l'en-tête : même hauteur que « Sauvegarder », posé juste à côté
+   (la règle .doc-controls .btn--style-primary d'admin-theme.css le monte à 44px). */
+.doc-controls .btn.lcs-share__trigger {
+  min-height: 44px;
+}
+
+.lcs-share {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+/* Fond translucide + flou, comme les modales de confirmation de Payload. */
+.lcs-share::before,
+.lcs-share::after {
+  content: ' ';
+  position: absolute;
+  inset: 0;
+}
+
+.lcs-share::before {
+  background: var(--theme-bg);
+  opacity: 0.75;
+}
+
+.lcs-share::after {
+  backdrop-filter: blur(8px);
+}
+
+.lcs-share__wrapper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 40px;
+  max-width: 34rem;
+}
+
+/* Taille de texte posée ici : les paragraphes en héritent, et chacun peut
+   ensuite être ajusté sans bataille de spécificité. */
+.lcs-share__content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--theme-elevation-800);
+}
+
+.lcs-share__content > * {
+  margin: 0;
+}
+
+.lcs-share__content h1 {
+  font-size: 1.35rem;
+  line-height: 1.25;
+  color: var(--theme-elevation-1000);
+}
+
+.lcs-share__warning {
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--lcs-radius-sm);
+  background: color-mix(in srgb, var(--lcs-gold) 14%, transparent);
+  color: var(--lcs-gold-dark);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+[data-theme='dark'] .lcs-share__warning {
+  color: var(--lcs-gold);
+}
+
+/* L'adresse elle-même : un clic la sélectionne en entier. */
+.lcs-share__url {
+  margin-top: 0.4rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px dashed var(--theme-elevation-200);
+  border-radius: var(--lcs-radius-sm);
+  background: var(--theme-elevation-50);
+  color: var(--theme-elevation-1000);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+  user-select: all;
+  cursor: text;
+}
+
+.lcs-share__open {
+  font-size: 0.85rem;
+}
+
+.lcs-share__open a {
+  color: var(--theme-elevation-600);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.lcs-share__open a::after {
+  content: '↗';
+  margin-left: 0.25rem;
+}
+
+.lcs-share__open a:hover {
+  color: var(--theme-elevation-1000);
+}
+
+.lcs-share__status:empty {
+  display: none;
+}
+
+.lcs-share__status {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--theme-elevation-600);
+}
+
+.lcs-share__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lcs-share__controls .btn {
+  margin: 0;
+}
