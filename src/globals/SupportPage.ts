@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { richTextAdmin } from '@/lib/richTextAdmin'
 
 export const SupportPage: GlobalConfig = {
   slug: 'support-page',
@@ -19,6 +20,7 @@ export const SupportPage: GlobalConfig = {
           type: 'textarea',
           label: 'Phrase d\'introduction',
           defaultValue: 'Votre soutien est essentiel pour faire vivre la musique et la rendre accessible à tous.',
+          admin: { ...richTextAdmin('inline') },
         },
       ],
     },
@@ -39,7 +41,7 @@ export const SupportPage: GlobalConfig = {
       admin: { description: 'Les différentes façons de soutenir l\'orchestre (adhésion, don, bénévolat…). Maximum 4.' },
       fields: [
         { name: 'title', type: 'text', required: true, label: 'Titre', admin: { description: 'Ex : « Adhérer à l\'association »' } },
-        { name: 'description', type: 'textarea', required: true, label: 'Description' },
+        { name: 'description', type: 'textarea', required: true, label: 'Description', admin: { ...richTextAdmin('prose') } },
         { name: 'ctaText', type: 'text', required: true, label: 'Texte du bouton', admin: { description: 'Ex : « Adhérer maintenant »' } },
         { name: 'ctaLink', type: 'text', required: true, label: 'Lien du bouton', admin: { description: 'URL vers la page d\'action (ex : HelloAsso).' } },
       ],
@@ -52,7 +54,7 @@ export const SupportPage: GlobalConfig = {
       fields: [
         { name: 'subtitle', type: 'text', label: 'Sur-titre' },
         { name: 'title', type: 'text', label: 'Titre' },
-        { name: 'description', type: 'textarea', label: 'Description', admin: { description: 'Explication du dispositif fiscal.' } },
+        { name: 'description', type: 'textarea', label: 'Description', admin: { ...richTextAdmin('prose'), description: 'Explication du dispositif fiscal.' } },
         {
           name: 'individualRate',
           type: 'text',
@@ -90,7 +92,7 @@ export const SupportPage: GlobalConfig = {
           type: 'text',
           label: 'Titre',
           defaultValue: 'Que *permet* votre don ?',
-          admin: { description: 'Un mot entre astérisques est mis en italique coloré.' },
+          admin: { ...richTextAdmin('title'), description: 'Sélectionnez un mot puis « I » pour le mettre en italique coloré.' },
         },
         {
           name: 'lede',
@@ -98,6 +100,7 @@ export const SupportPage: GlobalConfig = {
           label: 'Phrase d\'introduction',
           defaultValue:
             'Choisissez un montant et découvrez son impact concret pour l\'orchestre, ainsi que son coût réel après déduction fiscale.',
+          admin: { ...richTextAdmin('inline') },
         },
         {
           type: 'row',

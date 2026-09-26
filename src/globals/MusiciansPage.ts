@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload';
+import { richTextAdmin } from '@/lib/richTextAdmin';
 
 export const MusiciansPage: GlobalConfig = {
   slug: 'musicians-page',
@@ -21,6 +22,7 @@ export const MusiciansPage: GlobalConfig = {
           label: 'Phrase d\'introduction',
           defaultValue:
             'De 40 à 80 musiciens issus de conservatoires français, suisses et belges, réunis autour de la passion du répertoire symphonique.',
+          admin: { ...richTextAdmin('inline') },
         },
       ],
     },

@@ -5,6 +5,7 @@ import { useLiveGlobal, useLiveList } from '@/hooks/useLiveDocument';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FadeIn } from '@/components/FadeIn';
 import { DonationSimulator } from '@/components/DonationSimulator';
+import { RichText, renderInline } from '@/lib/richText';
 
 interface SupportClientProps {
   initialData: any;
@@ -36,8 +37,10 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
           </p>
           <h1>{header.title || 'Nous soutenir'}</h1>
           <p>
-            {header.lede ||
-              'Votre soutien est essentiel pour faire vivre la musique et la rendre accessible à tous.'}
+            {renderInline(
+              header.lede ||
+                'Votre soutien est essentiel pour faire vivre la musique et la rendre accessible à tous.',
+            )}
           </p>
         </div>
       </div>
@@ -53,7 +56,9 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
             {supportTypes.map((st: any, i: number) => (
               <FadeIn className="support-card" key={i}>
                 <h3>{st.title}</h3>
-                <p>{st.description}</p>
+                <div className="support-card__text rich-text">
+                  <RichText text={st.description} />
+                </div>
                 {st.ctaLink && (
                   <Link href={st.ctaLink} className="btn btn-primary">
                     {st.ctaText || 'En savoir plus'}
@@ -70,7 +75,8 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
           <FadeIn className="container">
             <p className="section-subtitle">{taxInfo.subtitle}</p>
             <h2 className="section-title">{taxInfo.title}</h2>
-            <p
+            <div
+              className="rich-text"
               style={{
                 maxWidth: '600px',
                 margin: '0 auto 2rem',
@@ -78,8 +84,8 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
                 fontWeight: 300,
               }}
             >
-              {taxInfo.description}
-            </p>
+              <RichText text={taxInfo.description} />
+            </div>
             <div className="stats-grid" style={{ maxWidth: '600px', margin: '0 auto' }}>
               {taxInfo.individualRate && (
                 <div className="stat-item">
@@ -134,7 +140,9 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
                     {amountTemplate.replace('{montant}', String(tier.minAmount))}
                   </p>
                 )}
-                <p data-live-item-field="description">{tier.description}</p>
+                <div className="support-card__text rich-text" data-live-item-field="description">
+                  <RichText text={tier.description} />
+                </div>
                 {tier.ctaLink && (
                   <a
                     href={tier.ctaLink}

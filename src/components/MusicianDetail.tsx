@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { placeholderForMusician } from '@/lib/unsplash';
 import { toEmbedUrl } from '@/lib/videoEmbed';
+import { RichText, renderInline } from '@/lib/richText';
 
 export type Musician = {
   id?: string;
@@ -51,7 +52,7 @@ type Props = {
 };
 
 export function MusicianDetail({ musician: m, previewMode = false, labels }: Props) {
-  const bioParagraphs = (m.bio || '').split(/\n\n+/).filter(Boolean);
+  const hasBio = Boolean(m.bio?.trim());
   const embedUrl = toEmbedUrl(m.videoUrl);
   const sectionLabel = m.section
     ? labels?.sections?.[m.section] || defaultSectionLabels[m.section]
@@ -109,11 +110,9 @@ export function MusicianDetail({ musician: m, previewMode = false, labels }: Pro
             </>
           )}
 
-          {bioParagraphs.length > 0 && (
-            <div className="musician-feature__bio" data-live-field="bio">
-              {bioParagraphs.map((p, i) => (
-                <p key={i}>{p}</p>
-              ))}
+          {hasBio && (
+            <div className="musician-feature__bio rich-text" data-live-field="bio">
+              <RichText text={m.bio} />
             </div>
           )}
 
@@ -182,7 +181,7 @@ export function MusicianDetail({ musician: m, previewMode = false, labels }: Pro
 
           {m.quote && (
             <figure className="quote-slab" data-live-field="quote">
-              <blockquote>{m.quote}</blockquote>
+              <blockquote>{renderInline(m.quote)}</blockquote>
               <figcaption>
                 <span className="velvet-mark" aria-hidden /> {m.name}
               </figcaption>

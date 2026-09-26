@@ -24,6 +24,8 @@ import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { UnsavedChanges as UnsavedChanges_937f98f92304cb030c9bd5ab6af069f0 } from '@/components/admin/UnsavedChanges'
 import { ConcertDateCell as ConcertDateCell_a4bec657baa40be44d47c8f1a300ac27 } from '@/components/admin/ConcertDateCell'
 import { ConcertPerformanceRowLabel as ConcertPerformanceRowLabel_3bdb41ae31c16bb59408a2f1f3625608 } from '@/components/admin/ConcertPerformanceRowLabel'
+import { RichTextCell as RichTextCell_6599043c93918f160bae90beab405f2d } from '@/components/admin/RichTextCell'
+import { RichTextField as RichTextField_5ca720b719ba31f2424b9deeaa166c00 } from '@/components/admin/RichTextField'
 import { ConcertsListNav as ConcertsListNav_2b5e84c20ff024dced76640216aaefa0 } from '@/components/admin/ConcertsListNav'
 import { MusiciansTabsNav as MusiciansTabsNav_f0bf74af169ff57631fe48d885ee464a } from '@/components/admin/MusiciansTabsNav'
 import { ConcertRelationSummary as ConcertRelationSummary_2ca3343c9d3df24ab3b7ab898be63c2a } from '@/components/admin/ConcertRelationSummary'
@@ -32,6 +34,7 @@ import { ArticleTextField as ArticleTextField_783e1ada3d7c421250d9c82c69e88d4c }
 import { ArticleCoverField as ArticleCoverField_15a6e3f3df8ef585032dddb3e3a58684 } from '@/components/admin/ArticleCoverField'
 import { FixedToolbarFeatureClient as FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { PostsListNav as PostsListNav_e587839e76f5c3444fd715bac47db6a9 } from '@/components/admin/PostsListNav'
+import { TimelineOrderBar as TimelineOrderBar_d45d1f73212f6371bfd4b8b89817026a } from '@/components/admin/TimelineOrderBar'
 import { PromoteSubmissionButton as PromoteSubmissionButton_8d30722c0b0e7fa1a9b8a839577f9a11 } from '@/components/admin/PromoteSubmissionButton'
 import { HomeSectionsField as HomeSectionsField_4f0be2871a168e5a6640850cd2d2a706 } from '@/components/admin/HomeSectionsField'
 import { ConcertLayoutField as ConcertLayoutField_5c2dc134ff87a1bc27aa82c9887f36fc } from '@/components/admin/ConcertLayoutField'
@@ -92,6 +95,8 @@ export const importMap = {
   "@/components/admin/UnsavedChanges#UnsavedChanges": UnsavedChanges_937f98f92304cb030c9bd5ab6af069f0,
   "@/components/admin/ConcertDateCell#ConcertDateCell": ConcertDateCell_a4bec657baa40be44d47c8f1a300ac27,
   "@/components/admin/ConcertPerformanceRowLabel#ConcertPerformanceRowLabel": ConcertPerformanceRowLabel_3bdb41ae31c16bb59408a2f1f3625608,
+  "@/components/admin/RichTextCell#RichTextCell": RichTextCell_6599043c93918f160bae90beab405f2d,
+  "@/components/admin/RichTextField#RichTextField": RichTextField_5ca720b719ba31f2424b9deeaa166c00,
   "@/components/admin/ConcertsListNav#ConcertsListNav": ConcertsListNav_2b5e84c20ff024dced76640216aaefa0,
   "@/components/admin/MusiciansTabsNav#MusiciansTabsNav": MusiciansTabsNav_f0bf74af169ff57631fe48d885ee464a,
   "@/components/admin/ConcertRelationSummary#ConcertRelationSummary": ConcertRelationSummary_2ca3343c9d3df24ab3b7ab898be63c2a,
@@ -100,6 +105,7 @@ export const importMap = {
   "@/components/admin/ArticleCoverField#ArticleCoverField": ArticleCoverField_15a6e3f3df8ef585032dddb3e3a58684,
   "@payloadcms/richtext-lexical/client#FixedToolbarFeatureClient": FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/admin/PostsListNav#PostsListNav": PostsListNav_e587839e76f5c3444fd715bac47db6a9,
+  "@/components/admin/TimelineOrderBar#TimelineOrderBar": TimelineOrderBar_d45d1f73212f6371bfd4b8b89817026a,
   "@/components/admin/PromoteSubmissionButton#PromoteSubmissionButton": PromoteSubmissionButton_8d30722c0b0e7fa1a9b8a839577f9a11,
   "@/components/admin/HomeSectionsField#HomeSectionsField": HomeSectionsField_4f0be2871a168e5a6640850cd2d2a706,
   "@/components/admin/ConcertLayoutField#ConcertLayoutField": ConcertLayoutField_5c2dc134ff87a1bc27aa82c9887f36fc,

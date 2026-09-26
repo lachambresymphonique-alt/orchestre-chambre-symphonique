@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { richTextAdmin } from '@/lib/richTextAdmin'
 
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
@@ -68,7 +69,7 @@ export const SiteSettings: GlobalConfig = {
       name: 'footerDescription',
       type: 'textarea',
       label: 'Description du pied de page',
-      admin: { description: 'Texte court affiché dans le footer du site, sous le logo.' },
+      admin: { ...richTextAdmin('inline'), description: 'Texte court affiché dans le footer du site, sous le logo.' },
     },
   ],
 }

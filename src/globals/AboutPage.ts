@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { richTextAdmin } from '@/lib/richTextAdmin'
 
 export const AboutPage: GlobalConfig = {
   slug: 'about-page',
@@ -21,6 +22,7 @@ export const AboutPage: GlobalConfig = {
           label: 'Phrase d\'introduction',
           defaultValue:
             'Un orchestre fondé en 2017 par Loïc Emmelin, porté par l\'ambition du répertoire symphonique en effectif resserré.',
+          admin: { ...richTextAdmin('inline') },
         },
       ],
     },
@@ -36,7 +38,7 @@ export const AboutPage: GlobalConfig = {
           name: 'content',
           type: 'textarea',
           label: 'Texte de présentation',
-          admin: { description: 'Description de la mission et des valeurs de l\'orchestre.' },
+          admin: { ...richTextAdmin('prose'), description: 'Description de la mission et des valeurs de l\'orchestre.' },
         },
         { name: 'image', type: 'upload', relationTo: 'media', label: 'Photo d\'illustration' },
       ],
@@ -76,7 +78,7 @@ export const AboutPage: GlobalConfig = {
           type: 'text',
           label: 'Titre',
           defaultValue: '*Les grandes dates*',
-          admin: { description: 'Un mot entre astérisques est mis en italique coloré.' },
+          admin: { ...richTextAdmin('title'), description: 'Sélectionnez un mot puis « I » pour le mettre en italique coloré.' },
         },
       ],
     },

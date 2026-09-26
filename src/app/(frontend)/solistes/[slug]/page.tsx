@@ -5,6 +5,7 @@ import { getPayloadClient } from '@/lib/payload';
 import { findUpcomingConcerts } from '@/lib/concerts';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { SoloistDetail, type SoloistDoc } from './SoloistDetail';
+import { toPlainText } from '@/lib/richText';
 
 /** Soliste par son adresse (slug), ou par son identifiant tant qu'il n'a pas de slug. */
 const getSoloist = cache(async (handle: string): Promise<SoloistDoc | null> => {
@@ -31,7 +32,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const photo = s.photo && typeof s.photo === 'object' ? s.photo.url : null;
   return {
     title: `${s.name}${s.instrument ? `, ${s.instrument.toLowerCase()}` : ''} — La Chambre Symphonique`,
-    description: s.tagline || s.bio?.slice(0, 160) || `${s.name}, soliste invité·e de La Chambre Symphonique.`,
+    description: s.tagline || toPlainText(s.bio).slice(0, 160) || `${s.name}, soliste invité·e de La Chambre Symphonique.`,
     alternates: { canonical: `/solistes/${s.slug || slug}` },
     ...(photo ? { openGraph: { images: [{ url: photo }] } } : {}),
   };

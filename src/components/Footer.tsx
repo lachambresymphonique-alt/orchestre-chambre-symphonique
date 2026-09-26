@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useLiveGlobal } from '@/hooks/useLiveDocument';
 import { LogoSvg } from './LogoSvg';
 import { FacebookIcon, InstagramIcon, YouTubeIcon, LinkedInIcon, TikTokIcon } from './SocialIcons';
+import { renderInline } from '@/lib/richText';
 
 interface FooterProps {
   settings?: {
@@ -35,7 +36,7 @@ export function Footer({ settings: initialSettings }: FooterProps) {
             <Link href="/" className="logo" aria-label="La Chambre Symphonique — Orchestre, accueil">
               <LogoSvg />
             </Link>
-            <p>{description}</p>
+            <p>{renderInline(description)}</p>
             <div className="footer-social">
               <a href="#" aria-label="Facebook"><FacebookIcon /></a>
               <a href="#" aria-label="Instagram"><InstagramIcon /></a>

@@ -7,6 +7,7 @@ import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FadeIn } from '@/components/FadeIn';
 import { stockImages } from '@/lib/unsplash';
 import { renderEmphasis } from '@/lib/emphasis';
+import { RichText, renderInline } from '@/lib/richText';
 
 interface AboutClientProps {
   initialData: any;
@@ -26,8 +27,6 @@ export function AboutClient({ initialData, timelineEvents }: AboutClientProps) {
   const header = data.header || {};
   const timeline = data.timeline || {};
 
-  const introParas = (intro?.content || '').split('\n\n').filter(Boolean);
-
   return (
     <div className="about-page">
       {/* PAGE HEADER */}
@@ -38,8 +37,10 @@ export function AboutClient({ initialData, timelineEvents }: AboutClientProps) {
           </p>
           <h1>{header.title || 'L\'orchestre'}</h1>
           <p>
-            {header.lede ||
-              'Un orchestre fondé en 2017 par Loïc Emmelin, porté par l\'ambition du répertoire symphonique en effectif resserré.'}
+            {renderInline(
+              header.lede ||
+                'Un orchestre fondé en 2017 par Loïc Emmelin, porté par l\'ambition du répertoire symphonique en effectif resserré.',
+            )}
           </p>
         </div>
       </div>
@@ -63,10 +64,8 @@ export function AboutClient({ initialData, timelineEvents }: AboutClientProps) {
               <p className="eyebrow eyebrow--gold">{intro?.subtitle || 'Notre histoire'}</p>
               <h2 className="about-intro__title">{intro?.title}</h2>
               <hr className="velvet-rule" />
-              <div className="about-intro__prose">
-                {introParas.map((p: string, i: number) => (
-                  <p key={i} data-lead={i === 0 ? 'true' : undefined}>{p}</p>
-                ))}
+              <div className="about-intro__prose rich-text">
+                <RichText text={intro?.content} lead />
               </div>
             </FadeIn>
           </div>
@@ -110,7 +109,9 @@ export function AboutClient({ initialData, timelineEvents }: AboutClientProps) {
                   data-live-link={item.id ? `/admin/collections/timeline-events/${item.id}` : undefined}
                 >
                   <span className="timeline-editorial__year" data-live-item-field="year">{item.year}</span>
-                  <p className="timeline-editorial__desc" data-live-item-field="description">{item.description}</p>
+                  <div className="timeline-editorial__desc rich-text" data-live-item-field="description">
+                    <RichText text={item.description} />
+                  </div>
                 </li>
               </FadeIn>
             ))}

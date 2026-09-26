@@ -13,6 +13,7 @@ import { ConcertFeature } from '@/components/ConcertFeature';
 import { stockImages, placeholderForMusician, directorPlaceholder } from '@/lib/unsplash';
 import { toConcertCard, type ConcertCard, type ConcertDoc } from '@/lib/concerts';
 import { renderEmphasis } from '@/lib/emphasis';
+import { RichText, renderInline } from '@/lib/richText';
 import { resolveHomeSections, type HomeSectionKey } from '@/lib/homeSections';
 
 interface HomeClientProps {
@@ -325,8 +326,10 @@ export function HomeClient({
             <div className="home-concerts__empty">
               <p>{concertsCfg.emptyTitle || 'La prochaine saison se prépare.'}</p>
               <p>
-                {concertsCfg.emptyText ||
-                  'Les dates seront annoncées ici dès qu\u2019elles seront fixées. Inscrivez-vous à la lettre d\u2019information pour être prévenu·e en avant-première.'}
+                {renderInline(
+                  concertsCfg.emptyText ||
+                    'Les dates seront annoncées ici dès qu\u2019elles seront fixées. Inscrivez-vous à la lettre d\u2019information pour être prévenu·e en avant-première.',
+                )}
               </p>
               {showNewsletter && (
                 <a href="#newsletter" className="link-arrow">
@@ -400,8 +403,10 @@ export function HomeClient({
                   {renderEmphasis(bento.musiciansTitle || '*Les musiciens*')}
                 </h3>
                 <p className="bento-card__lede">
-                  {bento.musiciansText ||
-                    'Issus de conservatoires français, suisses et belges. Étudiants, amateurs éclairés, jeunes professionnels.'}
+                  {renderInline(
+                    bento.musiciansText ||
+                      'Issus de conservatoires français, suisses et belges. Étudiants, amateurs éclairés, jeunes professionnels.',
+                  )}
                 </p>
                 <span className="link-arrow">{bento.musiciansLinkLabel || 'Découvrir'} →</span>
               </div>
@@ -412,8 +417,10 @@ export function HomeClient({
               <p className="eyebrow eyebrow--accent">{bento.historyEyebrow || 'Depuis'}</p>
               <span className="bento-card__year">{bento.historyYear || '2017'}</span>
               <p className="bento-card__history-text">
-                {bento.historyText ||
-                  'Fondé à Mâcon, l\'orchestre rassemble plus de 80 musiciens autour de la passion du répertoire symphonique.'}
+                {renderInline(
+                  bento.historyText ||
+                    'Fondé à Mâcon, l\'orchestre rassemble plus de 80 musiciens autour de la passion du répertoire symphonique.',
+                )}
               </p>
               <span className="link-arrow">{bento.historyLinkLabel || 'L\'histoire'} →</span>
             </Link>
@@ -436,7 +443,7 @@ export function HomeClient({
               </h2>
               <hr className="velvet-rule long" />
               {soloistsIntro && (
-                <p className="home-soloists__intro">{soloistsIntro}</p>
+                <p className="home-soloists__intro">{renderInline(soloistsIntro)}</p>
               )}
             </header>
 
@@ -514,13 +521,8 @@ export function HomeClient({
                   <em>{presentation?.title || 'La musique en partage'}</em>
                 </h2>
                 <hr className="velvet-rule" />
-                <div className="home-presentation__prose">
-                  {(presentation?.paragraphs || '')
-                    .split('\n\n')
-                    .filter(Boolean)
-                    .map((p: string, i: number) => (
-                      <p key={i} data-lead={i === 0 ? 'true' : undefined}>{p}</p>
-                    ))}
+                <div className="home-presentation__prose rich-text">
+                  <RichText text={presentation?.paragraphs} lead />
                 </div>
                 <div className="home-presentation__foot">
                   <Link href={presentation?.ctaLink || '/a-propos'} className="link-arrow">
@@ -602,7 +604,7 @@ export function HomeClient({
                 <em>{newsletter?.title || 'La saison à votre porte'}</em>
               </h2>
               {newsletter?.description && (
-                <p className="home-newsletter__lede">{newsletter.description}</p>
+                <p className="home-newsletter__lede">{renderInline(newsletter.description)}</p>
               )}
               <NewsletterForm
                 placeholder={newsletter?.placeholder}
@@ -635,7 +637,7 @@ export function HomeClient({
             </h1>
 
             {hero?.description && (
-              <p className="hero-modern__lede">{hero.description}</p>
+              <p className="hero-modern__lede">{renderInline(hero.description)}</p>
             )}
 
             <div className="hero-modern__cues">

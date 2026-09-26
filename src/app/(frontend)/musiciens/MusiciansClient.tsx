@@ -7,6 +7,7 @@ import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { useLiveGlobal, useLiveList } from '@/hooks/useLiveDocument';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { placeholderForMusician } from '@/lib/unsplash';
+import { renderInline } from '@/lib/richText';
 
 /** Page Musiciens, rendue côté client pour l'aperçu en direct. */
 
@@ -114,8 +115,10 @@ export function MusiciansClient({
           </p>
           <h1>{header.title || 'Les visages de l\'orchestre'}</h1>
           <p>
-            {header.lede ||
-              'De 40 à 80 musiciens issus de conservatoires français, suisses et belges, réunis autour de la passion du répertoire symphonique.'}
+            {renderInline(
+              header.lede ||
+                'De 40 à 80 musiciens issus de conservatoires français, suisses et belges, réunis autour de la passion du répertoire symphonique.',
+            )}
           </p>
         </div>
       </div>

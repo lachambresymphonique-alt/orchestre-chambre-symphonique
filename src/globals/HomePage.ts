@@ -1,5 +1,6 @@
 import type { GlobalConfig } from 'payload'
 import { validateHomeSections } from '../lib/homeSections'
+import { richTextAdmin } from '@/lib/richTextAdmin'
 
 export const HomePage: GlobalConfig = {
   slug: 'home-page',
@@ -88,6 +89,7 @@ export const HomePage: GlobalConfig = {
           type: 'textarea',
           label: 'Introduction Solistes',
           admin: {
+            ...richTextAdmin('inline'),
             description:
               "Une phrase ou deux pour présenter les solistes invités (optionnel).",
           },
@@ -143,7 +145,7 @@ export const HomePage: GlobalConfig = {
         { name: 'subtitle', type: 'text', label: 'Sur-titre', admin: { description: 'Petit texte au-dessus du titre principal.' } },
         { name: 'titleLine1', type: 'text', label: 'Titre — ligne 1' },
         { name: 'titleLine2Italic', type: 'text', label: 'Titre — ligne 2 (italique)' },
-        { name: 'description', type: 'textarea', label: 'Description', admin: { description: 'Texte d\'accroche sous le titre.' } },
+        { name: 'description', type: 'textarea', label: 'Description', admin: { ...richTextAdmin('inline'), description: 'Texte d\'accroche sous le titre.' } },
         {
           name: 'portraitImage',
           type: 'upload',
@@ -193,8 +195,9 @@ export const HomePage: GlobalConfig = {
           defaultValue:
             'Une *chambre* de musiciens\nqui jouent le répertoire *symphonique*\nsans rien perdre : ni la précision,\nni la chaleur, ni l\'*émotion*\ndu premier accord.',
           admin: {
+            ...richTextAdmin('lines'),
             description:
-              'Un retour à la ligne = une ligne à l\'écran. Un mot entre astérisques est mis en italique coloré : *chambre*.',
+              'Chaque retour à la ligne commence une ligne à l\'écran. Sélectionnez un mot puis « I » pour le mettre en italique coloré.',
           },
         },
         { name: 'ctaText', type: 'text', label: 'Lien — texte', defaultValue: 'Notre histoire' },
@@ -253,7 +256,7 @@ export const HomePage: GlobalConfig = {
           type: 'text',
           label: 'Titre',
           defaultValue: '*Prochains* concerts',
-          admin: { description: 'Un mot entre astérisques est mis en italique coloré.' },
+          admin: { ...richTextAdmin('title'), description: 'Sélectionnez un mot puis « I » pour le mettre en italique coloré.' },
         },
         { name: 'nextLabel', type: 'text', label: 'Étiquette « Prochain concert »', defaultValue: 'Prochain concert' },
         { name: 'todayLabel', type: 'text', label: 'Étiquette le jour même', defaultValue: 'Aujourd\'hui' },
@@ -273,6 +276,7 @@ export const HomePage: GlobalConfig = {
           label: 'Aucune date — texte',
           defaultValue:
             'Les dates seront annoncées ici dès qu\'elles seront fixées. Inscrivez-vous à la lettre d\'information pour être prévenu·e en avant-première.',
+          admin: { ...richTextAdmin('inline') },
         },
         { name: 'emptyCtaText', type: 'text', label: 'Aucune date — lien', defaultValue: 'Recevoir les prochaines dates' },
       ],
@@ -289,16 +293,17 @@ export const HomePage: GlobalConfig = {
           type: 'text',
           label: 'Titre',
           defaultValue: '*Les visages* de l\'orchestre',
-          admin: { description: 'Un mot entre astérisques est mis en italique coloré.' },
+          admin: { ...richTextAdmin('title'), description: 'Sélectionnez un mot puis « I » pour le mettre en italique coloré.' },
         },
         { name: 'musiciansEyebrow', type: 'text', label: 'Carte musiciens — sur-titre', defaultValue: 'L\'ensemble' },
-        { name: 'musiciansTitle', type: 'text', label: 'Carte musiciens — titre', defaultValue: '*Les musiciens*' },
+        { name: 'musiciansTitle', type: 'text', label: 'Carte musiciens — titre', defaultValue: '*Les musiciens*', admin: { ...richTextAdmin('title') } },
         {
           name: 'musiciansText',
           type: 'textarea',
           label: 'Carte musiciens — texte',
           defaultValue:
             'Issus de conservatoires français, suisses et belges. Étudiants, amateurs éclairés, jeunes professionnels.',
+          admin: { ...richTextAdmin('inline') },
         },
         { name: 'musiciansLinkLabel', type: 'text', label: 'Carte musiciens — lien', defaultValue: 'Découvrir' },
         { name: 'historyEyebrow', type: 'text', label: 'Carte histoire — sur-titre', defaultValue: 'Depuis' },
@@ -309,6 +314,7 @@ export const HomePage: GlobalConfig = {
           label: 'Carte histoire — texte',
           defaultValue:
             'Fondé à Mâcon, l\'orchestre rassemble plus de 80 musiciens autour de la passion du répertoire symphonique.',
+          admin: { ...richTextAdmin('inline') },
         },
         { name: 'historyLinkLabel', type: 'text', label: 'Carte histoire — lien', defaultValue: 'L\'histoire' },
         { name: 'historyLink', type: 'text', label: 'Carte histoire — page', defaultValue: '/a-propos' },
@@ -322,7 +328,7 @@ export const HomePage: GlobalConfig = {
       fields: [
         { name: 'subtitle', type: 'text', label: 'Sur-titre' },
         { name: 'title', type: 'text', label: 'Titre' },
-        { name: 'paragraphs', type: 'textarea', label: 'Texte de présentation', admin: { description: 'Plusieurs paragraphes séparés par des sauts de ligne.' } },
+        { name: 'paragraphs', type: 'textarea', label: 'Texte de présentation', admin: { ...richTextAdmin('prose'), description: 'Le premier paragraphe est mis en avant, en plus grand.' } },
         { name: 'ctaText', type: 'text', label: 'Bouton — texte', admin: { description: 'Ex : « En savoir plus »' } },
         { name: 'ctaLink', type: 'text', label: 'Bouton — lien' },
         { name: 'signature', type: 'text', label: 'Signature', admin: { description: 'Nom affiché sous le texte (ex : le directeur artistique).' } },
@@ -337,7 +343,7 @@ export const HomePage: GlobalConfig = {
       fields: [
         { name: 'subtitle', type: 'text', label: 'Sur-titre' },
         { name: 'title', type: 'text', label: 'Titre' },
-        { name: 'description', type: 'textarea', label: 'Description', admin: { description: 'Texte d\'accroche pour inciter à s\'inscrire.' } },
+        { name: 'description', type: 'textarea', label: 'Description', admin: { ...richTextAdmin('inline'), description: 'Texte d\'accroche pour inciter à s\'inscrire.' } },
         { name: 'placeholder', type: 'text', label: 'Texte du champ e-mail', defaultValue: 'Votre adresse e-mail' },
         { name: 'buttonLabel', type: 'text', label: 'Bouton', defaultValue: 'S\'inscrire' },
         { name: 'successLabel', type: 'text', label: 'Bouton après inscription', defaultValue: 'Inscrit !' },

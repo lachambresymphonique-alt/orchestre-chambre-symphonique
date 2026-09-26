@@ -3,6 +3,7 @@
 import { useState, FormEvent, CSSProperties } from 'react';
 import { Turnstile } from '@/components/Turnstile';
 import { renderEmphasis } from '@/lib/emphasis';
+import { renderInline } from '@/lib/richText';
 
 /** Textes du formulaire, modifiables dans Pages → Page Contact → Formulaire. */
 export type ContactFormCopy = {
@@ -121,8 +122,10 @@ export function ContactForm({ formToken, turnstileSiteKey, copy }: ContactFormPr
         <h2 className="contact-form__title">{renderEmphasis(c.successTitle || '*Merci.*')}</h2>
         <hr className="velvet-rule long" />
         <p className="contact-form__success">
-          {c.successText ||
-            'Votre message vient d\'arriver. Nous vous répondrons personnellement, en général sous 48 heures.'}
+          {renderInline(
+            c.successText ||
+              'Votre message vient d\'arriver. Nous vous répondrons personnellement, en général sous 48 heures.',
+          )}
         </p>
       </div>
     );

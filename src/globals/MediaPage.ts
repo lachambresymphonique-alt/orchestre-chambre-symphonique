@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload';
+import { richTextAdmin } from '@/lib/richTextAdmin';
 
 export const MediaPage: GlobalConfig = {
   slug: 'media-page',
@@ -19,6 +20,7 @@ export const MediaPage: GlobalConfig = {
           type: 'textarea',
           label: 'Phrase d\'introduction',
           defaultValue: 'Retrouvez nos vidéos de concerts, nos enregistrements et notre galerie photographique.',
+          admin: { ...richTextAdmin('inline') },
         },
       ],
     },

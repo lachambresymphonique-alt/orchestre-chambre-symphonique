@@ -7,6 +7,7 @@ import { useLiveDoc } from '@/hooks/useLiveDocument';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { toConcertCard, type ConcertCard, type ConcertDoc } from '@/lib/concerts';
 import { bookable, citiesOf, periodOf } from '@/lib/concertSeo';
+import { RichText } from '@/lib/richText';
 
 const capitalize = (s: string) => (s ? s.charAt(0).toLocaleUpperCase('fr-FR') + s.slice(1) : s);
 
@@ -46,10 +47,7 @@ export function ConcertDetail({
     .split(/\n+/)
     .map((l) => l.trim().replace(/[,;]\s*$/, ''))
     .filter(Boolean);
-  const paragraphs = card.description
-    .split(/\n\s*\n/)
-    .map((p) => p.trim())
-    .filter(Boolean);
+  const hasDescription = Boolean(card.description.trim());
   const years = new Set(card.allPerformances.map((p) => p.date.year));
 
   return (
@@ -197,15 +195,13 @@ export function ConcertDetail({
               </section>
             )}
 
-            {paragraphs.length > 0 && (
+            {hasDescription && (
               <section className="concert-page__section" aria-labelledby="concert-about">
                 <h2 id="concert-about" className="concert-page__h2">
                   Présentation
                 </h2>
-                <div className="concert-page__prose" data-live-field="description">
-                  {paragraphs.map((p, i) => (
-                    <p key={i}>{p}</p>
-                  ))}
+                <div className="concert-page__prose rich-text" data-live-field="description">
+                  <RichText text={card.description} />
                 </div>
               </section>
             )}

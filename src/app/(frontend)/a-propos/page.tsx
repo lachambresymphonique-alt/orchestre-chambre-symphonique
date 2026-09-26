@@ -24,7 +24,8 @@ export default async function APropos() {
 
   const [aboutPage, timelineEvents] = await Promise.all([
     getAboutPage(),
-    payload.find({ collection: 'timeline-events' as any }),
+    // Ordre réglé par glisser-déposer dans l'admin (Contenu → Chronologie).
+    payload.find({ collection: 'timeline-events' as any, sort: '_order', pagination: false }),
   ]);
 
   return (

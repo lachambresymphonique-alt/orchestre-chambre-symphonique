@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload';
+import { richTextAdmin } from '@/lib/richTextAdmin';
 
 export const SupportTiers: CollectionConfig = {
   slug: 'support-tiers',
@@ -24,7 +25,7 @@ export const SupportTiers: CollectionConfig = {
       type: 'textarea',
       required: true,
       label: 'Avantages',
-      admin: { description: 'Liste des avantages pour les membres de ce cercle.' },
+      admin: { ...richTextAdmin('prose'), description: 'Liste des avantages pour les membres de ce cercle.' },
     },
     {
       name: 'ctaText',

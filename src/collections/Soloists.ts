@@ -1,4 +1,5 @@
 import type { CollectionAfterChangeHook, CollectionAfterReadHook, CollectionConfig } from 'payload';
+import { richTextAdmin } from '@/lib/richTextAdmin';
 
 const slugify = (s: string) =>
   s
@@ -138,7 +139,7 @@ export const Soloists: CollectionConfig = {
       name: 'bio',
       type: 'textarea',
       label: 'Biographie courte',
-      admin: { description: 'Quelques phrases. Affiché en complément du nom.' },
+      admin: { ...richTextAdmin('prose'), description: 'Quelques phrases. Affiché en complément du nom.' },
     },
     {
       name: 'tagline',

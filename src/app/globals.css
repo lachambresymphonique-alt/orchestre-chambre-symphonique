@@ -190,6 +190,51 @@ p {
   margin: 0;
 }
 
+/* Texte mis en forme dans l'admin (lib/richText) : paragraphes, titre,
+   sous-titre, liste. Les conteneurs qui règlent déjà l'espacement de leurs
+   paragraphes (.about-intro__prose p…) gardent le leur. */
+.rich-text > * + * {
+  margin-top: 0.9em;
+}
+
+.rich-text__title {
+  margin: 1.6em 0 0.5em;
+  font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--bordeaux);
+}
+
+.rich-text__subtitle {
+  margin: 1.4em 0 0.4em;
+  font-family: var(--font-body);
+  font-variation-settings: normal;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--velvet);
+}
+
+.rich-text > :is(.rich-text__title, .rich-text__subtitle):first-child {
+  margin-top: 0;
+}
+
+.rich-text__list {
+  margin: 0;
+  padding-left: 1.2em;
+  list-style: disc;
+}
+
+.rich-text__list li + li {
+  margin-top: 0.35em;
+}
+
+.rich-text__list li::marker {
+  color: var(--velvet);
+}
+
 /* Velvet rule — bordeaux hairline */
 .velvet-rule {
   display: block;
@@ -4069,6 +4114,28 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   color: var(--bordeaux-deep);
   line-height: 1.7;
   margin-bottom: 1.5rem;
+}
+
+/* Description mise en forme d'une carte (lib/richText) : l'espace sous le
+   bloc, pas sous chaque paragraphe. */
+.support-card__text {
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--bordeaux-deep);
+}
+
+.support-card .support-card__text p {
+  margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+  .support-card__text { margin-bottom: 1rem; }
+}
+
+.tax-info .rich-text__list {
+  padding-left: 0;
+  list-style-position: inside;
 }
 
 .tax-info {

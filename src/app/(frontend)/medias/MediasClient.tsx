@@ -11,6 +11,7 @@ import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { useLiveGlobal, useLiveList } from '@/hooks/useLiveDocument';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { parseVideoUrl } from '@/lib/video';
+import { renderInline } from '@/lib/richText';
 
 /** Page Médias, rendue côté client pour l'aperçu en direct. */
 
@@ -139,7 +140,7 @@ export function MediasClient({
             </div>
             <div className="media-info">
               <h3 data-live-item-field="title">{item.title}</h3>
-              <p data-live-item-field="description">{item.description}</p>
+              <p data-live-item-field="description">{renderInline(item.description)}</p>
               <p className="media-date" data-live-item-field="date">{item.date}</p>
             </div>
           </FadeIn>
@@ -201,8 +202,10 @@ export function MediasClient({
           </p>
           <h1>{header.title || 'Médias'}</h1>
           <p>
-            {header.lede ||
-              'Retrouvez nos vidéos de concerts, nos enregistrements et notre galerie photographique.'}
+            {renderInline(
+              header.lede ||
+                'Retrouvez nos vidéos de concerts, nos enregistrements et notre galerie photographique.',
+            )}
           </p>
         </div>
       </div>

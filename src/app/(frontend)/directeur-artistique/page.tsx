@@ -3,6 +3,7 @@ import { cache } from 'react';
 import { getPayloadClient } from '@/lib/payload';
 import { DirectorClient, type Director } from './DirectorClient';
 import { resolveDirectorPage, type DirectorPageContent } from '@/lib/directorDefaults';
+import { toPlainText } from '@/lib/richText';
 
 type PageData = { content: DirectorPageContent; director: Director | null; global: any };
 
@@ -53,7 +54,7 @@ export async function generateMetadata(): Promise<Metadata> {
     description:
       content.seo.metaDescription ||
       director?.tagline ||
-      `${name}, ${lowerFirst(role)} et fondateur de La Chambre Symphonique. ${content.hero.ledeFallback}`,
+      `${name}, ${lowerFirst(role)} et fondateur de La Chambre Symphonique. ${toPlainText(content.hero.ledeFallback)}`,
     ...(photoUrl ? { openGraph: { images: [{ url: photoUrl }] } } : {}),
   };
 }

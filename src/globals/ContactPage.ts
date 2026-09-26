@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload';
+import { richTextAdmin } from '@/lib/richTextAdmin';
 
 export const ContactPage: GlobalConfig = {
   slug: 'contact-page',
@@ -20,6 +21,7 @@ export const ContactPage: GlobalConfig = {
           type: 'textarea',
           label: 'Phrase d\'introduction',
           defaultValue: 'Une question, une demande de partenariat ou de réservation ? N\'hésitez pas à nous écrire.',
+          admin: { ...richTextAdmin('inline') },
         },
       ],
     },
@@ -44,7 +46,7 @@ export const ContactPage: GlobalConfig = {
           type: 'text',
           label: 'Titre',
           defaultValue: '*Un mot,* une question',
-          admin: { description: 'Un mot entre astérisques est mis en italique coloré.' },
+          admin: { ...richTextAdmin('title'), description: 'Sélectionnez un mot puis « I » pour le mettre en italique coloré.' },
         },
         {
           type: 'row',
@@ -112,13 +114,14 @@ export const ContactPage: GlobalConfig = {
           type: 'text',
           label: 'Confirmation — titre',
           defaultValue: '*Merci.*',
-          admin: { description: 'Un mot entre astérisques est mis en italique coloré.' },
+          admin: { ...richTextAdmin('title'), description: 'Sélectionnez un mot puis « I » pour le mettre en italique coloré.' },
         },
         {
           name: 'successText',
           type: 'textarea',
           label: 'Confirmation — texte',
           defaultValue: 'Votre message vient d\'arriver. Nous vous répondrons personnellement, en général sous 48 heures.',
+          admin: { ...richTextAdmin('inline') },
         },
       ],
     },

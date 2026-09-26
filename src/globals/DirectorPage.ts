@@ -1,7 +1,8 @@
 import type { GlobalConfig } from 'payload';
 import { DIRECTOR_PAGE_DEFAULTS as D } from '../lib/directorDefaults';
+import { richTextAdmin } from '@/lib/richTextAdmin';
 
-const EMPHASIS_HINT = 'Entourez un mot d\'astérisques pour le mettre en italique coloré : *vivante*.';
+const EMPHASIS_HINT = 'Sélectionnez un mot puis « I » pour le mettre en italique coloré.';
 
 export const DirectorPage: GlobalConfig = {
   slug: 'director-page',
@@ -42,6 +43,7 @@ export const DirectorPage: GlobalConfig = {
           label: 'Phrase de présentation par défaut',
           defaultValue: D.hero.ledeFallback,
           admin: {
+            ...richTextAdmin('inline'),
             description:
               'Affichée sous le nom si la fiche du musicien n\'a pas de « Phrase signature ».',
           },
@@ -75,13 +77,14 @@ export const DirectorPage: GlobalConfig = {
       admin: { description: 'Titre de la section et biographie affichée si la fiche n\'en a pas.' },
       fields: [
         { name: 'eyebrow', type: 'text', label: 'Sur-titre', defaultValue: D.story.eyebrow },
-        { name: 'title', type: 'text', label: 'Titre', defaultValue: D.story.title, admin: { description: EMPHASIS_HINT } },
+        { name: 'title', type: 'text', label: 'Titre', defaultValue: D.story.title, admin: { ...richTextAdmin('title'), description: EMPHASIS_HINT } },
         {
           name: 'bioFallback',
           type: 'textarea',
           label: 'Biographie par défaut',
           defaultValue: D.story.bioFallback,
           admin: {
+            ...richTextAdmin('prose'),
             description:
               'Affichée si la fiche du musicien n\'a pas de biographie. Paragraphes séparés par une ligne vide.',
           },
@@ -95,7 +98,7 @@ export const DirectorPage: GlobalConfig = {
       admin: { description: 'Visible uniquement si la fiche a une formation, des distinctions ou une vidéo.' },
       fields: [
         { name: 'eyebrow', type: 'text', label: 'Sur-titre', defaultValue: D.path.eyebrow },
-        { name: 'title', type: 'text', label: 'Titre', defaultValue: D.path.title, admin: { description: EMPHASIS_HINT } },
+        { name: 'title', type: 'text', label: 'Titre', defaultValue: D.path.title, admin: { ...richTextAdmin('title'), description: EMPHASIS_HINT } },
       ],
     },
     {
@@ -105,7 +108,7 @@ export const DirectorPage: GlobalConfig = {
       admin: { description: 'Cartes de fin de page renvoyant vers le reste du site.' },
       fields: [
         { name: 'eyebrow', type: 'text', label: 'Sur-titre', defaultValue: D.encore.eyebrow },
-        { name: 'title', type: 'text', label: 'Titre', defaultValue: D.encore.title, admin: { description: EMPHASIS_HINT } },
+        { name: 'title', type: 'text', label: 'Titre', defaultValue: D.encore.title, admin: { ...richTextAdmin('title'), description: EMPHASIS_HINT } },
         {
           name: 'cards',
           type: 'array',
@@ -115,7 +118,7 @@ export const DirectorPage: GlobalConfig = {
           defaultValue: D.encore.cards,
           fields: [
             { name: 'eyebrow', type: 'text', label: 'Sur-titre', admin: { description: 'Ex : « La saison »' } },
-            { name: 'title', type: 'text', required: true, label: 'Titre', admin: { description: EMPHASIS_HINT } },
+            { name: 'title', type: 'text', required: true, label: 'Titre', admin: { ...richTextAdmin('title'), description: EMPHASIS_HINT } },
             { name: 'linkLabel', type: 'text', required: true, label: 'Texte du lien', admin: { description: 'Ex : « Voir la programmation »' } },
             { name: 'link', type: 'text', required: true, label: 'Lien', admin: { description: 'Ex : /musiciens, /#concerts, /nous-soutenir' } },
           ],

@@ -10,6 +10,7 @@ import {
   sortPerformances,
   validateBookingLink,
 } from '../lib/concerts';
+import { richTextAdmin } from '@/lib/richTextAdmin';
 
 const trim: FieldHook = ({ value }) => (typeof value === 'string' ? value.trim() : value);
 
@@ -275,6 +276,7 @@ export const Concerts: CollectionConfig = {
       label: 'Présentation',
       hooks: { beforeValidate: [trim] },
       admin: {
+        ...richTextAdmin('prose'),
         description:
           'Texte de la page du concert, sous le programme : les œuvres, les interprètes, l’histoire du projet. Quelques paragraphes (une ligne vide les sépare). C’est aussi ce que lit Google.',
       },

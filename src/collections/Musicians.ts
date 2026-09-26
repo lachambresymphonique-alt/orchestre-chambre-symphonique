@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload';
+import { richTextAdmin } from '@/lib/richTextAdmin';
 
 const slugify = (s: string) =>
   s
@@ -81,7 +82,7 @@ export const Musicians: CollectionConfig = {
       name: 'bio',
       type: 'textarea',
       label: 'Biographie',
-      admin: { description: 'Quelques paragraphes — formation, parcours, répertoire.' },
+      admin: { ...richTextAdmin('prose'), description: 'Quelques paragraphes — formation, parcours, répertoire.' },
     },
     {
       name: 'inspiringSymphony',
@@ -139,7 +140,7 @@ export const Musicians: CollectionConfig = {
       name: 'quote',
       type: 'textarea',
       label: 'Citation',
-      admin: { description: 'Une phrase ou deux du musicien lui-même (optionnel).' },
+      admin: { ...richTextAdmin('inline'), description: 'Une phrase ou deux du musicien lui-même (optionnel).' },
     },
     {
       name: 'order',

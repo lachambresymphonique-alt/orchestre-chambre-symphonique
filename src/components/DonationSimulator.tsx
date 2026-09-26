@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { renderEmphasis } from '@/lib/emphasis';
+import { renderInline } from '@/lib/richText';
 
 type IconKey = 'score' | 'meal' | 'rehearsal' | 'transport' | 'piano' | 'soloist' | 'venue' | 'recording' | 'tour';
 
@@ -310,7 +311,7 @@ export function DonationSimulator({ config }: { config?: any } = {}) {
         <h2 id="donation-sim-title" className="donation-sim__title">
           {renderEmphasis(cfg.title.replace(/ \?$/, '\u00a0?'))}
         </h2>
-        <p className="donation-sim__lede">{cfg.lede}</p>
+        <p className="donation-sim__lede">{renderInline(cfg.lede)}</p>
       </div>
 
       <div className="donation-sim__panel">

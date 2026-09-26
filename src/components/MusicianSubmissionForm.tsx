@@ -2,6 +2,7 @@
 
 import { useState, FormEvent, useRef, ChangeEvent, CSSProperties } from 'react';
 import { Turnstile } from '@/components/Turnstile';
+import { renderInline } from '@/lib/richText';
 import {
   allQuestions,
   layoutQuestions,
@@ -136,7 +137,7 @@ export function MusicianSubmissionForm({ formToken, turnstileSiteKey, form }: Mu
           {form.success.title ? ` ${form.success.title}` : ''}
         </h2>
         <hr className="velvet-rule long" />
-        <p className="contribute-success__body">{form.success.body}</p>
+        <p className="contribute-success__body">{renderInline(form.success.body)}</p>
       </div>
     );
   }
@@ -306,7 +307,7 @@ export function MusicianSubmissionForm({ formToken, turnstileSiteKey, form }: Mu
             <span className="eyebrow eyebrow--gold">{part.title}</span>
           </legend>
           <hr className="velvet-rule" />
-          {part.lede && <p className="contribute-act__lede">{part.lede}</p>}
+          {part.lede && <p className="contribute-act__lede">{renderInline(part.lede)}</p>}
 
           {layoutQuestions(part.questions).map((row, rowIndex) =>
             row.length > 1 ? (

@@ -14,6 +14,7 @@ import {
   fieldAdminLabel,
   isCoreField,
 } from '@/lib/musicianForm';
+import { richTextAdmin } from '@/lib/richTextAdmin';
 
 /**
  * Formulaire musiciens — questions posées sur /musiciens/contribuer.
@@ -112,7 +113,7 @@ export const MusicianForm: GlobalConfig = {
           name: 'lede',
           type: 'textarea',
           label: 'Phrase d’introduction',
-          admin: { description: 'Facultative — laissez vide pour n’afficher que le titre.' },
+          admin: { ...richTextAdmin('inline'), description: 'Facultative — laissez vide pour n’afficher que le titre.' },
         },
         {
           name: 'questions',
@@ -323,6 +324,7 @@ export const MusicianForm: GlobalConfig = {
           type: 'textarea',
           label: 'Texte',
           defaultValue: DEFAULT_SUCCESS.body,
+          admin: { ...richTextAdmin('inline') },
         },
       ],
     },

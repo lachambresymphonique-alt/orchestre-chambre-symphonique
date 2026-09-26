@@ -7,6 +7,7 @@ import { FadeIn } from '@/components/FadeIn';
 import { ContactForm } from '@/components/ContactForm';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { FacebookIcon, InstagramIcon, YouTubeIcon, LinkedInIcon, TikTokIcon } from '@/components/SocialIcons';
+import { renderInline } from '@/lib/richText';
 
 interface ContactClientProps {
   /** Réglages du site (coordonnées, horaires, réseaux) — aperçu en direct. */
@@ -53,8 +54,10 @@ export function ContactClient({ initialData, pageContent, formToken, turnstileSi
           </p>
           <h1>{header.title || 'Contactez-nous'}</h1>
           <p>
-            {header.lede ||
-              'Une question, une demande de partenariat ou de réservation ? N\u2019hésitez pas à nous écrire.'}
+            {renderInline(
+              header.lede ||
+                'Une question, une demande de partenariat ou de réservation ? N\u2019hésitez pas à nous écrire.',
+            )}
           </p>
         </div>
       </div>

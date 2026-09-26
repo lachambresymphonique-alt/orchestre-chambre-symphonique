@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload';
+import { richTextAdmin } from '@/lib/richTextAdmin';
 
 export const MediaItems: CollectionConfig = {
   slug: 'media-items',
@@ -23,7 +24,7 @@ export const MediaItems: CollectionConfig = {
       ],
     },
     { name: 'title', type: 'text', required: true, label: 'Titre' },
-    { name: 'description', type: 'textarea', label: 'Description' },
+    { name: 'description', type: 'textarea', label: 'Description', admin: { ...richTextAdmin('inline') } },
     {
       name: 'date',
       type: 'text',

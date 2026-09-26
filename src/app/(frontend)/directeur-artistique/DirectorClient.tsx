@@ -9,6 +9,7 @@ import { directorPlaceholder } from '@/lib/unsplash';
 import { toEmbedUrl } from '@/lib/videoEmbed';
 import { resolveDirectorPage } from '@/lib/directorDefaults';
 import { renderEmphasis } from '@/lib/emphasis';
+import { RichText, renderInline } from '@/lib/richText';
 
 /**
  * Page Direction, rendue côté client pour l'aperçu en direct : elle suit à la
@@ -143,15 +144,8 @@ export function DirectorClient({
   const [firstName, ...restName] = director.name.trim().split(/\s+/);
   const lastName = restName.join(' ');
 
-  const bioParagraphs = (director.bio || '')
-    .split(/\n\n+/)
-    .map((p) => p.trim())
-    .filter(Boolean);
   // Fallbacks come from Pages → Page Direction while the fiche is not filled in.
-  const paragraphs =
-    bioParagraphs.length > 0
-      ? bioParagraphs
-      : story.bioFallback.split(/\n\n+/).map((p) => p.trim()).filter(Boolean);
+  const bio = director.bio?.trim() ? director.bio : story.bioFallback;
   const lede = director.tagline?.trim() || hero.ledeFallback;
   const facts = [{ label: 'Fonction', value: director.role }, ...hero.facts];
 
@@ -202,7 +196,7 @@ export function DirectorClient({
               {director.role}
               {director.instrument ? ` · ${director.instrument}` : ''}
             </p>
-            <p className="director-hero__lede" data-live-field="tagline" data-live-owner={owner}>{lede}</p>
+            <p className="director-hero__lede" data-live-field="tagline" data-live-owner={owner}>{renderInline(lede)}</p>
 
             <dl className="director-facts">
               {facts.map((fact, i) => (
@@ -237,12 +231,8 @@ export function DirectorClient({
           <hr className="velvet-rule" />
         </header>
 
-        <div className="director-story__body" data-live-field="bio" data-live-owner={owner}>
-          {paragraphs.map((p, i) => (
-            <p key={i} data-lead={i === 0 ? 'true' : undefined}>
-              {p}
-            </p>
-          ))}
+        <div className="director-story__body rich-text" data-live-field="bio" data-live-owner={owner}>
+          <RichText text={bio} lead />
         </div>
       </section>
 
@@ -303,7 +293,7 @@ export function DirectorClient({
         <section className="director-signature" data-live-field="quote" data-live-owner={owner}>
           <figure>
             <QuotationGlyph />
-            <blockquote>{director.quote}</blockquote>
+            <blockquote>{renderInline(director.quote)}</blockquote>
             <figcaption>
               <span className="director-signature__rule" aria-hidden />
               <span className="director-signature__name">{director.name}</span>

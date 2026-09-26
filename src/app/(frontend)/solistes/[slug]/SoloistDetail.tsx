@@ -8,6 +8,7 @@ import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { placeholderForMusician } from '@/lib/unsplash';
 import type { ConcertCard } from '@/lib/concerts';
 import { describeDateRange } from '@/components/ConcertPosters';
+import { RichText } from '@/lib/richText';
 
 /**
  * Page d'un·e soliste invité·e (/solistes/<slug>), mise en page des fiches
@@ -34,7 +35,7 @@ export function SoloistDetail({ soloist, concerts }: { soloist: SoloistDoc; conc
   const s = useLiveDoc<SoloistDoc>('soloists', soloist, 1);
   useLivePreviewSync(s);
   const photo = s.photo && typeof s.photo === 'object' ? s.photo : null;
-  const bio = (s.bio || '').split(/\n\n+/).map((p) => p.trim()).filter(Boolean);
+  const hasBio = Boolean(s.bio?.trim());
   const website = s.website?.trim() || '';
 
   return (
@@ -79,11 +80,9 @@ export function SoloistDetail({ soloist, concerts }: { soloist: SoloistDoc; conc
             </>
           )}
 
-          {bio.length > 0 && (
-            <div className="musician-feature__bio" data-live-field="bio">
-              {bio.map((p, i) => (
-                <p key={i}>{p}</p>
-              ))}
+          {hasBio && (
+            <div className="musician-feature__bio rich-text" data-live-field="bio">
+              <RichText text={s.bio} />
             </div>
           )}
 

@@ -13,6 +13,7 @@ import {
   type ConcertDoc,
   type ConcertPerformanceView,
 } from './concerts';
+import { toPlainText } from './richText';
 
 export const SITE_URL = 'https://www.lachambresymphonique.fr';
 export const SITE_NAME = 'La Chambre Symphonique';
@@ -138,7 +139,7 @@ const ORCHESTRA = { '@type': 'MusicGroup', name: SITE_NAME, url: SITE_URL } as c
 export function concertEvents(card: ConcertCard): Record<string, unknown>[] {
   const url = absoluteUrl(card.url || '/#concerts');
   const image = card.image ? [absoluteUrl(card.image.url)] : undefined;
-  const description = card.description ? cut(card.description.replace(/\s+/g, ' '), 300) : card.program ? programLine(card.program) : undefined;
+  const description = card.description ? cut(toPlainText(card.description), 300) : card.program ? programLine(card.program) : undefined;
   const performers = [
     ORCHESTRA,
     ...card.soloists.map((s) => ({

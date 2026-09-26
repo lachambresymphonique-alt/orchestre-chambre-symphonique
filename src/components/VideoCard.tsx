@@ -2,6 +2,7 @@
 
 import { useState, type CSSProperties } from 'react';
 import Image from 'next/image';
+import { renderInline } from '@/lib/richText';
 
 type VideoCardProps = {
   title: string;
@@ -112,7 +113,7 @@ export function VideoCard({
       </div>
       <div className="media-info">
         <h3>{title}</h3>
-        <p>{description}</p>
+        <p>{renderInline(description)}</p>
         <p className="media-date">{date}</p>
       </div>
     </>
