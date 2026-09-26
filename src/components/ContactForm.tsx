@@ -13,6 +13,8 @@ export type ContactFormCopy = {
   namePlaceholder?: string | null;
   emailLabel?: string | null;
   emailPlaceholder?: string | null;
+  phoneLabel?: string | null;
+  phonePlaceholder?: string | null;
   subjectLabel?: string | null;
   subjectPlaceholder?: string | null;
   subjects?: { value?: string | null; label?: string | null }[] | null;
@@ -84,6 +86,7 @@ export function ContactForm({ formToken, turnstileSiteKey, copy }: ContactFormPr
     const data = {
       name: (form.elements.namedItem('name') as HTMLInputElement).value,
       email: (form.elements.namedItem('email') as HTMLInputElement).value,
+      phone: (form.elements.namedItem('phone') as HTMLInputElement).value,
       subject: (form.elements.namedItem('subject') as HTMLSelectElement).value,
       message: (form.elements.namedItem('message') as HTMLTextAreaElement).value,
       website: (form.elements.namedItem('website') as HTMLInputElement).value,
@@ -150,6 +153,18 @@ export function ContactForm({ formToken, turnstileSiteKey, copy }: ContactFormPr
         <div className="form-group">
           <label htmlFor="email">{c.emailLabel || 'Adresse e-mail'}</label>
           <input type="email" id="email" name="email" placeholder={c.emailPlaceholder || 'votre@email.fr'} required />
+        </div>
+        <div className="form-group">
+          <label htmlFor="phone">{c.phoneLabel || 'Téléphone'}</label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            autoComplete="tel"
+            maxLength={30}
+            placeholder={c.phonePlaceholder || '06 12 34 56 78'}
+            required
+          />
         </div>
         <div className="form-group">
           <label htmlFor="subject">{c.subjectLabel || 'Objet'}</label>

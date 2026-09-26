@@ -65,6 +65,13 @@ export const ContactPage: GlobalConfig = {
         {
           type: 'row',
           fields: [
+            { name: 'phoneLabel', type: 'text', label: 'Champ téléphone — libellé', defaultValue: 'Téléphone', admin: { width: '50%' } },
+            { name: 'phonePlaceholder', type: 'text', label: 'Champ téléphone — exemple', defaultValue: '06 12 34 56 78', admin: { width: '50%' } },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
             { name: 'subjectLabel', type: 'text', label: 'Champ objet — libellé', defaultValue: 'Objet', admin: { width: '50%' } },
             { name: 'subjectPlaceholder', type: 'text', label: 'Champ objet — invite', defaultValue: 'Choisissez un sujet', admin: { width: '50%' } },
           ],

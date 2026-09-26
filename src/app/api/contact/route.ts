@@ -24,6 +24,9 @@ const MAX_NAME_LENGTH = 200;
 const MAX_EMAIL_LENGTH = 254;
 const MAX_MESSAGE_LENGTH = 5_000;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_PHONE_LENGTH = 30;
+// Chiffres, espaces, points, tirets, parenthèses et « + » international ; au moins 6 chiffres.
+const PHONE_PATTERN = /^\+?[\d\s().-]+$/;
 
 function clientIp(req: NextRequest): string | null {
   const forwarded = req.headers.get('x-forwarded-for');
@@ -48,10 +51,11 @@ export async function POST(req: NextRequest) {
     // 2. Champs
     const name = typeof body?.name === 'string' ? body.name.trim() : '';
     const email = typeof body?.email === 'string' ? body.email.trim() : '';
+    const phone = typeof body?.phone === 'string' ? body.phone.trim() : '';
     const subject = typeof body?.subject === 'string' ? body.subject : '';
     const message = typeof body?.message === 'string' ? body.message.trim() : '';
 
-    if (!name || !email || !subject || !message) {
+    if (!name || !email || !phone || !subject || !message) {
       return badRequest('Tous les champs sont requis.');
     }
     if (!Object.prototype.hasOwnProperty.call(SUBJECT_LABELS, subject)) {
@@ -59,6 +63,13 @@ export async function POST(req: NextRequest) {
     }
     if (!EMAIL_PATTERN.test(email) || email.length > MAX_EMAIL_LENGTH) {
       return badRequest('Adresse e-mail invalide.');
+    }
+    if (
+      phone.length > MAX_PHONE_LENGTH ||
+      !PHONE_PATTERN.test(phone) ||
+      phone.replace(/\D/g, '').length < 6
+    ) {
+      return badRequest('Numéro de téléphone invalide.');
     }
     if (name.length > MAX_NAME_LENGTH || message.length > MAX_MESSAGE_LENGTH) {
       return badRequest('Message trop long.');
@@ -89,7 +100,7 @@ export async function POST(req: NextRequest) {
     const payload = await getPayloadClient();
     await payload.create({
       collection: 'contact-submissions' as any,
-      data: { name, email, subject, message },
+      data: { name, email, phone, subject, message },
       overrideAccess: true,
     });
 
@@ -116,6 +127,7 @@ export async function POST(req: NextRequest) {
         text: [
           `Nom : ${name}`,
           `E-mail : ${email}`,
+          `Téléphone : ${phone}`,
           `Objet : ${subjectLabel}`,
           '',
           message,

@@ -8,7 +8,7 @@ export const ContactSubmissions: CollectionConfig = {
     group: 'Messages reçus',
     description: 'Messages envoyés via le formulaire de contact du site.',
     useAsTitle: 'subject',
-    defaultColumns: ['name', 'email', 'subject', 'createdAt'],
+    defaultColumns: ['name', 'email', 'phone', 'subject', 'createdAt'],
   },
   access: {
     // Les messages n'arrivent que par la route /api/contact (API locale, hors
@@ -22,7 +22,15 @@ export const ContactSubmissions: CollectionConfig = {
   },
   fields: [
     { name: 'name', type: 'text', label: 'Nom', required: true },
-    { name: 'email', type: 'email', label: 'E-mail', required: true },
+    {
+      type: 'row',
+      fields: [
+        { name: 'email', type: 'email', label: 'E-mail', required: true, admin: { width: '50%' } },
+        // Exigé par le formulaire (/api/contact), mais pas en base : les messages
+        // reçus avant son ajout n'en ont pas.
+        { name: 'phone', type: 'text', label: 'Téléphone', admin: { width: '50%' } },
+      ],
+    },
     {
       name: 'subject',
       type: 'select',
