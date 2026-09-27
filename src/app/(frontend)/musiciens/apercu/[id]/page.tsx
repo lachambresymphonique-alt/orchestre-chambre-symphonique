@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
 import { getPayloadClient } from '@/lib/payload';
+import { isAdminUser } from '@/lib/access';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { SubmissionPreview } from './SubmissionPreview';
 
@@ -27,7 +28,7 @@ export default async function MusicianPreviewPage({
   } catch {
     user = null;
   }
-  if (!user) notFound();
+  if (!isAdminUser(user)) notFound();
 
   let submission: any;
   try {

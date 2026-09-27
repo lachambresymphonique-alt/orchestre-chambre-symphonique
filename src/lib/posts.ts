@@ -6,6 +6,7 @@
 import { cache } from 'react';
 import { headers } from 'next/headers';
 import { getPayloadClient } from './payload';
+import { isAdminUser } from './access';
 import type { PostCategory } from './postCategories';
 
 export const POSTS_PER_PAGE = 10;
@@ -83,7 +84,7 @@ export const isEditorRequest = cache(async (): Promise<boolean> => {
   try {
     const payload = await getPayloadClient();
     const { user } = await payload.auth({ headers: await headers() });
-    return !!user;
+    return isAdminUser(user);
   } catch {
     return false;
   }

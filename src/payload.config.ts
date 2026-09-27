@@ -34,6 +34,7 @@ import { MusicianForm } from './globals/MusicianForm';
 import { ThemeSettings } from './globals/ThemeSettings';
 import { Navigation } from './globals/Navigation';
 import { unsavedChangesPlugin } from './lib/unsavedChangesPlugin';
+import { adminByDefault, globalAdminByDefault, lockPayloadInternals } from './lib/access';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -167,6 +168,9 @@ export default buildConfig({
     },
   },
 
+  // Toute opération non réglée par une collection ou un global est réservée
+  // aux administrateurs (Payload l'ouvrirait sinon à tout compte connecté) :
+  // voir src/lib/access.ts.
   collections: [
     // Pages
     Pages,
@@ -189,7 +193,7 @@ export default buildConfig({
     PageViews,
     // Réglages
     Users,
-  ],
+  ].map(adminByDefault),
 
   globals: [
     // Pages
@@ -205,7 +209,7 @@ export default buildConfig({
     SiteSettings,
     ThemeSettings,
     Navigation,
-  ],
+  ].map(globalAdminByDefault),
 
   i18n: {
     supportedLanguages: { fr },
@@ -273,4 +277,6 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-});
+  // Préférences, verrous, migrations : collections ajoutées par Payload
+  // pendant la validation, donc bornées après coup (src/lib/access.ts).
+}).then(lockPayloadInternals);

@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload';
+import { isAdmin } from '@/lib/access';
 
 export const MusicianSubmissions: CollectionConfig = {
   slug: 'musician-submissions',
@@ -22,10 +23,10 @@ export const MusicianSubmissions: CollectionConfig = {
     // Les fiches n'arrivent que par la route /api/musician-submissions (API
     // locale, hors contrôle d'accès), qui applique pot de miel et jeton signé.
     // Sans cela, un robot contournerait le formulaire via GraphQL ou REST.
-    create: ({ req }) => !!req.user,
-    read: ({ req }) => !!req.user,
-    update: ({ req }) => !!req.user,
-    delete: ({ req }) => !!req.user,
+    create: isAdmin,
+    read: isAdmin,
+    update: isAdmin,
+    delete: isAdmin,
   },
   fields: [
     { name: 'firstName', type: 'text', required: true, label: 'Prénom' },

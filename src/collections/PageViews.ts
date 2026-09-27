@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload';
+import { isAdmin } from '@/lib/access';
 
 /**
  * Journal des pages vues sur le site public.
@@ -26,9 +27,9 @@ export const PageViews: CollectionConfig = {
   access: {
     // Insertion uniquement via l'API locale (route /api/visite), jamais via REST.
     create: () => false,
-    read: ({ req }) => !!req.user,
+    read: isAdmin,
     update: () => false,
-    delete: ({ req }) => !!req.user,
+    delete: isAdmin,
   },
   fields: [
     { name: 'path', type: 'text', label: 'Page', required: true },

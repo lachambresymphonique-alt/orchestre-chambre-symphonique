@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { getPayloadClient } from '@/lib/payload';
+import { isAdminUser } from '@/lib/access';
 
 const VALID_SECTIONS = new Set(['direction', 'cordes', 'vents', 'claviers']);
 
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
   } catch {
     user = null;
   }
-  if (!user) {
+  if (!isAdminUser(user)) {
     return NextResponse.json({ error: 'Authentification requise.' }, { status: 401 });
   }
 
