@@ -612,11 +612,7 @@
   --rose-shadow:     oklch(82% 0.060 65);
 }
 
-/* ── Page libre : en-tête (titre) puis sections ──────────────────────────── */
-.free-page__head {
-  padding-bottom: 0;
-}
-
-.free-page__head + .lcs-section--bg-page {
-  padding-top: clamp(1.5rem, 3vw, 2.5rem);
+/* ── Page libre : bandeau d'en-tête (titre) puis sections ─────────────────── */
+.free-page > .page-header + .lcs-section--sp-normal {
+  padding-top: clamp(3rem, 6vw, 5rem);
 }

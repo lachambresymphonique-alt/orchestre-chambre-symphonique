@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload';
 import { PAGE_SECTIONS } from '@/blocks';
 import { withLegacyContent } from '@/lib/sections';
+import { slugify } from '@/lib/slug';
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -22,7 +23,10 @@ export const Pages: CollectionConfig = {
     },
   },
   versions: {
-    drafts: true,
+    // Enregistrement automatique des brouillons : « Créer » ouvre tout de suite
+    // la page en brouillon (Payload la crée), donc avec son aperçu en direct ;
+    // plus rien ne se perd, et seul « Publier » met en ligne.
+    drafts: { autosave: { interval: 1500 } },
   },
   hooks: {
     beforeChange: [
@@ -50,14 +54,25 @@ export const Pages: CollectionConfig = {
       unique: true,
       label: 'Adresse (slug)',
       admin: {
-        description: 'L\'URL de la page. Ex : « saison-2025 » donnera /saison-2025. Pas d\'espaces ni de caractères spéciaux.',
+        description:
+          'Fin de l’adresse de la page : « saison-2025 » donnera /saison-2025. Générée à partir du titre si vous la laissez vide ; accents et espaces sont convertis.',
+      },
+      hooks: {
+        beforeValidate: [
+          ({ value, data }) => {
+            const typed = typeof value === 'string' ? value.trim() : '';
+            if (typed) return slugify(typed) || typed;
+            const title = (data as { title?: unknown } | undefined)?.title;
+            return typeof title === 'string' && title.trim() ? slugify(title) : value;
+          },
+        ],
       },
       validate: (value: string | null | undefined) => {
         if (!value) return 'Le slug est requis.';
         if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
           return 'Utilisez uniquement des lettres minuscules, chiffres et tirets (ex : ma-nouvelle-page).';
         }
-        const reserved = ['admin', 'api', 'a-propos', 'directeur-artistique', 'musiciens', 'medias', 'journal', 'blog', 'nous-soutenir', 'contact', 'concerts', 'solistes'];
+        const reserved = ['admin', 'api', 'a-propos', 'directeur-artistique', 'musiciens', 'medias', 'journal', 'blog', 'nous-soutenir', 'contact', 'concerts', 'solistes', 'recrutement', 'espace-membres', 'apercu'];
         if (reserved.includes(value)) {
           return `« ${value} » est déjà utilisé par une page du site. Choisissez un autre slug.`;
         }
@@ -73,6 +88,7 @@ export const Pages: CollectionConfig = {
       labels: { singular: 'une section', plural: 'Sections' },
       blocks: PAGE_SECTIONS,
       admin: {
+        components: { Field: '@/components/admin/SectionsField#SectionsField' },
         description:
           'La page se compose de sections, dans l’ordre de cette liste : faites-les glisser par leur poignée pour les déplacer, et utilisez le menu ⋯ d’une section pour la dupliquer ou la supprimer.',
       },

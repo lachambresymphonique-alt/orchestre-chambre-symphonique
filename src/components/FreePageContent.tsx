@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Sections } from '@/components/sections/Sections';
 import type { ConcertCard } from '@/lib/concerts';
 import { resolveSections } from '@/lib/sections';
@@ -33,14 +34,16 @@ export function FreePageContent({ title, layout, content, upcomingConcerts, plac
 
   return (
     <main className="free-page">
-      <section className="section free-page__head">
+      <div className="page-header">
         <div className="container">
-          <div className="section-label">Page</div>
-          <h1 className="section-title" data-live-field="title">
+          <p className="breadcrumb">
+            <Link href="/">Accueil</Link> / {heading || 'Page'}
+          </p>
+          <h1 data-live-field="title">
             {heading || (placeholders ? <span style={placeholderStyle}>Titre de la page</span> : null)}
           </h1>
         </div>
-      </section>
+      </div>
       {sections.length > 0 ? (
         <Sections sections={sections} upcomingConcerts={upcomingConcerts} preview={placeholders} />
       ) : placeholders ? (
