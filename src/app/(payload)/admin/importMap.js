@@ -35,6 +35,7 @@ import { ArticleCoverField as ArticleCoverField_15a6e3f3df8ef585032dddb3e3a58684
 import { FixedToolbarFeatureClient as FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { PostsListNav as PostsListNav_e587839e76f5c3444fd715bac47db6a9 } from '@/components/admin/PostsListNav'
 import { TimelineOrderBar as TimelineOrderBar_d45d1f73212f6371bfd4b8b89817026a } from '@/components/admin/TimelineOrderBar'
+import { SectionRowLabel as SectionRowLabel_76f6ffac4c9b5e6b3dc508ff293e95b2 } from '@/components/admin/SectionRowLabel'
 import { PromoteSubmissionButton as PromoteSubmissionButton_8d30722c0b0e7fa1a9b8a839577f9a11 } from '@/components/admin/PromoteSubmissionButton'
 import { HomeSectionsField as HomeSectionsField_4f0be2871a168e5a6640850cd2d2a706 } from '@/components/admin/HomeSectionsField'
 import { ConcertLayoutField as ConcertLayoutField_5c2dc134ff87a1bc27aa82c9887f36fc } from '@/components/admin/ConcertLayoutField'
@@ -106,6 +107,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#FixedToolbarFeatureClient": FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/admin/PostsListNav#PostsListNav": PostsListNav_e587839e76f5c3444fd715bac47db6a9,
   "@/components/admin/TimelineOrderBar#TimelineOrderBar": TimelineOrderBar_d45d1f73212f6371bfd4b8b89817026a,
+  "@/components/admin/SectionRowLabel#SectionRowLabel": SectionRowLabel_76f6ffac4c9b5e6b3dc508ff293e95b2,
   "@/components/admin/PromoteSubmissionButton#PromoteSubmissionButton": PromoteSubmissionButton_8d30722c0b0e7fa1a9b8a839577f9a11,
   "@/components/admin/HomeSectionsField#HomeSectionsField": HomeSectionsField_4f0be2871a168e5a6640850cd2d2a706,
   "@/components/admin/ConcertLayoutField#ConcertLayoutField": ConcertLayoutField_5c2dc134ff87a1bc27aa82c9887f36fc,

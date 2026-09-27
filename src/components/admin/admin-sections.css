@@ -1,0 +1,49 @@
+/* ==========================================================================
+   « Sections de la page » (Pages) : en-tête de chaque section
+   Composant : src/components/admin/SectionRowLabel.tsx
+   ========================================================================== */
+.lcs-srow {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 13px;
+}
+
+.lcs-srow__num {
+  font-variant-numeric: tabular-nums;
+  color: var(--theme-elevation-400);
+}
+
+.lcs-srow__type {
+  flex: none;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-900);
+  font-weight: 600;
+}
+
+.lcs-srow__excerpt {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--theme-elevation-700);
+}
+
+.lcs-srow__excerpt--empty {
+  font-style: italic;
+  color: var(--theme-elevation-400);
+}
+
+.lcs-srow__badge {
+  flex: none;
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--lcs-gold, #c9a84c);
+  color: var(--lcs-gold-dark, #a07d2e);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}

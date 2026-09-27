@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload';
 import { PAGE_SECTIONS } from '@/blocks';
+import { hasRichText } from '@/lib/sections';
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -53,20 +54,31 @@ export const Pages: CollectionConfig = {
       },
     },
     {
-      name: 'content',
-      type: 'richText',
-      required: true,
-      label: 'Contenu',
-      admin: { description: 'Le contenu principal de la page. Vous pouvez ajouter des titres, du texte, des listes, des liens et des images.' },
-    },
-    {
       // Sections de la page (constructeur de pages), stockées en JSON
-      // (blocksAsJSON). Masqué tant que le constructeur n'est pas livré.
+      // (blocksAsJSON) : voir src/blocks/index.ts et components/sections.
       name: 'layout',
       type: 'blocks',
       label: 'Sections de la page',
+      labels: { singular: 'une section', plural: 'Sections' },
       blocks: PAGE_SECTIONS,
-      admin: { hidden: true },
+      admin: {
+        description:
+          'La page se compose de sections, dans l’ordre de cette liste : faites-les glisser par leur poignée pour les déplacer, et utilisez le menu ⋯ d’une section pour la dupliquer ou la supprimer.',
+      },
+    },
+    {
+      // Ancien champ unique, d'avant les sections. Tant qu'une page n'a pas de
+      // sections, c'est lui qui s'affiche (src/lib/sections.ts) ; la reprise
+      // le recopie dans une section « Texte ». Jamais effacé.
+      name: 'content',
+      type: 'richText',
+      label: 'Ancien contenu',
+      admin: {
+        // Seulement sur une page d'avant les sections qui a encore du contenu.
+        condition: (data) => !(Array.isArray(data?.layout) && data.layout.length > 0) && hasRichText(data?.content),
+        description:
+          'Contenu d’avant les sections. Il reste affiché tant que la page n’a aucune section ; dès qu’une section est ajoutée, c’est elle qui compte.',
+      },
     },
     {
       name: 'meta',

@@ -4,6 +4,7 @@ import { Component, type ReactNode } from 'react';
 import { useLivePreview } from '@payloadcms/live-preview-react';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FreePageContent } from './FreePageContent';
+import type { ConcertCard } from '@/lib/concerts';
 
 /**
  * Aperçu en direct d'une page libre, affiché dans l'admin à côté du
@@ -17,6 +18,7 @@ import { FreePageContent } from './FreePageContent';
 
 type PageData = {
   title?: string | null;
+  layout?: unknown;
   content?: unknown;
 };
 
@@ -62,12 +64,13 @@ export const populate: RequestHandler = async ({ apiPath, data, serverURL }) => 
   return new Response(body, { headers: { 'Content-Type': 'application/json' } });
 };
 
-export function PagePreview() {
+export function PagePreview({ upcomingConcerts = [] }: { upcomingConcerts?: ConcertCard[] }) {
   const serverURL = typeof window !== 'undefined' ? window.location.origin : '';
   const { data } = useLivePreview<PageData>({
     initialData: EMPTY_PAGE,
     serverURL,
-    depth: 1,
+    // 2 : les concerts choisis dans une section, avec leurs affiches.
+    depth: 2,
     requestHandler: populate,
   });
 
@@ -75,7 +78,13 @@ export function PagePreview() {
 
   return (
     <PreviewBoundary resetKey={data}>
-      <FreePageContent title={data?.title} content={data?.content} placeholders />
+      <FreePageContent
+        title={data?.title}
+        layout={data?.layout}
+        content={data?.content}
+        upcomingConcerts={upcomingConcerts}
+        placeholders
+      />
     </PreviewBoundary>
   );
 }
