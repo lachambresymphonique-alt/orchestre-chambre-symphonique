@@ -37,19 +37,36 @@ export function hasRichText(value: unknown): boolean {
   return walk(root);
 }
 
+/** La section « Texte » qui reprend l'ancien contenu d'une page d'avant les sections. */
+function legacyTextSection(content: unknown): SectionBlock {
+  return {
+    id: 'ancien-contenu',
+    blockType: 'text',
+    content,
+    variant: 'plain',
+    settings: { background: 'auto', width: 'auto', spacing: 'normal', hidden: false },
+  };
+}
+
 /**
- * Les sections à afficher. Une page d'avant les sections (champ `content`
- * seul) passe par une section « Texte » équivalente : même rendu avant et
- * après la reprise, et une ancienne version restaurée s'affiche encore.
+ * Les sections d'une page. Une page d'avant les sections (champ `content`
+ * seul) reçoit une section « Texte » qui porte son ancien contenu : à la
+ * lecture dans l'admin (hook afterRead de Pages.layout), on la voit et on la
+ * modifie comme les autres, et le rendu est le même qu'avant. Vaut aussi pour
+ * une ancienne version restaurée.
  */
+export function withLegacyContent(layout: unknown, content: unknown): unknown {
+  if (Array.isArray(layout) && layout.length > 0) return layout;
+  if (hasRichText(content)) return [legacyTextSection(content)];
+  return layout ?? [];
+}
+
+/** Les sections à afficher (mêmes règles que withLegacyContent). */
 export function resolveSections(doc: { layout?: unknown; content?: unknown } | null | undefined): SectionBlock[] {
-  const layout = Array.isArray(doc?.layout) ? (doc!.layout as SectionBlock[]) : [];
-  const valid = layout.filter((block) => block && typeof block.blockType === 'string');
-  if (valid.length > 0) return valid;
-  if (hasRichText(doc?.content)) {
-    return [{ id: 'ancien-contenu', blockType: 'text', content: doc!.content, variant: 'plain' }];
-  }
-  return [];
+  const layout = withLegacyContent(doc?.layout, doc?.content);
+  return (Array.isArray(layout) ? (layout as SectionBlock[]) : []).filter(
+    (block) => block && typeof block.blockType === 'string',
+  );
 }
 
 /** Fond et largeur d'origine de chaque type de section (réglage « Automatique »). */

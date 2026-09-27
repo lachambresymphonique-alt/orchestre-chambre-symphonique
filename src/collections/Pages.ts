@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload';
 import { PAGE_SECTIONS } from '@/blocks';
-import { hasRichText } from '@/lib/sections';
+import { withLegacyContent } from '@/lib/sections';
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -23,6 +23,17 @@ export const Pages: CollectionConfig = {
   },
   versions: {
     drafts: true,
+  },
+  hooks: {
+    beforeChange: [
+      ({ data }) => {
+        // Enregistré depuis le constructeur : l'ancien contenu a été repris
+        // dans les sections (voir withLegacyContent) ; le garder le ferait
+        // réapparaître si toutes les sections étaient un jour supprimées.
+        if (data && Array.isArray(data.layout)) data.content = null;
+        return data;
+      },
+    ],
   },
   fields: [
     {
@@ -65,20 +76,21 @@ export const Pages: CollectionConfig = {
         description:
           'La page se compose de sections, dans l’ordre de cette liste : faites-les glisser par leur poignée pour les déplacer, et utilisez le menu ⋯ d’une section pour la dupliquer ou la supprimer.',
       },
+      hooks: {
+        // Page d'avant les sections : son ancien contenu arrive comme une
+        // section « Texte », modifiable comme les autres.
+        afterRead: [({ value, siblingData }) => withLegacyContent(value, siblingData?.content)],
+      },
     },
     {
-      // Ancien champ unique, d'avant les sections. Tant qu'une page n'a pas de
-      // sections, c'est lui qui s'affiche (src/lib/sections.ts) ; la reprise
-      // le recopie dans une section « Texte ». Jamais effacé.
+      // Ancien champ unique, d'avant les sections. Jamais saisi : à la lecture,
+      // son contenu devient une section « Texte » (hook de `layout`) ; au
+      // premier enregistrement avec des sections, il est vidé, le texte vivant
+      // désormais dans cette section (l'historique des versions garde tout).
       name: 'content',
       type: 'richText',
       label: 'Ancien contenu',
-      admin: {
-        // Seulement sur une page d'avant les sections qui a encore du contenu.
-        condition: (data) => !(Array.isArray(data?.layout) && data.layout.length > 0) && hasRichText(data?.content),
-        description:
-          'Contenu d’avant les sections. Il reste affiché tant que la page n’a aucune section ; dès qu’une section est ajoutée, c’est elle qui compte.',
-      },
+      admin: { hidden: true },
     },
     {
       name: 'meta',
