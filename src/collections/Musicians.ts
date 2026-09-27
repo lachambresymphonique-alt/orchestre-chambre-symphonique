@@ -19,6 +19,10 @@ export const Musicians: CollectionConfig = {
     defaultColumns: ['photo', 'name', 'instrument', 'section'],
     components: {
       beforeList: ['@/components/admin/MusiciansTabsNav#MusiciansTabsNav'],
+      edit: {
+        // Accès à l'espace membres (collection Accès membres).
+        beforeDocumentControls: ['@/components/admin/InviteMemberButton#InviteMemberButton'],
+      },
     },
   },
   defaultSort: 'order',

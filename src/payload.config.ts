@@ -21,6 +21,7 @@ import { MusicianSubmissions } from './collections/MusicianSubmissions';
 import { Soloists } from './collections/Soloists';
 import { Posts } from './collections/Posts';
 import { PageViews } from './collections/PageViews';
+import { MemberAccounts } from './collections/MemberAccounts';
 
 import { SiteSettings } from './globals/SiteSettings';
 import { HomePage } from './globals/HomePage';
@@ -193,6 +194,8 @@ export default buildConfig({
     PageViews,
     // Réglages
     Users,
+    // Espace membres : comptes sans accès à l'admin (src/lib/memberSession.ts)
+    MemberAccounts,
   ].map(adminByDefault),
 
   globals: [

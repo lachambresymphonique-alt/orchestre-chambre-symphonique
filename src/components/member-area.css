@@ -1,0 +1,93 @@
+/* Espace membres (/espace-membres) : reprend la mise en page et les champs
+   du formulaire de contact (.contact-section, .contact-form), sur une
+   colonne plus étroite. */
+
+.member-area__inner {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.member-area__notice {
+  font-family: var(--font-h3);
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--bordeaux);
+  padding: 1rem 0;
+  margin: 0 0 2rem;
+  border-top: 1px solid var(--paper-rule);
+  border-bottom: 1px solid var(--paper-rule);
+}
+
+.member-area__text {
+  font-family: var(--font-body-serif);
+  font-size: 1.1rem;
+  line-height: 1.65;
+  color: var(--bordeaux-deep);
+  max-width: 38ch;
+  margin: 0 0 2rem;
+}
+
+.member-area__hint {
+  font-size: 0.98rem;
+  margin: 2rem 0 0;
+}
+
+.member-area__hint a {
+  color: var(--bordeaux);
+  border-bottom: 1px solid var(--paper-rule);
+}
+
+/* Membre connecté : portrait à gauche, fiche à droite. */
+.member-area__home {
+  max-width: var(--max-width);
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
+}
+
+.member-area__portrait {
+  margin: 0;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--paper-soft);
+}
+
+.member-area__portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.member-area__details {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+  margin: 0.9rem 0 0;
+}
+
+.member-area__logout {
+  margin-top: 2.5rem;
+}
+
+.member-area__logout button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 0 0.3rem;
+}
+
+@media (max-width: 900px) {
+  .member-area__home {
+    grid-template-columns: 1fr;
+  }
+
+  .member-area__portrait {
+    max-width: 22rem;
+  }
+}

@@ -40,6 +40,7 @@ import { ArticleCoverField as ArticleCoverField_15a6e3f3df8ef585032dddb3e3a58684
 import { PostsListNav as PostsListNav_e587839e76f5c3444fd715bac47db6a9 } from '@/components/admin/PostsListNav'
 import { TimelineOrderBar as TimelineOrderBar_d45d1f73212f6371bfd4b8b89817026a } from '@/components/admin/TimelineOrderBar'
 import { PromoteSubmissionButton as PromoteSubmissionButton_8d30722c0b0e7fa1a9b8a839577f9a11 } from '@/components/admin/PromoteSubmissionButton'
+import { InviteMemberButton as InviteMemberButton_8eb46bcfb0277d71702407741ea3056c } from '@/components/admin/InviteMemberButton'
 import { HomeSectionsField as HomeSectionsField_4f0be2871a168e5a6640850cd2d2a706 } from '@/components/admin/HomeSectionsField'
 import { ConcertLayoutField as ConcertLayoutField_5c2dc134ff87a1bc27aa82c9887f36fc } from '@/components/admin/ConcertLayoutField'
 import { MusicianFormCoreNote as MusicianFormCoreNote_06e40e52a38c8c46926f7949f0a13d21 } from '@/components/admin/MusicianFormRowLabel'
@@ -115,6 +116,7 @@ export const importMap = {
   "@/components/admin/PostsListNav#PostsListNav": PostsListNav_e587839e76f5c3444fd715bac47db6a9,
   "@/components/admin/TimelineOrderBar#TimelineOrderBar": TimelineOrderBar_d45d1f73212f6371bfd4b8b89817026a,
   "@/components/admin/PromoteSubmissionButton#PromoteSubmissionButton": PromoteSubmissionButton_8d30722c0b0e7fa1a9b8a839577f9a11,
+  "@/components/admin/InviteMemberButton#InviteMemberButton": InviteMemberButton_8eb46bcfb0277d71702407741ea3056c,
   "@/components/admin/HomeSectionsField#HomeSectionsField": HomeSectionsField_4f0be2871a168e5a6640850cd2d2a706,
   "@/components/admin/ConcertLayoutField#ConcertLayoutField": ConcertLayoutField_5c2dc134ff87a1bc27aa82c9887f36fc,
   "@/components/admin/MusicianFormRowLabel#MusicianFormCoreNote": MusicianFormCoreNote_06e40e52a38c8c46926f7949f0a13d21,
