@@ -312,19 +312,24 @@ button.btn:disabled {
   margin-right: auto;
 }
 
-/* Aligne le bouton "Créer nouveau" sur la même ligne que les tabs (.lcs-mtabs)
-   en le positionnant absolument en haut à droite du conteneur de la liste. */
+/* Contexte de positionnement des listes. Servait à poser le bouton « Créer »
+   en haut à droite ; ce bouton a retrouvé sa place d'origine (voir plus bas),
+   la règle ne reste que pour ce qui viendrait s'y positionner ensuite. */
 .collection-list,
 .collection-list__wrap,
 .template-default__wrap {
   position: relative;
 }
 
+/* Anciennes dispositions de Payload, où le bouton « Créer » tombait sous le
+   titre et devait être remonté à la main. Depuis la 3.74, l'en-tête de liste
+   est une grille qui le pose déjà à droite du titre : le lien « …/create » a
+   été retiré de cette règle, sinon il partait 52 px au-dessus, hors de l'écran,
+   et la liste n'offrait plus aucun moyen d'ajouter une fiche. */
 .list-controls__create-new,
 .collection-list__create-new,
 .list-header__create-new,
 a.list-header__create-new-link,
-a[href$="/create"].btn,
 .list-header > a:not(.btn--style-secondary):last-child,
 .collection-list__header > a:last-child {
   position: absolute;
