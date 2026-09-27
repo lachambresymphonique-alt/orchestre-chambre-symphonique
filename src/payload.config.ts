@@ -228,6 +228,9 @@ export default buildConfig({
 
   db: postgresAdapter({
     push: true,
+    // Blocs (sections des pages) en une colonne JSON : ajouter un type de
+    // section ne crée ni table ni migration. Voir src/blocks/index.ts.
+    blocksAsJSON: true,
     pool: (() => {
       // Strip `sslmode` from the connection string so pg-connection-string
       // doesn't emit the v3 deprecation warning, then configure ssl explicitly.

@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload';
+import { PAGE_SECTIONS } from '@/blocks';
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -57,6 +58,15 @@ export const Pages: CollectionConfig = {
       required: true,
       label: 'Contenu',
       admin: { description: 'Le contenu principal de la page. Vous pouvez ajouter des titres, du texte, des listes, des liens et des images.' },
+    },
+    {
+      // Sections de la page (constructeur de pages), stockées en JSON
+      // (blocksAsJSON). Masqué tant que le constructeur n'est pas livré.
+      name: 'layout',
+      type: 'blocks',
+      label: 'Sections de la page',
+      blocks: PAGE_SECTIONS,
+      admin: { hidden: true },
     },
     {
       name: 'meta',
