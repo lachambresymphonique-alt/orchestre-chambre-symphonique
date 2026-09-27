@@ -91,3 +91,104 @@
     max-width: 22rem;
   }
 }
+
+/* Statut de la dernière proposition (ProposalStatus) */
+.member-area__notice p {
+  margin: 0;
+}
+
+.member-area__notice p + p {
+  margin-top: 0.6rem;
+}
+
+.member-area__note {
+  font-family: var(--font-body-serif);
+  color: var(--bordeaux-deep);
+}
+
+.member-area__actions {
+  margin: 0 0 2rem;
+}
+
+.member-area__help {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--rose-mute);
+  margin: 0.5rem 0 0;
+}
+
+/* Formulaire « Ma fiche » */
+.member-profile__sent {
+  margin: 0 0 2.5rem;
+}
+
+.member-profile__preview {
+  margin: 0 0 1rem;
+  max-width: 12rem;
+}
+
+.member-profile__preview img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  background: var(--paper-soft);
+}
+
+.member-profile__preview figcaption {
+  margin-top: 0.4rem;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--rose-mute);
+}
+
+/* Champ de fichier : le natif est masqué, le libellé sert de bouton. */
+.member-profile .member-profile__file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.contact-form .member-profile__file-button {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 0.8rem 1.3rem;
+  border: 1px solid var(--paper-rule);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  color: var(--bordeaux);
+  cursor: pointer;
+  transition: border-color var(--d-quick) var(--ease-curtain);
+}
+
+.contact-form .member-profile__file-button:hover,
+.member-profile__file-input:focus-visible + .member-profile__file-button {
+  border-color: var(--bordeaux);
+}
+
+.member-profile__file-input:focus-visible + .member-profile__file-button {
+  outline: 2px solid var(--bordeaux);
+  outline-offset: 2px;
+}
+
+.member-profile__file-name {
+  display: block;
+  margin-top: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--bordeaux-deep);
+  overflow-wrap: anywhere;
+}
+
+.member-profile > .btn-filled {
+  margin-top: 1rem;
+}
+
+.member-profile > .btn-filled + .member-area__help {
+  margin-top: 1rem;
+}

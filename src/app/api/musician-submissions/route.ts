@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPayloadClient } from '@/lib/payload';
 import nodemailer from 'nodemailer';
+import { teamNotificationEmail } from '@/lib/mail';
 import {
   FORM_TOKEN_ERRORS,
   checkFormToken,
@@ -210,7 +211,7 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const to = process.env.CONTACT_EMAIL || process.env.SMTP_USER;
+      const to = teamNotificationEmail();
       await transporter.sendMail({
         from: `"La Chambre Symphonique" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
         to,

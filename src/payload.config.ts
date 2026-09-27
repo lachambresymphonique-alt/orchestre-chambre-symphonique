@@ -22,6 +22,7 @@ import { Soloists } from './collections/Soloists';
 import { Posts } from './collections/Posts';
 import { PageViews } from './collections/PageViews';
 import { MemberAccounts } from './collections/MemberAccounts';
+import { ProfileChanges } from './collections/ProfileChanges';
 
 import { SiteSettings } from './globals/SiteSettings';
 import { HomePage } from './globals/HomePage';
@@ -190,6 +191,8 @@ export default buildConfig({
     // Messages reçus
     ContactSubmissions,
     MusicianSubmissions,
+    // Modifications de fiche proposées depuis l'espace membres
+    ProfileChanges,
     // Statistiques de visite (masquée : alimentée par /api/visite, lue par /admin/statistiques)
     PageViews,
     // Réglages

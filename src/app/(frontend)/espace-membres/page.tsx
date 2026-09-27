@@ -3,7 +3,10 @@ import Link from 'next/link';
 import { getFormSecret, issueFormToken } from '@/lib/antispam';
 import { firstName, getMemberSession, type MemberSession } from '@/lib/memberSession';
 import { placeholderForMusician } from '@/lib/unsplash';
+import { getPayloadClient } from '@/lib/payload';
+import { latestProposal } from '@/lib/profileChanges';
 import { MemberLoginForm } from './MemberLoginForm';
+import { ProposalStatus } from './ProposalStatus';
 import '@/components/member-area.css';
 
 /**
@@ -28,7 +31,10 @@ export default async function MemberAreaPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const session = await getMemberSession();
-  if (session) return <MemberHome session={session} />;
+  if (session) {
+    const proposal = await latestProposal(await getPayloadClient(), session.musician.id);
+    return <MemberHome session={session} proposal={proposal} />;
+  }
 
   const params = await searchParams;
   const notice = params.lien === 'invalide' ? NOTICES.invalide : params.deconnecte ? NOTICES.deconnecte : null;
@@ -61,7 +67,7 @@ export default async function MemberAreaPage({
   );
 }
 
-function MemberHome({ session }: { session: MemberSession }) {
+function MemberHome({ session, proposal }: { session: MemberSession; proposal: any | null }) {
   const { musician } = session;
   const photo = typeof musician.photo === 'object' && musician.photo ? musician.photo : null;
   const details = [musician.role, musician.instrument].filter(Boolean).join(' · ');
@@ -89,9 +95,15 @@ function MemberHome({ session }: { session: MemberSession }) {
             </h2>
             {details && <p className="member-area__details">{details}</p>}
             <hr className="velvet-rule" />
+            <ProposalStatus proposal={proposal} />
             <p className="member-area__text">
-              Bientôt, vous pourrez mettre votre fiche à jour depuis cet espace. Chaque
-              modification sera relue par l’équipe avant d’être publiée.
+              Mettez votre fiche à jour quand vous le souhaitez&nbsp;: chaque modification est
+              relue par l’équipe avant d’être publiée.
+            </p>
+            <p className="member-area__actions">
+              <Link className="btn-filled" href="/espace-membres/fiche">
+                Modifier ma fiche →
+              </Link>
             </p>
             {musician.slug && (
               <p>
