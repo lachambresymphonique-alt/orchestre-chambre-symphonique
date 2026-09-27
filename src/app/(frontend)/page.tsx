@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getPayloadClient } from '@/lib/payload';
 import { findUpcomingConcerts } from '@/lib/concerts';
+import { PUPITRE_SECTIONS } from '@/lib/musicianForm';
 import { concertEvents, jsonLdString } from '@/lib/concertSeo';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { HomeClient } from './HomeClient';
@@ -43,7 +44,10 @@ export default async function Home() {
       }),
       payload.find({
         collection: 'musicians' as any,
-        where: { section: { not_equals: 'direction' } } as any,
+      // Bande « Les musiciens » de l'accueil : les pupitres seulement. La
+      // direction a sa propre carte ; le bureau et l'équipe technique ne se
+      // montrent que sur la page Musiciens.
+        where: { section: { in: [...PUPITRE_SECTIONS] } } as any,
         sort: 'order' as any,
         limit: 4,
         depth: 1,

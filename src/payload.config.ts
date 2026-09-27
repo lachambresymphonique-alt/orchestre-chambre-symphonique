@@ -119,7 +119,7 @@ export default buildConfig({
             'contact-page': '/contact',
             'media-page': '/medias',
             'musicians-page': '/musiciens',
-            'musician-form': '/musiciens/contribuer',
+            'musician-form': '/recrutement/musicien',
             'site-settings': '/contact',
             'theme-settings': '/',
             navigation: '/',

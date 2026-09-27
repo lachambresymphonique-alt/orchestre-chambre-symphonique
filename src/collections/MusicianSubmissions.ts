@@ -54,6 +54,9 @@ export const MusicianSubmissions: CollectionConfig = {
         { label: 'Cordes', value: 'cordes' },
         { label: 'Vents', value: 'vents' },
         { label: 'Claviers & Percussions', value: 'claviers' },
+        // Celles et ceux qui font tourner l'orchestre sans être sur scène.
+        { label: 'Bureau', value: 'bureau' },
+        { label: 'Équipe technique', value: 'technique' },
       ],
     },
     { name: 'bio', type: 'textarea', label: 'Biographie' },

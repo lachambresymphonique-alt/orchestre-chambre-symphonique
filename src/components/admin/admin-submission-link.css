@@ -3,14 +3,6 @@
    Composant : src/components/admin/SubmissionFormLink.tsx
    Posé dans la même ligne que les onglets : le bouton « Créer » reste à droite.
    ========================================================================== */
-/* Le bouton « Créer » de la liste est posé en absolu à droite de cette ligne :
-   on lui réserve sa place pour que le lien ne passe jamais dessous. */
-@media (min-width: 900px) {
-  .lcs-mtabs--with-link {
-    padding-right: 12rem;
-  }
-}
-
 .lcs-formlink {
   position: relative;
   display: inline-flex;

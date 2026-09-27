@@ -621,7 +621,9 @@ const PAGE_LABELS: Record<string, string> = {
   '/journal': 'Blog (ancienne adresse)',
   '/medias': 'Médias',
   '/musiciens': 'Musiciens',
-  '/musiciens/contribuer': 'Musiciens · Contribuer',
+  '/recrutement/musicien': 'Recrutement · Musicien',
+  // Ancienne adresse de la même page, gardée pour les visites déjà comptées.
+  '/musiciens/contribuer': 'Recrutement · Musicien (ancienne adresse)',
   '/nous-soutenir': 'Nous soutenir',
 };
 

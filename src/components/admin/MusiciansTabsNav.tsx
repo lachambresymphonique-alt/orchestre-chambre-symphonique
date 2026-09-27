@@ -1,7 +1,7 @@
 import './admin-theme.css';
 import Link from 'next/link';
-import { headers } from 'next/headers';
 import { getPayloadClient } from '@/lib/payload';
+import { publicUrl } from '@/lib/siteUrl';
 import { SubmissionFormLink } from './SubmissionFormLink';
 
 type Props = {
@@ -9,32 +9,10 @@ type Props = {
 };
 
 /** Formulaire public où les musiciens remplissent leur fiche. */
-const FORM_PATH = '/musiciens/contribuer';
+const FORM_PATH = '/recrutement/musicien';
 
 /** Statuts d'une fiche reçue qui attend encore une décision. */
 const PENDING_STATUSES = ['nouveau', 'en-cours'];
-
-/**
- * Adresse complète du formulaire : l'URL publique du site si elle est
- * configurée, sinon celle du site sur lequel l'admin est ouvert.
- */
-async function formUrl(): Promise<string> {
-  const site = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/+$/, '');
-  if (site && /^https?:\/\//.test(site)) return `${site}${FORM_PATH}`;
-  try {
-    const h = await headers();
-    const host = h.get('x-forwarded-host') || h.get('host');
-    if (host) {
-      const proto =
-        h.get('x-forwarded-proto')?.split(',')[0].trim() ||
-        (host.startsWith('localhost') ? 'http' : 'https');
-      return `${proto}://${host}${FORM_PATH}`;
-    }
-  } catch {
-    /* le composant client complétera avec l'adresse du navigateur */
-  }
-  return FORM_PATH;
-}
 
 export async function MusiciansTabsNav({ collectionConfig }: Props) {
   const activeSlug = collectionConfig?.slug;
@@ -103,7 +81,7 @@ export async function MusiciansTabsNav({ collectionConfig }: Props) {
           })}
         </div>
       </nav>
-      <SubmissionFormLink url={await formUrl()} />
+      <SubmissionFormLink url={publicUrl(FORM_PATH)} />
     </div>
   );
 }

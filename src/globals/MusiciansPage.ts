@@ -29,13 +29,15 @@ export const MusiciansPage: GlobalConfig = {
     {
       name: 'sections',
       type: 'group',
-      label: 'Titres des pupitres',
+      label: 'Titres des sections',
       admin: { description: 'Noms affichés au-dessus de chaque groupe de musiciens et dans le fil d\'Ariane des fiches.' },
       fields: [
         { name: 'direction', type: 'text', label: 'Direction artistique', defaultValue: 'Direction artistique' },
         { name: 'cordes', type: 'text', label: 'Cordes', defaultValue: 'Les Cordes' },
         { name: 'vents', type: 'text', label: 'Vents', defaultValue: 'Les Vents' },
         { name: 'claviers', type: 'text', label: 'Claviers & percussions', defaultValue: 'Claviers & Percussions' },
+        { name: 'bureau', type: 'text', label: 'Bureau', defaultValue: 'Le bureau' },
+        { name: 'technique', type: 'text', label: 'Équipe technique', defaultValue: 'L’équipe technique' },
       ],
     },
     {

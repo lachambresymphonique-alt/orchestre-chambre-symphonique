@@ -16,7 +16,7 @@ export type Musician = {
   name: string;
   role: string;
   instrument?: string;
-  section: 'direction' | 'cordes' | 'vents' | 'claviers';
+  section: 'direction' | 'cordes' | 'vents' | 'claviers' | 'bureau' | 'technique';
   photo?: { url?: string; alt?: string } | null;
   slug?: string;
 };
@@ -103,6 +103,9 @@ export function MusiciansClient({
   const cordes = all.filter((m) => m.section === 'cordes');
   const vents = all.filter((m) => m.section === 'vents');
   const claviers = all.filter((m) => m.section === 'claviers');
+  // Celles et ceux qui ne sont pas sur scène, présentés après les pupitres.
+  const bureau = all.filter((m) => m.section === 'bureau');
+  const technique = all.filter((m) => m.section === 'technique');
 
   return (
     <div className="musicians-page">
@@ -127,6 +130,8 @@ export function MusiciansClient({
       <Section title={sections.cordes || 'Les Cordes'} count={cordes.length} musicians={cordes} />
       <Section title={sections.vents || 'Les Vents'} count={vents.length} musicians={vents} />
       <Section title={sections.claviers || 'Claviers & Percussions'} count={claviers.length} musicians={claviers} />
+      <Section title={sections.bureau || 'Le bureau'} count={bureau.length} musicians={bureau} />
+      <Section title={sections.technique || 'L’équipe technique'} count={technique.length} musicians={technique} />
     </div>
   );
 }

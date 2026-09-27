@@ -16,7 +16,7 @@ type Props = {
 type CopyState = 'idle' | 'copied' | 'error';
 
 /**
- * Lien du formulaire « Votre fiche sur le site » (/musiciens/contribuer), à
+ * Lien du formulaire « Votre fiche sur le site » (/recrutement/musicien), à
  * envoyer aux musiciens. Affiché en haut des listes Musiciens et Fiches reçues.
  * Les fiches envoyées arrivent en attente : rien n'est publié avant qu'un admin
  * clique « Ajouter à la liste de musiciens » sur la fiche.

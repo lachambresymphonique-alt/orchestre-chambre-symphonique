@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { getPayloadClient } from '@/lib/payload';
 import { isAdminUser } from '@/lib/access';
+import { SECTION_VALUES } from '@/lib/musicianForm';
 
-const VALID_SECTIONS = new Set(['direction', 'cordes', 'vents', 'claviers']);
+// Toutes les sections du projet, bureau et équipe technique compris : cette
+// liste était figée ici, si bien qu'une fiche de bureau validée atterrissait
+// dans les cordes. Elle suit désormais la seule source qui les déclare.
+const VALID_SECTIONS = new Set<string>(SECTION_VALUES);
 
 const slugify = (s: string) =>
   s

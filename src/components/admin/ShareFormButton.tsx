@@ -5,12 +5,10 @@ import './admin-share-form.css';
 import { useEffect, useRef, useState } from 'react';
 import { Button, Modal, useFormModified, useModal } from '@payloadcms/ui';
 import { copyText } from '@/lib/clipboard';
+import { publicUrl } from '@/lib/siteUrl';
 
 /** Page publique où les musiciens remplissent leur fiche. */
-const FORM_PATH = '/musiciens/contribuer';
-
-/** Adresse publique du site, renseignée au déploiement (vide en local). */
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? '').trim().replace(/\/+$/, '');
+const FORM_PATH = '/recrutement/musicien';
 
 const MODAL_SLUG = 'lcs-share-musician-form';
 
@@ -65,7 +63,7 @@ function LinkIcon() {
 export function ShareFormButton() {
   const { closeModal, isModalOpen, openModal } = useModal();
   const modified = useFormModified();
-  const [url, setUrl] = useState(SITE_URL ? `${SITE_URL}${FORM_PATH}` : FORM_PATH);
+  const url = publicUrl(FORM_PATH);
   const [state, setState] = useState<CopyState>('idle');
   const urlRef = useRef<HTMLParagraphElement>(null);
   const timer = useRef<number | undefined>(undefined);
@@ -73,9 +71,6 @@ export function ShareFormButton() {
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
   const open = () => {
-    // Sans adresse publique configurée, on prend celle du site ouvert dans le
-    // navigateur : l'admin et le site partagent le même domaine.
-    if (!SITE_URL) setUrl(`${window.location.origin}${FORM_PATH}`);
     setState('idle');
     openModal(MODAL_SLUG);
   };

@@ -256,14 +256,25 @@ export const TEXT_FIELD_KEYS: readonly FieldKey[] = FIELD_CATALOGUE.filter(
  * proposer d'autres empêcherait de recopier la fiche. Le libellé affiché sur
  * le formulaire, lui, se modifie librement.
  */
-export const SECTION_VALUES = ['cordes', 'vents', 'claviers', 'direction'] as const;
+export const SECTION_VALUES = ['cordes', 'vents', 'claviers', 'direction', 'bureau', 'technique'] as const;
 export type SectionValue = (typeof SECTION_VALUES)[number];
+
+/**
+ * Les pupitres, c'est-à-dire les sections qui jouent. Liste volontairement
+ * positive : une section ajoutée demain — bénévoles, mécènes — n'apparaîtra
+ * pas d'office là où l'on n'attend que des musiciens. L'oubli d'un nouveau
+ * pupitre se voit et se répare ; l'apparition d'une section qui n'a rien à
+ * faire là, beaucoup moins.
+ */
+export const PUPITRE_SECTIONS = ['cordes', 'vents', 'claviers'] as const satisfies readonly SectionValue[];
 
 export const SECTION_DEFAULT_LABELS: Record<SectionValue, string> = {
   cordes: 'Cordes',
   vents: 'Vents',
   claviers: 'Claviers & percussions',
   direction: 'Direction artistique',
+  bureau: 'Bureau',
+  technique: 'Équipe technique',
 };
 
 export function isSectionValue(value: unknown): value is SectionValue {

@@ -47,7 +47,7 @@ export const Musicians: CollectionConfig = {
       type: 'text',
       required: true,
       label: 'Rôle',
-      admin: { description: 'Ex : « Directeur artistique », « Violoniste »' },
+      admin: { description: 'Ex : « Directeur artistique », « Violoniste », « Présidente », « Ingénieur du son »' },
     },
     { name: 'instrument', type: 'text', label: 'Instrument' },
     {
@@ -55,12 +55,15 @@ export const Musicians: CollectionConfig = {
       type: 'select',
       required: true,
       label: 'Section',
-      admin: { description: 'Détermine le regroupement sur la page Musiciens.' },
+      admin: { description: 'Détermine le regroupement sur la page Musiciens : un pupitre, la direction, le bureau ou l’équipe technique.' },
       options: [
         { label: 'Direction artistique', value: 'direction' },
         { label: 'Cordes', value: 'cordes' },
         { label: 'Vents', value: 'vents' },
         { label: 'Claviers & Percussions', value: 'claviers' },
+        // Celles et ceux qui font tourner l'orchestre sans être sur scène.
+        { label: 'Bureau', value: 'bureau' },
+        { label: 'Équipe technique', value: 'technique' },
       ],
     },
     { name: 'photo', type: 'upload', relationTo: 'media', label: 'Photo' },

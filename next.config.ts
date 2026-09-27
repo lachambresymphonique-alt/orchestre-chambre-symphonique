@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
       // Le blog de l'orchestre vit sous /blog ; /journal, son ancien nom, y renvoie.
       { source: '/journal', destination: '/blog', permanent: true },
       { source: '/journal/:slug', destination: '/blog/:slug', permanent: true },
+      // Le formulaire des musiciens a déménagé sous /recrutement : les liens
+      // déjà envoyés continuent d'aboutir.
+      { source: '/musiciens/contribuer', destination: '/recrutement/musicien', permanent: true },
     ];
   },
   images: {

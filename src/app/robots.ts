@@ -12,7 +12,7 @@ export default function robots(): MetadataRoute.Robots {
         // La règle la plus longue l'emporte : /api/media/file/ passe devant /api.
         allow: ['/', '/api/media/file/'],
         // Zones privées / non pertinentes pour l'indexation
-        disallow: ['/admin', '/api', '/musiciens/apercu', '/musiciens/contribuer'],
+        disallow: ['/admin', '/api', '/musiciens/apercu', '/recrutement/musicien', '/musiciens/contribuer'],
       },
     ],
     sitemap: `${BASE_URL}/sitemap.xml`,
