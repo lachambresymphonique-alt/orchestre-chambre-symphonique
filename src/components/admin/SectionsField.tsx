@@ -15,6 +15,7 @@ import {
 import type { BlocksFieldClientProps, ClientBlock } from 'payload';
 import { DRAG_MOVE_SECTION, DRAG_NEW_SECTION, SECTION_NAMES, type SectionMessage } from '@/lib/sections';
 import { SectionIcon } from '@/components/sections/SectionIcon';
+import { PreviewDevices } from './PreviewDevices';
 import { SectionSummary, type Row } from './SectionRowLabel';
 
 /**
@@ -385,6 +386,7 @@ export function SectionsField(props: BlocksFieldClientProps) {
         setDrop(null);
       }}
     >
+      <PreviewDevices />
       {focused ? (
         <>
           {/* Seule la section ouverte reste à l'écran. */}
