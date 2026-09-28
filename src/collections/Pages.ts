@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload';
+import { APIError, type CollectionConfig } from 'payload';
 import { PAGE_SECTIONS } from '@/blocks';
 import { withLegacyContent } from '@/lib/sections';
 import { slugify } from '@/lib/slug';
@@ -21,15 +21,36 @@ export const Pages: CollectionConfig = {
     livePreview: {
       url: '/apercu/pages',
     },
+    // Pastille « Brouillon / En ligne » et état de l'enregistrement.
+    components: { edit: { beforeDocumentControls: ['@/components/admin/PageStatus#PageStatus'] } },
   },
   versions: {
     // Enregistrement automatique des brouillons : « Créer » ouvre tout de suite
     // la page en brouillon (Payload la crée), donc avec son aperçu en direct ;
     // plus rien ne se perd, et seul « Publier » met en ligne.
-    drafts: { autosave: { interval: 1500 } },
+    // « Enregistrer le brouillon » (et ⌘S) en plus : on peut enregistrer
+    // quand on veut, sans attendre ni publier.
+    drafts: { autosave: { interval: 1500, showSaveDraftButton: true } },
   },
   hooks: {
     beforeChange: [
+      ({ data, operation, originalDoc, req }) => {
+        // Serveur d'essai (base du site, code pas encore en ligne) : ni
+        // publier, ni retirer du site une page en ligne. Les brouillons
+        // s'enregistrent normalement.
+        if (process.env.NEXT_PUBLIC_LCS_TEST_SERVER === '1') {
+          const unpublishing = operation === 'update' && originalDoc?._status === 'published' && req.query?.draft !== 'true';
+          if (data?._status === 'published' || unpublishing) {
+            throw new APIError(
+              'Serveur d’essai : publier et retirer du site sont désactivés tant que le constructeur de pages n’est pas en ligne. Vos modifications restent enregistrées en brouillon.',
+              403,
+              undefined,
+              true,
+            );
+          }
+        }
+        return data;
+      },
       ({ data }) => {
         // Enregistré depuis le constructeur : l'ancien contenu a été repris
         // dans les sections (voir withLegacyContent) ; le garder le ferait
