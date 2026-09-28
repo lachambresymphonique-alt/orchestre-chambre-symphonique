@@ -12,6 +12,7 @@ import { SECTION_NAMES, hasRichText, sectionLook, type SectionBlock } from '@/li
 import { PhotoGrid } from './PhotoGrid';
 import { LazyVideo } from './LazyVideo';
 import { InsertPoint, PreviewScroll, SectionToolbar } from './PreviewEditing';
+import type { InlineKind } from './InlineEditing';
 
 /**
  * Rendu des sections d'une page libre, partagé par la page publique (/[slug])
@@ -52,6 +53,25 @@ const link = (v: unknown): { label: string; url: string } | null => {
   return url ? { label: str(l?.label) || 'En savoir plus', url } : null;
 };
 
+/**
+ * Marques de l'édition directe dans l'aperçu (voir InlineEditing) : le champ
+ * d'un texte ou d'une photo dans le formulaire. Rien sur la page publique.
+ */
+type Edit = {
+  text: (field: string, kind: InlineKind) => Record<string, string> | undefined;
+  image: (field: string) => Record<string, string> | undefined;
+};
+
+const NO_EDIT: Edit = { text: () => undefined, image: () => undefined };
+
+function editFor(index: number): Edit {
+  const base = `layout.${index}`;
+  return {
+    text: (field, kind) => ({ 'data-lcs-edit': `${base}.${field}`, 'data-lcs-kind': kind }),
+    image: (field) => ({ 'data-lcs-image': `${base}.${field}` }),
+  };
+}
+
 function isExternal(url: string) {
   return /^(https?:|mailto:|tel:)/.test(url);
 }
@@ -72,21 +92,29 @@ function SmartLink({ href, className, children }: { href: string; className?: st
   );
 }
 
-function SectionHead({ block }: { block: SectionBlock }) {
+function SectionHead({ block, ed = NO_EDIT }: { block: SectionBlock; ed?: Edit }) {
   const eyebrow = str(block.eyebrow);
   const title = str(block.title);
   if (!eyebrow && !title) return null;
   return (
     <header className="lcs-section__head">
-      {eyebrow && <p className="eyebrow eyebrow--accent">{eyebrow}</p>}
-      {title && <h2 className="lcs-section__title">{renderEmphasis(title)}</h2>}
+      {eyebrow && (
+        <p className="eyebrow eyebrow--accent" {...ed.text('eyebrow', 'plain')}>
+          {eyebrow}
+        </p>
+      )}
+      {title && (
+        <h2 className="lcs-section__title" {...ed.text('title', 'title')}>
+          {renderEmphasis(title)}
+        </h2>
+      )}
     </header>
   );
 }
 
-function Photo({ image, sizes, className }: { image: Media; sizes: string; className?: string }) {
+function Photo({ image, sizes, className, attrs }: { image: Media; sizes: string; className?: string; attrs?: Record<string, string> }) {
   return (
-    <div className={`lcs-photo ${className ?? ''}`}>
+    <div className={`lcs-photo ${className ?? ''}`} {...attrs}>
       <Image src={image.url!} alt={image.alt ?? ''} fill sizes={sizes} style={{ objectFit: 'cover' }} />
     </div>
   );
@@ -130,10 +158,10 @@ function concertsOf(block: SectionBlock, upcoming: ConcertCard[]): ConcertCard[]
 
 // ── Les types de sections ───────────────────────────────────────────────────
 
-function TextBody({ block }: { block: SectionBlock }) {
+function TextBody({ block, ed }: { block: SectionBlock; ed: Edit }) {
   return (
     <>
-      <SectionHead block={block} />
+      <SectionHead block={block} ed={ed} />
       <div className="rich-text-content lcs-text">
         <PostRichText data={block.content} />
       </div>
@@ -141,7 +169,7 @@ function TextBody({ block }: { block: SectionBlock }) {
   );
 }
 
-function QuoteBody({ block }: { block: SectionBlock }) {
+function QuoteBody({ block, ed }: { block: SectionBlock; ed: Edit }) {
   const author = str(block.author);
   const role = str(block.role);
   const photo = media(block.photo);
@@ -150,35 +178,43 @@ function QuoteBody({ block }: { block: SectionBlock }) {
       <svg viewBox="0 0 60 48" aria-hidden className="lcs-quote__glyph">
         <path d="M0 48V28C0 12.5 8.4 3.2 25.2 0l2.4 6.4C18.6 9 14.2 14.4 13.8 22H25.2V48H0Zm34.8 0V28C34.8 12.5 43.2 3.2 60 0l2.4 6.4C53.4 9 49 14.4 48.6 22H60V48H34.8Z" />
       </svg>
-      <blockquote>{renderInline(str(block.quote))}</blockquote>
+      <blockquote {...ed.text('quote', 'inline')}>{renderInline(str(block.quote))}</blockquote>
       {(author || role || photo) && (
         <figcaption>
-          {photo && <Photo image={photo} sizes="64px" className="lcs-quote__photo" />}
+          {photo && <Photo image={photo} sizes="64px" className="lcs-quote__photo" attrs={ed.image('photo')} />}
           <span className="lcs-quote__rule" aria-hidden />
-          {author && <span className="lcs-quote__author">{author}</span>}
-          {role && <span className="lcs-quote__role">{role}</span>}
+          {author && (
+            <span className="lcs-quote__author" {...ed.text('author', 'plain')}>
+              {author}
+            </span>
+          )}
+          {role && (
+            <span className="lcs-quote__role" {...ed.text('role', 'plain')}>
+              {role}
+            </span>
+          )}
         </figcaption>
       )}
     </figure>
   );
 }
 
-function MediaTextBody({ block }: { block: SectionBlock }) {
+function MediaTextBody({ block, ed }: { block: SectionBlock; ed: Edit }) {
   const image = media(block.image);
   const l = link(block.link);
   return (
     <div className="lcs-mediatext">
       <div className="lcs-mediatext__media">
         {image ? (
-          <Photo image={image} sizes="(max-width: 900px) 100vw, 45vw" />
+          <Photo image={image} sizes="(max-width: 900px) 100vw, 45vw" attrs={ed.image('image')} />
         ) : (
-          <div className="lcs-photo lcs-photo--empty" aria-hidden />
+          <div className="lcs-photo lcs-photo--empty" aria-hidden {...ed.image('image')} />
         )}
       </div>
       <div className="lcs-mediatext__text">
-        <SectionHead block={block} />
+        <SectionHead block={block} ed={ed} />
         {str(block.text) && (
-          <div className="lcs-prose rich-text">
+          <div className="lcs-prose rich-text" {...ed.text('text', 'prose')}>
             <RichText text={str(block.text)} lead />
           </div>
         )}
@@ -194,20 +230,30 @@ function MediaTextBody({ block }: { block: SectionBlock }) {
 
 type ColumnItem = { id?: string; title?: string; text?: string; image?: unknown; link?: unknown };
 
-function ColumnsBody({ block }: { block: SectionBlock }) {
+function ColumnsBody({ block, ed }: { block: SectionBlock; ed: Edit }) {
   const items = (Array.isArray(block.items) ? block.items : []) as ColumnItem[];
   return (
     <>
-      <SectionHead block={block} />
+      <SectionHead block={block} ed={ed} />
       <div className="lcs-columns" data-count={items.length}>
         {items.map((item, i) => {
           const image = media(item.image);
           const l = link(item.link);
           return (
             <article key={item.id ?? i} className="lcs-columns__item">
-              {image && <Photo image={image} sizes="(max-width: 800px) 100vw, 33vw" className="lcs-columns__image" />}
-              {str(item.title) && <h3 className="lcs-columns__title">{renderEmphasis(str(item.title))}</h3>}
-              {str(item.text) && <p className="lcs-columns__text">{renderInline(str(item.text))}</p>}
+              {image && (
+                <Photo image={image} sizes="(max-width: 800px) 100vw, 33vw" className="lcs-columns__image" attrs={ed.image(`items.${i}.image`)} />
+              )}
+              {str(item.title) && (
+                <h3 className="lcs-columns__title" {...ed.text(`items.${i}.title`, 'title')}>
+                  {renderEmphasis(str(item.title))}
+                </h3>
+              )}
+              {str(item.text) && (
+                <p className="lcs-columns__text" {...ed.text(`items.${i}.text`, 'inline')}>
+                  {renderInline(str(item.text))}
+                </p>
+              )}
               {l && (
                 <SmartLink href={l.url} className="link-arrow lcs-columns__link">
                   {l.label} →
@@ -221,7 +267,7 @@ function ColumnsBody({ block }: { block: SectionBlock }) {
   );
 }
 
-function GalleryBody({ block }: { block: SectionBlock }) {
+function GalleryBody({ block, ed }: { block: SectionBlock; ed: Edit }) {
   const photos = (Array.isArray(block.images) ? block.images : [])
     .map((row) => {
       const r = row as { id?: string; image?: unknown; caption?: string };
@@ -231,20 +277,20 @@ function GalleryBody({ block }: { block: SectionBlock }) {
     .filter((p): p is NonNullable<typeof p> => p !== null);
   return (
     <>
-      <SectionHead block={block} />
+      <SectionHead block={block} ed={ed} />
       <PhotoGrid photos={photos} variant={block.variant === 'grid' ? 'grid' : 'mosaic'} />
     </>
   );
 }
 
-function VideoBody({ block }: { block: SectionBlock }) {
+function VideoBody({ block, ed }: { block: SectionBlock; ed: Edit }) {
   const info = parseVideoUrl(str(block.url));
   const poster = media(block.poster);
   const caption = str(block.caption);
-  if (!info) return <SectionHead block={block} />;
+  if (!info) return <SectionHead block={block} ed={ed} />;
   return (
     <>
-      <SectionHead block={block} />
+      <SectionHead block={block} ed={ed} />
       <figure className="lcs-video">
         <LazyVideo
           embedUrl={info.embedUrl}
@@ -252,22 +298,32 @@ function VideoBody({ block }: { block: SectionBlock }) {
           posterFallback={info.thumbnailFallbackUrl}
           title={str(block.title) || 'Vidéo'}
         />
-        {caption && <figcaption>{renderInline(caption)}</figcaption>}
+        {caption && <figcaption {...ed.text('caption', 'inline')}>{renderInline(caption)}</figcaption>}
       </figure>
     </>
   );
 }
 
-function CtaBody({ block, plainButton }: { block: SectionBlock; plainButton: boolean }) {
+function CtaBody({ block, plainButton, ed }: { block: SectionBlock; plainButton: boolean; ed: Edit }) {
   const button = link(block.button);
   const secondary = link(block.secondary);
   const text = str(block.text);
   return (
     <div className="lcs-cta">
       <div className="lcs-cta__text">
-        {str(block.eyebrow) && <p className="eyebrow eyebrow--accent">{str(block.eyebrow)}</p>}
-        <h2 className="lcs-section__title">{renderEmphasis(str(block.title))}</h2>
-        {text && <p className="lcs-cta__lede">{renderInline(text)}</p>}
+        {str(block.eyebrow) && (
+          <p className="eyebrow eyebrow--accent" {...ed.text('eyebrow', 'plain')}>
+            {str(block.eyebrow)}
+          </p>
+        )}
+        <h2 className="lcs-section__title" {...ed.text('title', 'title')}>
+          {renderEmphasis(str(block.title))}
+        </h2>
+        {text && (
+          <p className="lcs-cta__lede" {...ed.text('text', 'inline')}>
+            {renderInline(text)}
+          </p>
+        )}
       </div>
       {(button || secondary) && (
         <div className="lcs-cta__actions">
@@ -288,11 +344,11 @@ function CtaBody({ block, plainButton }: { block: SectionBlock; plainButton: boo
   );
 }
 
-function ConcertsBody({ block, upcoming, preview }: { block: SectionBlock; upcoming: ConcertCard[]; preview: boolean }) {
+function ConcertsBody({ block, upcoming, preview, ed }: { block: SectionBlock; upcoming: ConcertCard[]; preview: boolean; ed: Edit }) {
   const concerts = concertsOf(block, upcoming);
   return (
     <>
-      <SectionHead block={block} />
+      <SectionHead block={block} ed={ed} />
       {concerts.length > 0 ? (
         <ConcertPosters concerts={concerts} variant={block.variant === 'strip' ? 'strip' : 'posters'} labels={CONCERT_LABELS} />
       ) : preview ? (
@@ -320,31 +376,32 @@ export function Sections({ sections, upcomingConcerts = [], preview = false }: P
         const empty = isEmpty(block, upcomingConcerts);
         if (!preview && (look.hidden || empty)) return null;
 
+        const ed = preview ? editFor(index) : NO_EDIT;
         let body: ReactNode;
         switch (block.blockType) {
           case 'text':
-            body = <TextBody block={block} />;
+            body = <TextBody block={block} ed={ed} />;
             break;
           case 'quote':
-            body = <QuoteBody block={block} />;
+            body = <QuoteBody block={block} ed={ed} />;
             break;
           case 'mediaText':
-            body = <MediaTextBody block={block} />;
+            body = <MediaTextBody block={block} ed={ed} />;
             break;
           case 'columns':
-            body = <ColumnsBody block={block} />;
+            body = <ColumnsBody block={block} ed={ed} />;
             break;
           case 'gallery':
-            body = <GalleryBody block={block} />;
+            body = <GalleryBody block={block} ed={ed} />;
             break;
           case 'video':
-            body = <VideoBody block={block} />;
+            body = <VideoBody block={block} ed={ed} />;
             break;
           case 'cta':
-            body = <CtaBody block={block} plainButton={filledCta !== -1 && index !== filledCta} />;
+            body = <CtaBody block={block} plainButton={filledCta !== -1 && index !== filledCta} ed={ed} />;
             break;
           case 'concerts':
-            body = <ConcertsBody block={block} upcoming={upcomingConcerts} preview={preview} />;
+            body = <ConcertsBody block={block} upcoming={upcomingConcerts} preview={preview} ed={ed} />;
             break;
           default:
             return null;

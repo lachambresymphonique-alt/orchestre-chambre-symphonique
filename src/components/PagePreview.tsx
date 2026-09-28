@@ -4,6 +4,7 @@ import { Component, type ReactNode } from 'react';
 import { useLivePreview } from '@payloadcms/live-preview-react';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FreePageContent } from './FreePageContent';
+import { useInlineOverrides } from './sections/InlineEditing';
 import type { ConcertCard } from '@/lib/concerts';
 
 /**
@@ -66,7 +67,7 @@ export const populate: RequestHandler = async ({ apiPath, data, serverURL }) => 
 
 export function PagePreview({ upcomingConcerts = [] }: { upcomingConcerts?: ConcertCard[] }) {
   const serverURL = typeof window !== 'undefined' ? window.location.origin : '';
-  const { data } = useLivePreview<PageData>({
+  const { data: received } = useLivePreview<PageData>({
     initialData: EMPTY_PAGE,
     serverURL,
     // 2 : les concerts choisis dans une section, avec leurs affiches.
@@ -74,7 +75,9 @@ export function PagePreview({ upcomingConcerts = [] }: { upcomingConcerts?: Conc
     requestHandler: populate,
   });
 
-  useLivePreviewSync(data);
+  // Textes modifiés dans l'aperçu : affichés sans attendre le retour de l'admin.
+  const data = useInlineOverrides(received);
+  useLivePreviewSync(received);
 
   return (
     <PreviewBoundary resetKey={data}>

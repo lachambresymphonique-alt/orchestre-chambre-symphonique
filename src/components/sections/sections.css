@@ -910,3 +910,53 @@
   font: 600 12px/1 system-ui, -apple-system, sans-serif;
   transform: translate(-50%, -50%);
 }
+
+/* ── Édition directe dans l'aperçu (InlineEditing.tsx) ──────────────────────
+   Les marques data-lcs-edit / data-lcs-image n'existent que dans l'aperçu. */
+[data-lcs-edit] {
+  cursor: text;
+}
+
+[data-lcs-edit]:hover:not([data-lcs-editing]) {
+  outline: 1px dashed rgba(201, 168, 76, 0.9);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+[data-lcs-editing] {
+  outline: 2px solid #c9a84c;
+  outline-offset: 4px;
+  border-radius: 2px;
+  caret-color: #c9a84c;
+}
+
+[data-lcs-edit][data-lcs-empty]:empty::before {
+  content: 'Titre de la page';
+  opacity: 0.35;
+}
+
+[data-lcs-image] {
+  cursor: pointer;
+}
+
+[data-lcs-image]:hover::after,
+.lcs-photo--empty[data-lcs-image]::after {
+  content: 'Changer la photo';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 5;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #c9a84c;
+  color: #1f1a12;
+  font: 600 12px/1 system-ui, -apple-system, sans-serif;
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.lcs-photo--empty[data-lcs-image]::after {
+  content: 'Choisir une photo';
+  background: rgba(201, 168, 76, 0.85);
+}

@@ -9,6 +9,7 @@ import {
   useForm,
   useFormBackgroundProcessing,
   useFormFields,
+  useListDrawer,
   useModal,
   useWatchForm,
 } from '@payloadcms/ui';
@@ -50,7 +51,7 @@ import { SectionSummary, type Row } from './SectionRowLabel';
 
 type Drop = { index: number; top: number };
 
-type Action = Pick<SectionMessage, 'action' | 'index' | 'preset' | 'to'>;
+type Action = Pick<SectionMessage, 'action' | 'index' | 'preset' | 'to' | 'path' | 'value'>;
 
 type FieldState = Record<string, { value: unknown; initialValue?: unknown; valid: boolean; passesCondition?: boolean; rows?: unknown[]; disableFormData?: boolean }>;
 
@@ -186,6 +187,10 @@ export function SectionsField(props: BlocksFieldClientProps) {
   const presets = SECTION_PRESETS.filter((preset) => blockSlugs.has(preset.blockType));
   const readOnly = Boolean(props.readOnly);
 
+  // Photo cliquée dans l'aperçu : choisie dans la médiathèque.
+  const [MediaDrawer, , { openDrawer: openMediaDrawer, closeDrawer: closeMediaDrawer }] = useListDrawer({ collectionSlugs: ['media'] });
+  const imagePath = useRef<string | null>(null);
+
   // Section ouverte (null : le plan de la page).
   const [selected, setSelectedState] = useState<number | null>(null);
   const selectedRef = useRef<number | null>(null);
@@ -281,6 +286,21 @@ export function SectionsField(props: BlocksFieldClientProps) {
         tellPreview(selectedRef.current);
         return;
       }
+      if (action === 'field') {
+        // Texte modifié directement dans l'aperçu (components/sections/InlineEditing).
+        if (typeof data.path === 'string' && typeof data.value === 'string') {
+          dispatchFields({ type: 'UPDATE', path: data.path, value: data.value });
+          setModified(true);
+        }
+        return;
+      }
+      if (action === 'image') {
+        if (typeof data.path === 'string') {
+          imagePath.current = data.path;
+          openMediaDrawer();
+        }
+        return;
+      }
       if (action === 'delete') {
         if (index < countRef.current) {
           setPendingDelete(index);
@@ -321,7 +341,7 @@ export function SectionsField(props: BlocksFieldClientProps) {
         }
       });
     },
-    [select, tellPreview, openModal, deleteModal, whenIdle, addFieldRow, path, schemaPath, move, dispatchFields, setModified, getDataByPath],
+    [select, tellPreview, openModal, deleteModal, whenIdle, addFieldRow, path, schemaPath, move, dispatchFields, setModified, getDataByPath, openMediaDrawer],
   );
 
   const confirmDelete = () => {
@@ -515,6 +535,16 @@ export function SectionsField(props: BlocksFieldClientProps) {
           </ul>
         </div>
       )}
+      <MediaDrawer
+        onSelect={({ doc }) => {
+          if (imagePath.current) {
+            dispatchFields({ type: 'UPDATE', path: imagePath.current, value: doc.id });
+            setModified(true);
+          }
+          imagePath.current = null;
+          closeMediaDrawer();
+        }}
+      />
       <ConfirmationModal
         modalSlug={deleteModal}
         heading="Supprimer cette section ?"

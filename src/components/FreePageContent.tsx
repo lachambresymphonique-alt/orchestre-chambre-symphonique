@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Sections } from '@/components/sections/Sections';
 import { InsertPoint, PreviewDropZone, PreviewSelection } from '@/components/sections/PreviewEditing';
+import { PreviewInlineEditing } from '@/components/sections/InlineEditing';
 import type { ConcertCard } from '@/lib/concerts';
 import { resolveSections } from '@/lib/sections';
 
@@ -37,12 +38,16 @@ export function FreePageContent({ title, layout, content, upcomingConcerts, plac
     <main className="free-page">
       {placeholders && <PreviewDropZone />}
       {placeholders && <PreviewSelection />}
+      {placeholders && <PreviewInlineEditing />}
       <div className="page-header">
         <div className="container">
           <p className="breadcrumb">
             <Link href="/">Accueil</Link> / {heading || 'Page'}
           </p>
-          <h1 data-live-field="title">
+          <h1
+            data-live-field="title"
+            {...(placeholders ? { 'data-lcs-edit': 'title', 'data-lcs-kind': 'plain', 'data-lcs-empty': heading ? undefined : 'true' } : {})}
+          >
             {heading || (placeholders ? <span style={placeholderStyle}>Titre de la page</span> : null)}
           </h1>
         </div>

@@ -191,14 +191,20 @@ export function findPreset(id: string | undefined | null): SectionPreset | undef
 /**
  * Message de l'aperçu vers l'admin (components/sections/PreviewEditing ↔
  * admin/SectionsField). `select` : clic sur une section ; `ready` : l'aperçu
- * vient de se charger et demande quelle section est ouverte.
+ * vient de se charger et demande quelle section est ouverte ; `field` : texte
+ * modifié dans l'aperçu ; `image` : clic sur une photo, à choisir dans la
+ * médiathèque.
  */
 export type SectionMessage = {
   type: 'lcs:section';
-  action: 'add' | 'select' | 'ready' | 'up' | 'down' | 'move' | 'duplicate' | 'hide' | 'delete';
+  action: 'add' | 'select' | 'ready' | 'up' | 'down' | 'move' | 'duplicate' | 'hide' | 'delete' | 'field' | 'image';
   index: number;
   /** `add` : le modèle à ajouter (voir SECTION_PRESETS). */
   preset?: string;
+  /** `field`, `image` : chemin du champ dans le formulaire (« layout.3.title », « title »). */
+  path?: string;
+  /** `field` : la nouvelle valeur, saisie dans l'aperçu (components/sections/InlineEditing). */
+  value?: string;
   /** `move` : emplacement de dépôt (0 = avant la première section). */
   to?: number;
 };
