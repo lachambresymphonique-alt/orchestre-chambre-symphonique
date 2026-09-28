@@ -23,7 +23,7 @@ export const VideoSection: Block = {
       admin: { placeholder: 'https://www.youtube.com/watch?v=…' },
     },
     eyebrowField,
-    titleField(),
+    titleField(false, 'À *voir*'),
     { name: 'caption', type: 'textarea', label: 'Légende (facultative)', admin: { ...richTextAdmin('inline') } },
     imageField('poster', 'Image d’aperçu (facultative, sinon celle de YouTube/Vimeo)'),
   ]),

@@ -11,7 +11,7 @@ export const GallerySection: Block = {
   fields: sectionFields(
     [
       eyebrowField,
-      titleField(),
+      titleField(false, 'La saison en *images*'),
       {
         name: 'images',
         type: 'array',

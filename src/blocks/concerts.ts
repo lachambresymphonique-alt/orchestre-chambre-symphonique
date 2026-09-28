@@ -11,7 +11,7 @@ export const ConcertsSection: Block = {
   fields: sectionFields(
     [
       eyebrowField,
-      titleField(),
+      titleField(false, 'Les prochains *concerts*'),
       {
         name: 'source',
         type: 'radio',

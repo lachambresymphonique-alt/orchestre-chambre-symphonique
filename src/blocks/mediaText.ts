@@ -1,6 +1,6 @@
 import type { Block } from 'payload';
 import { richTextAdmin } from '@/lib/richTextAdmin';
-import { SECTION_LABEL, eyebrowField, imageField, linkGroup, sectionFields, titleField, variantField } from './settings';
+import { SECTION_LABEL, eyebrowWith, imageField, linkGroup, sectionFields, titleField, variantField } from './settings';
 
 /** Texte + image : le geste de base du site, une photo et un texte côte à côte. */
 export const MediaTextSection: Block = {
@@ -12,10 +12,17 @@ export const MediaTextSection: Block = {
   fields: sectionFields(
     [
       imageField('image', 'Photo', true),
-      eyebrowField,
-      titleField(),
-      { name: 'text', type: 'textarea', label: 'Texte', admin: { ...richTextAdmin('prose') } },
-      linkGroup('link', 'Lien (facultatif)'),
+      eyebrowWith('L’orchestre'),
+      titleField(false, 'Un titre *évocateur*'),
+      {
+        name: 'text',
+        type: 'textarea',
+        label: 'Texte',
+        defaultValue:
+          'Présentez ici le sujet de la section, en deux ou trois phrases : ce premier paragraphe est mis en avant.\n\nUn second paragraphe peut donner des détails, un lieu, une date.',
+        admin: { ...richTextAdmin('prose') },
+      },
+      linkGroup('link', 'Lien (facultatif)', undefined, { label: 'En savoir plus' }),
     ],
     [
       variantField(

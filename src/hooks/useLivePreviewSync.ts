@@ -277,6 +277,9 @@ export function useLivePreviewSync(data: any) {
 
     const handleClick = (e: MouseEvent) => {
       const root = e.target as HTMLElement;
+      // Outils d'édition des sections (« + », barre d'outils) : ils agissent
+      // eux-mêmes, sans sélectionner la section dessous.
+      if (root.closest('[data-lcs-editor]')) return;
 
       // 1. data-live-link wins: open the target in a new admin tab
       //    (we open in a new tab so the user doesn't lose the page they

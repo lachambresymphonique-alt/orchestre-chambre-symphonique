@@ -1,5 +1,5 @@
 import './sections.css';
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { PostRichText } from '@/components/PostRichText';
@@ -11,6 +11,7 @@ import { toConcertCard, type ConcertCard, type ConcertDoc } from '@/lib/concerts
 import { SECTION_NAMES, hasRichText, sectionLook, type SectionBlock } from '@/lib/sections';
 import { PhotoGrid } from './PhotoGrid';
 import { LazyVideo } from './LazyVideo';
+import { InsertPoint, PreviewScroll, SectionToolbar } from './PreviewEditing';
 
 /**
  * Rendu des sections d'une page libre, partagé par la page publique (/[slug])
@@ -307,10 +308,13 @@ function ConcertsBody({ block, upcoming, preview }: { block: SectionBlock; upcom
 
 export function Sections({ sections, upcomingConcerts = [], preview = false }: Props) {
   // Un seul bouton plein par page : les suivants s'affichent en lien fléché.
-  let filledButtonUsed = false;
+  const filledCta = sections.findIndex(
+    (b) => b.blockType === 'cta' && Boolean(link(b.button)) && !sectionLook(b).hidden,
+  );
 
   return (
     <>
+      {preview && <PreviewScroll />}
       {sections.map((block, index) => {
         const look = sectionLook(block);
         const empty = isEmpty(block, upcomingConcerts);
@@ -336,13 +340,9 @@ export function Sections({ sections, upcomingConcerts = [], preview = false }: P
           case 'video':
             body = <VideoBody block={block} />;
             break;
-          case 'cta': {
-            const hasButton = Boolean(link(block.button)) && !look.hidden;
-            const plainButton = hasButton && filledButtonUsed;
-            if (hasButton) filledButtonUsed = true;
-            body = <CtaBody block={block} plainButton={plainButton} />;
+          case 'cta':
+            body = <CtaBody block={block} plainButton={filledCta !== -1 && index !== filledCta} />;
             break;
-          }
           case 'concerts':
             body = <ConcertsBody block={block} upcoming={upcomingConcerts} preview={preview} />;
             break;
@@ -352,8 +352,9 @@ export function Sections({ sections, upcomingConcerts = [], preview = false }: P
 
         const name = SECTION_NAMES[block.blockType] ?? 'Section';
         return (
+          <Fragment key={block.id ?? index}>
+          {preview && <InsertPoint index={index} />}
           <section
-            key={block.id ?? index}
             id={look.anchor}
             className={`${look.className}${preview && (look.hidden || empty) ? ' lcs-section--ghost' : ''}`}
             data-live-field={`layout__${index}`}
@@ -363,10 +364,13 @@ export function Sections({ sections, upcomingConcerts = [], preview = false }: P
                 {look.hidden ? `${name} — masquée, n’apparaît pas sur le site` : `${name} — à remplir, n’apparaît pas encore sur le site`}
               </p>
             )}
+            {preview && <SectionToolbar index={index} count={sections.length} name={name} hidden={look.hidden} />}
             <div className="lcs-section__inner">{body}</div>
           </section>
+          </Fragment>
         );
       })}
+      {preview && sections.length > 0 && <InsertPoint index={sections.length} />}
     </>
   );
 }

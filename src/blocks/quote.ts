@@ -16,16 +16,18 @@ export const QuoteSection: Block = {
         type: 'textarea',
         label: 'Citation',
         required: true,
+        defaultValue: 'Une phrase qui *compte* : celle d’un musicien, d’un spectateur ou de la presse.',
         admin: { ...richTextAdmin('inline'), description: 'Sans guillemets : ils sont ajoutés à l’affichage.' },
       },
       {
         type: 'row',
         fields: [
-          { name: 'author', type: 'text', label: 'Auteur', admin: { width: '50%' } },
+          { name: 'author', type: 'text', label: 'Auteur', defaultValue: 'Prénom Nom', admin: { width: '50%' } },
           {
             name: 'role',
             type: 'text',
             label: 'Fonction ou source',
+            defaultValue: 'Fonction ou source',
             admin: { width: '50%', placeholder: 'Ex : Le Journal de Saône-et-Loire, mars 2025' },
           },
         ],

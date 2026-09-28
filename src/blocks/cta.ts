@@ -1,6 +1,6 @@
 import type { Block } from 'payload';
 import { richTextAdmin } from '@/lib/richTextAdmin';
-import { SECTION_LABEL, eyebrowField, linkGroup, sectionFields, titleField, variantField } from './settings';
+import { SECTION_LABEL, eyebrowWith, linkGroup, sectionFields, titleField, variantField } from './settings';
 
 /** Appel à l'action : inviter à un geste (réserver, soutenir, écrire). */
 export const CtaSection: Block = {
@@ -11,10 +11,16 @@ export const CtaSection: Block = {
   admin: { group: 'Mise en avant', disableBlockName: true, components: { Label: SECTION_LABEL } },
   fields: sectionFields(
     [
-      eyebrowField,
-      titleField(true),
-      { name: 'text', type: 'textarea', label: 'Une phrase (facultative)', admin: { ...richTextAdmin('inline') } },
-      linkGroup('button', 'Bouton'),
+      eyebrowWith('La saison'),
+      titleField(true, 'Venez nous *écouter*'),
+      {
+        name: 'text',
+        type: 'textarea',
+        label: 'Une phrase (facultative)',
+        defaultValue: 'Les concerts de la saison sont ouverts à la réservation.',
+        admin: { ...richTextAdmin('inline') },
+      },
+      linkGroup('button', 'Bouton', undefined, { label: 'Voir les concerts', url: '/concerts' }),
       linkGroup('secondary', 'Lien secondaire (facultatif)', 'Affiché en lien discret à côté du bouton.'),
     ],
     [

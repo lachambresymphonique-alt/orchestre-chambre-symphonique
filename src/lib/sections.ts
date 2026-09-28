@@ -127,3 +127,23 @@ export function needsUpcomingConcerts(sections: SectionBlock[]): number {
     .filter((s) => s.blockType === 'concerts' && s.source !== 'selected' && !s.settings?.hidden)
     .reduce((max, s) => Math.max(max, typeof s.limit === 'number' ? s.limit : 6), 0);
 }
+
+/** Types de sections proposés à l'ajout, dans l'ordre du sélecteur (voir src/blocks/index.ts). */
+export const SECTION_CATALOG: { slug: string; name: string; hint: string; thumb: string }[] = [
+  { slug: 'text', name: 'Texte', hint: 'Paragraphes, intertitres, listes', thumb: '/vignettes-sections/texte.svg' },
+  { slug: 'quote', name: 'Citation', hint: 'Faire entendre une voix', thumb: '/vignettes-sections/citation.svg' },
+  { slug: 'columns', name: 'Colonnes', hint: '2 à 4 cartes côte à côte', thumb: '/vignettes-sections/colonnes.svg' },
+  { slug: 'mediaText', name: 'Texte + image', hint: 'Une photo et un texte', thumb: '/vignettes-sections/texte-image.svg' },
+  { slug: 'gallery', name: 'Photos', hint: 'Mosaïque ou grille', thumb: '/vignettes-sections/photos.svg' },
+  { slug: 'video', name: 'Vidéo', hint: 'YouTube ou Vimeo', thumb: '/vignettes-sections/video.svg' },
+  { slug: 'cta', name: 'Appel à l’action', hint: 'Un titre et un bouton', thumb: '/vignettes-sections/appel.svg' },
+  { slug: 'concerts', name: 'Concerts', hint: 'Les prochaines dates', thumb: '/vignettes-sections/concerts.svg' },
+];
+
+/** Message de l'aperçu vers l'admin (components/sections/PreviewEditing ↔ admin/SectionsField). */
+export type SectionMessage = {
+  type: 'lcs:section';
+  action: 'add' | 'up' | 'down' | 'duplicate' | 'hide' | 'delete';
+  index: number;
+  blockType?: string;
+};

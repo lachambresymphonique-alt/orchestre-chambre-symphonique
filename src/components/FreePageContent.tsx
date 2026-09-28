@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Sections } from '@/components/sections/Sections';
+import { InsertPoint } from '@/components/sections/PreviewEditing';
 import type { ConcertCard } from '@/lib/concerts';
 import { resolveSections } from '@/lib/sections';
 
@@ -47,11 +48,10 @@ export function FreePageContent({ title, layout, content, upcomingConcerts, plac
       {sections.length > 0 ? (
         <Sections sections={sections} upcomingConcerts={upcomingConcerts} preview={placeholders} />
       ) : placeholders ? (
-        <section className="section" data-live-field="layout">
+        <section className="section lcs-empty-page" data-live-field="layout">
           <div className="container">
-            <p style={placeholderStyle}>
-              Votre page est vide. Ajoutez une première section (un texte, une photo, une citation) dans « Sections de la page ».
-            </p>
+            <p style={placeholderStyle}>Votre page est vide. Ajoutez une première section : un texte, une photo, une citation…</p>
+            <InsertPoint index={0} big />
           </div>
         </section>
       ) : null}

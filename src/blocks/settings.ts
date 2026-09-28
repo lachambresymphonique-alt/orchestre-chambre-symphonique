@@ -125,12 +125,18 @@ export const eyebrowField: Field = {
   admin: { description: 'Facultatif : petit texte en capitales au-dessus du titre.' },
 };
 
-export function titleField(required = false): Field {
+/** Sur-titre avec un exemple déjà saisi. */
+export function eyebrowWith(sample: string): Field {
+  return { ...eyebrowField, defaultValue: sample } as Field;
+}
+
+export function titleField(required = false, sample?: string): Field {
   return {
     name: 'title',
     type: 'text',
     label: 'Titre',
     required,
+    ...(sample ? { defaultValue: sample } : {}),
     admin: {
       ...richTextAdmin('title'),
       description: 'Sélectionnez un mot puis « I » : il prendra la couleur d’accent du site.',
@@ -139,7 +145,12 @@ export function titleField(required = false): Field {
 }
 
 /** Un lien (texte + adresse), pour un bouton ou une carte. */
-export function linkGroup(name: string, label: string, description?: string): Field {
+export function linkGroup(
+  name: string,
+  label: string,
+  description?: string,
+  defaults?: { label?: string; url?: string },
+): Field {
   return {
     name,
     type: 'group',
@@ -149,17 +160,49 @@ export function linkGroup(name: string, label: string, description?: string): Fi
       {
         type: 'row',
         fields: [
-          { name: 'label', type: 'text', label: 'Texte du lien', admin: { width: '40%' } },
+          {
+            name: 'label',
+            type: 'text',
+            label: 'Texte du lien',
+            ...(defaults?.label ? { defaultValue: defaults.label } : {}),
+            admin: { width: '40%' },
+          },
           {
             name: 'url',
             type: 'text',
             label: 'Adresse',
             validate: validateLink,
+            ...(defaults?.url ? { defaultValue: defaults.url } : {}),
             admin: { width: '60%', placeholder: '/contact, /#concerts ou https://…' },
           },
         ],
       },
     ],
+  };
+}
+
+/** Texte riche Lexical d'un seul paragraphe (contenu d'exemple d'une section). */
+export function lexicalParagraph(text: string) {
+  return {
+    root: {
+      type: 'root',
+      format: '',
+      indent: 0,
+      version: 1,
+      direction: 'ltr',
+      children: [
+        {
+          type: 'paragraph',
+          format: '',
+          indent: 0,
+          version: 1,
+          direction: 'ltr',
+          textFormat: 0,
+          textStyle: '',
+          children: [{ type: 'text', text, format: 0, style: '', mode: 'normal', detail: 0, version: 1 }],
+        },
+      ],
+    },
   };
 }
 

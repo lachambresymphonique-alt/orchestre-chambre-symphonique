@@ -1,6 +1,6 @@
 import type { Block } from 'payload';
 import { FixedToolbarFeature, lexicalEditor } from '@payloadcms/richtext-lexical';
-import { SECTION_LABEL, eyebrowField, sectionFields, titleField, variantField } from './settings';
+import { SECTION_LABEL, eyebrowField, lexicalParagraph, sectionFields, titleField, variantField } from './settings';
 
 /**
  * Texte : paragraphes, intertitres, listes, liens et images. L'éditeur garde
@@ -16,11 +16,14 @@ export const TextSection: Block = {
   fields: sectionFields(
     [
       eyebrowField,
-      titleField(),
+      titleField(false, 'Un titre pour *cette section*'),
       {
         name: 'content',
         type: 'richText',
         label: 'Texte',
+        defaultValue: lexicalParagraph(
+          'Écrivez ici votre texte. Sélectionnez un mot pour le mettre en gras ou en italique ; la barre d’outils ajoute des intertitres, des listes, des liens et des images.',
+        ),
         editor: lexicalEditor({
           features: ({ defaultFeatures }) => [...defaultFeatures, FixedToolbarFeature()],
         }),

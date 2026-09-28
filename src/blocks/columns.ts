@@ -12,7 +12,7 @@ export const ColumnsSection: Block = {
   fields: sectionFields(
     [
       eyebrowField,
-      titleField(),
+      titleField(false, 'Trois bonnes raisons de *venir*'),
       {
         name: 'items',
         type: 'array',
@@ -20,6 +20,11 @@ export const ColumnsSection: Block = {
         labels: { singular: 'une colonne', plural: 'Colonnes' },
         minRows: 2,
         maxRows: 4,
+        defaultValue: ['Première', 'Deuxième', 'Troisième'].map((rang) => ({
+          title: `${rang} raison`,
+          text: 'Une ou deux phrases pour la présenter.',
+          link: { label: 'En savoir plus', url: '' },
+        })),
         admin: { description: 'De 2 à 4. Sur téléphone, elles s’affichent l’une sous l’autre.' },
         fields: [
           { name: 'title', type: 'text', label: 'Titre', required: true },
