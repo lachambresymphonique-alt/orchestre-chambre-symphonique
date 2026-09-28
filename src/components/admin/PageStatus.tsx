@@ -38,7 +38,10 @@ const LABELS: Record<Status, string> = {
   changed: 'En ligne · modifications à publier',
 };
 
-const timeFormat = new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' });
+// Heure de Paris, fixée : le serveur (Vercel, en temps universel) et le
+// navigateur doivent écrire la même heure, sinon React signale une
+// différence au chargement (erreur 418) et redessine l'en-tête.
+const timeFormat = new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris' });
 
 /** Une heure lisible, ou null (Payload donne parfois une date invalide). */
 export function timeOf(value: unknown): string | null {
