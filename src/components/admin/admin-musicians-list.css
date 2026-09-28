@@ -1,0 +1,57 @@
+/* Liste Musiciens de l'admin (MusicianCells) : vignettes homogènes. */
+
+.lcs-avatar-link {
+  display: inline-flex;
+  border-radius: 50%;
+  text-decoration: none;
+}
+
+.lcs-avatar-link:focus-visible {
+  outline: 2px solid var(--lcs-gold);
+  outline-offset: 2px;
+}
+
+.lcs-avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  overflow: hidden;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--lcs-gold) 14%, var(--theme-elevation-50));
+  box-shadow: 0 0 0 1px var(--theme-elevation-150);
+  vertical-align: middle;
+}
+
+/* Le thème de l'admin impose aux vignettes de listes un carré de 56 px bordé
+   (.table .cell-photo img, admin-theme.css) : ici, l'image remplit le rond. */
+.lcs-avatar img,
+.table td .lcs-avatar img {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none;
+  object-fit: cover;
+  border: 0;
+  border-radius: 0;
+}
+
+.lcs-avatar__initials {
+  font-family: var(--lcs-serif);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  color: var(--lcs-gold-dark);
+}
+
+.lcs-cell-empty {
+  color: var(--theme-elevation-400);
+}
+
+/* Lignes centrées verticalement sur la vignette, sur cette liste seulement. */
+.collection-list--musicians .table td {
+  vertical-align: middle;
+}

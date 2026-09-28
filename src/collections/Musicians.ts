@@ -54,7 +54,12 @@ export const Musicians: CollectionConfig = {
       label: 'Rôle',
       admin: { description: 'Ex : « Directeur artistique », « Violoniste », « Présidente », « Ingénieur du son »' },
     },
-    { name: 'instrument', type: 'text', label: 'Instrument' },
+    {
+      name: 'instrument',
+      type: 'text',
+      label: 'Instrument',
+      admin: { components: { Cell: '@/components/admin/MusicianCells#MusicianInstrumentCell' } },
+    },
     {
       name: 'section',
       type: 'select',
@@ -82,7 +87,14 @@ export const Musicians: CollectionConfig = {
       },
       options: PUPITRES.map((p) => ({ label: p.label, value: p.value })),
     },
-    { name: 'photo', type: 'upload', relationTo: 'media', label: 'Photo' },
+    {
+      name: 'photo',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Photo',
+      // Liste : vignette ronde homogène ou initiales (MusicianCells).
+      admin: { components: { Cell: '@/components/admin/MusicianCells#MusicianPhotoCell' } },
+    },
     {
       name: 'instagram',
       type: 'text',
