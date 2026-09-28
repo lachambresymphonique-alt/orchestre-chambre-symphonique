@@ -48,55 +48,94 @@ export const Pages: CollectionConfig = {
       admin: { description: 'Titre principal affiché en haut de la page et dans l\'onglet du navigateur.' },
     },
     {
-      name: 'slug',
-      type: 'text',
-      required: true,
-      unique: true,
-      label: 'Adresse (slug)',
-      admin: {
-        description:
-          'Fin de l’adresse de la page : « saison-2025 » donnera /saison-2025. Générée à partir du titre si vous la laissez vide ; accents et espaces sont convertis.',
-      },
-      hooks: {
-        beforeValidate: [
-          ({ value, data }) => {
-            const typed = typeof value === 'string' ? value.trim() : '';
-            if (typed) return slugify(typed) || typed;
-            const title = (data as { title?: unknown } | undefined)?.title;
-            return typeof title === 'string' && title.trim() ? slugify(title) : value;
-          },
-        ],
-      },
-      validate: (value: string | null | undefined) => {
-        if (!value) return 'Le slug est requis.';
-        if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
-          return 'Utilisez uniquement des lettres minuscules, chiffres et tirets (ex : ma-nouvelle-page).';
-        }
-        const reserved = ['admin', 'api', 'a-propos', 'directeur-artistique', 'musiciens', 'medias', 'journal', 'blog', 'nous-soutenir', 'contact', 'concerts', 'solistes', 'recrutement', 'espace-membres', 'apercu'];
-        if (reserved.includes(value)) {
-          return `« ${value} » est déjà utilisé par une page du site. Choisissez un autre slug.`;
-        }
-        return true;
-      },
-    },
-    {
-      // Sections de la page (constructeur de pages), stockées en JSON
-      // (blocksAsJSON) : voir src/blocks/index.ts et components/sections.
-      name: 'layout',
-      type: 'blocks',
-      label: 'Sections de la page',
-      labels: { singular: 'une section', plural: 'Sections' },
-      blocks: PAGE_SECTIONS,
-      admin: {
-        components: { Field: '@/components/admin/SectionsField#SectionsField' },
-        description:
-          'La page se compose de sections, dans l’ordre de cette liste : faites-les glisser par leur poignée pour les déplacer, et utilisez le menu ⋯ d’une section pour la dupliquer ou la supprimer.',
-      },
-      hooks: {
-        // Page d'avant les sections : son ancien contenu arrive comme une
-        // section « Texte », modifiable comme les autres.
-        afterRead: [({ value, siblingData }) => withLegacyContent(value, siblingData?.content)],
-      },
+      // Onglets de présentation (sans nom : les données restent à plat).
+      // Comme chez Shopify, on arrive sur les sections ; l'adresse et le
+      // référencement se règlent à part.
+      type: 'tabs',
+      tabs: [
+        {
+          label: 'Sections',
+          fields: [
+            {
+              // Sections de la page (constructeur de pages), stockées en JSON
+              // (blocksAsJSON) : voir src/blocks/index.ts et components/sections.
+              name: 'layout',
+              type: 'blocks',
+              label: 'Sections de la page',
+              labels: { singular: 'une section', plural: 'Sections' },
+              blocks: PAGE_SECTIONS,
+              admin: {
+                components: { Field: '@/components/admin/SectionsField#SectionsField' },
+                description:
+                  'La page se compose de sections, dans l’ordre de cette liste : cliquez sur une section pour la modifier, faites-la glisser par sa poignée pour la déplacer.',
+              },
+              hooks: {
+                // Page d'avant les sections : son ancien contenu arrive comme une
+                // section « Texte », modifiable comme les autres.
+                afterRead: [({ value, siblingData }) => withLegacyContent(value, siblingData?.content)],
+              },
+            },
+          ],
+        },
+        {
+          label: 'Adresse et référencement',
+          fields: [
+            {
+              name: 'slug',
+              type: 'text',
+              required: true,
+              unique: true,
+              label: 'Adresse (slug)',
+              admin: {
+                description:
+                  'Fin de l’adresse de la page : « saison-2025 » donnera /saison-2025. Générée à partir du titre si vous la laissez vide ; accents et espaces sont convertis.',
+              },
+              hooks: {
+                beforeValidate: [
+                  ({ value, data }) => {
+                    const typed = typeof value === 'string' ? value.trim() : '';
+                    if (typed) return slugify(typed) || typed;
+                    const title = (data as { title?: unknown } | undefined)?.title;
+                    return typeof title === 'string' && title.trim() ? slugify(title) : value;
+                  },
+                ],
+              },
+              validate: (value: string | null | undefined) => {
+                if (!value) return 'Le slug est requis.';
+                if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
+                  return 'Utilisez uniquement des lettres minuscules, chiffres et tirets (ex : ma-nouvelle-page).';
+                }
+                const reserved = ['admin', 'api', 'a-propos', 'directeur-artistique', 'musiciens', 'medias', 'journal', 'blog', 'nous-soutenir', 'contact', 'concerts', 'solistes', 'recrutement', 'espace-membres', 'apercu'];
+                if (reserved.includes(value)) {
+                  return `« ${value} » est déjà utilisé par une page du site. Choisissez un autre slug.`;
+                }
+                return true;
+              },
+            },
+            {
+              name: 'meta',
+              type: 'group',
+              label: 'Référencement (SEO)',
+              admin: { description: 'Optionnel. Améliore la visibilité de la page sur Google.', condition: () => true },
+              fields: [
+                {
+                  name: 'description',
+                  type: 'textarea',
+                  label: 'Description',
+                  admin: { description: 'Résumé de la page affiché dans les résultats Google (160 caractères max).' },
+                },
+                {
+                  name: 'image',
+                  type: 'upload',
+                  relationTo: 'media',
+                  label: 'Image de partage',
+                  admin: { description: 'Image affichée quand la page est partagée sur les réseaux sociaux.' },
+                },
+              ],
+            },
+          ],
+        },
+      ],
     },
     {
       // Ancien champ unique, d'avant les sections. Jamais saisi : à la lecture,
@@ -107,27 +146,6 @@ export const Pages: CollectionConfig = {
       type: 'richText',
       label: 'Ancien contenu',
       admin: { hidden: true },
-    },
-    {
-      name: 'meta',
-      type: 'group',
-      label: 'Référencement (SEO)',
-      admin: { description: 'Optionnel. Améliore la visibilité de la page sur Google.', condition: () => true },
-      fields: [
-        {
-          name: 'description',
-          type: 'textarea',
-          label: 'Description',
-          admin: { description: 'Résumé de la page affiché dans les résultats Google (160 caractères max).' },
-        },
-        {
-          name: 'image',
-          type: 'upload',
-          relationTo: 'media',
-          label: 'Image de partage',
-          admin: { description: 'Image affichée quand la page est partagée sur les réseaux sociaux.' },
-        },
-      ],
     },
     // Anciens réglages de navigation, remplacés par le global « Menu du site »
     // (Réglages → Menu du site). Conservés en base et masqués dans l'admin :

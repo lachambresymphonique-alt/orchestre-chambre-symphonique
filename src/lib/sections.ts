@@ -140,15 +140,22 @@ export const SECTION_CATALOG: { slug: string; name: string; hint: string; thumb:
   { slug: 'concerts', name: 'Concerts', hint: 'Les prochaines dates', thumb: '/vignettes-sections/concerts.svg' },
 ];
 
-/** Message de l'aperçu vers l'admin (components/sections/PreviewEditing ↔ admin/SectionsField). */
+/**
+ * Message de l'aperçu vers l'admin (components/sections/PreviewEditing ↔
+ * admin/SectionsField). `select` : clic sur une section ; `ready` : l'aperçu
+ * vient de se charger et demande quelle section est ouverte.
+ */
 export type SectionMessage = {
   type: 'lcs:section';
-  action: 'add' | 'up' | 'down' | 'move' | 'duplicate' | 'hide' | 'delete';
+  action: 'add' | 'select' | 'ready' | 'up' | 'down' | 'move' | 'duplicate' | 'hide' | 'delete';
   index: number;
   blockType?: string;
   /** `move` : emplacement de dépôt (0 = avant la première section). */
   to?: number;
 };
+
+/** Message de l'admin vers l'aperçu : la section ouverte dans le panneau (null : aucune). */
+export type SelectedSectionMessage = { type: 'lcs:selected'; index: number | null };
 
 /** Types de données du glisser-déposer : une nouvelle section, ou une section déplacée. */
 export const DRAG_NEW_SECTION = 'application/x-lcs-section';

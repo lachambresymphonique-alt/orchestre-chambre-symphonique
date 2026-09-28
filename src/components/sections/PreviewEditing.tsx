@@ -1,7 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { DRAG_MOVE_SECTION, DRAG_NEW_SECTION, SECTION_CATALOG, type SectionMessage } from '@/lib/sections';
+import { SectionIcon } from './SectionIcon';
+import {
+  DRAG_MOVE_SECTION,
+  DRAG_NEW_SECTION,
+  SECTION_CATALOG,
+  type SectionMessage,
+  type SelectedSectionMessage,
+} from '@/lib/sections';
 
 /**
  * Outils d'édition posés sur l'aperçu en direct de l'admin (jamais sur le
@@ -157,12 +164,6 @@ export function InsertPoint({ index, big = false }: { index: number; big?: boole
   );
 }
 
-const Icon = ({ d }: { d: string }) => (
-  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d={d} />
-  </svg>
-);
-
 export function SectionToolbar({ index, count, name, hidden }: { index: number; count: number; name: string; hidden: boolean }) {
   return (
     <div className="lcs-sectionbar" data-lcs-editor role="toolbar" aria-label={`Section ${name}`}>
@@ -184,22 +185,61 @@ export function SectionToolbar({ index, count, name, hidden }: { index: number; 
         <span className="lcs-sectionbar__name">{name}</span>
       </span>
       <button type="button" onClick={() => send('up', index)} disabled={index === 0} title="Monter" aria-label="Monter">
-        <Icon d="M12 19V5M5 12l7-7 7 7" />
+        <SectionIcon name="up" />
       </button>
       <button type="button" onClick={() => send('down', index)} disabled={index >= count - 1} title="Descendre" aria-label="Descendre">
-        <Icon d="M12 5v14M5 12l7 7 7-7" />
+        <SectionIcon name="down" />
       </button>
       <button type="button" onClick={() => send('duplicate', index)} title="Dupliquer" aria-label="Dupliquer">
-        <Icon d="M9 9h10v10H9zM5 15V5h10" />
+        <SectionIcon name="duplicate" />
       </button>
       <button type="button" onClick={() => send('hide', index)} title={hidden ? 'Afficher sur le site' : 'Masquer (le contenu est gardé)'} aria-label={hidden ? 'Afficher' : 'Masquer'}>
-        <Icon d={hidden ? 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z' : 'M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6 0 10 7 10 7a17 17 0 0 1-3.2 3.9M6.6 6.6C3.9 8.3 2 12 2 12s4 7 10 7a9.7 9.7 0 0 0 5.4-1.6'} />
+        <SectionIcon name={hidden ? 'show' : 'hide'} />
       </button>
       <button type="button" className="lcs-sectionbar__danger" onClick={() => send('delete', index)} title="Supprimer" aria-label="Supprimer">
-        <Icon d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" />
+        <SectionIcon name="delete" />
       </button>
     </div>
   );
+}
+
+/**
+ * Sélection façon Shopify : un clic sur une section l'ouvre dans le panneau de
+ * l'admin, et la section ouverte là-bas est entourée ici.
+ */
+export function PreviewSelection() {
+  const [selected, setSelected] = useState<number | null>(null);
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('[data-lcs-editor]')) return;
+      const section = target.closest<HTMLElement>('section[data-live-field^="layout__"]');
+      if (!section) return;
+      const index = Number(section.getAttribute('data-live-field')?.slice('layout__'.length));
+      if (Number.isInteger(index)) send('select', index);
+    };
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+      const data = event.data as SelectedSectionMessage | undefined;
+      if (data?.type !== 'lcs:selected') return;
+      setSelected(typeof data.index === 'number' ? data.index : null);
+      if (typeof data.index !== 'number') return;
+      const el = document.querySelector(`[data-live-field="layout__${data.index}"]`);
+      const r = el?.getBoundingClientRect();
+      if (el && r && (r.bottom < 80 || r.top > window.innerHeight - 80)) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    document.addEventListener('click', onClick, true);
+    window.addEventListener('message', onMessage);
+    send('ready', 0);
+    return () => {
+      document.removeEventListener('click', onClick, true);
+      window.removeEventListener('message', onMessage);
+    };
+  }, []);
+
+  if (selected === null) return null;
+  return <style>{`section[data-live-field="layout__${selected}"] { outline: 2px solid #c9a84c; outline-offset: -2px; }`}</style>;
 }
 
 /** Après un ajout, une duplication ou un déplacement : amène la section à l'écran. */

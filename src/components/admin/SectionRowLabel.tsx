@@ -5,7 +5,7 @@ import { useRowLabel } from '@payloadcms/ui';
 import { SECTION_NAMES } from '@/lib/sections';
 import { toPlainText } from '@/lib/richText';
 
-type Row = Record<string, unknown> & { blockType?: string; settings?: { hidden?: boolean } };
+export type Row = Record<string, unknown> & { blockType?: string; settings?: { hidden?: boolean } };
 
 type LexicalNode = { text?: string; children?: LexicalNode[] };
 
@@ -55,24 +55,32 @@ function excerptOf(row: Row): string {
   }
 }
 
-/**
- * En-tête d'une section dans « Sections de la page » : numéro, type, début du
- * contenu (lisible section repliée), et « Masquée » quand elle l'est.
- */
-export function SectionRowLabel() {
-  const { data, rowNumber } = useRowLabel<Row>();
+type SummaryProps = { data: Row | null | undefined; index: number };
+
+/** Numéro, type, début du contenu et « Masquée » : une section en une ligne. */
+export function SectionSummary({ data, index }: SummaryProps) {
   const name = SECTION_NAMES[String(data?.blockType ?? '')] ?? 'Section';
   const raw = excerptOf(data ?? {});
   const excerpt = raw.length > 70 ? `${raw.slice(0, 70).trimEnd()}…` : raw;
 
   return (
     <span className="lcs-srow">
-      <span className="lcs-srow__num">{String((rowNumber ?? 0) + 1).padStart(2, '0')}</span>
+      <span className="lcs-srow__num">{String(index + 1).padStart(2, '0')}</span>
       <span className="lcs-srow__type">{name}</span>
       {excerpt ? <span className="lcs-srow__excerpt">{excerpt}</span> : <span className="lcs-srow__excerpt lcs-srow__excerpt--empty">à remplir</span>}
       {data?.settings?.hidden ? <span className="lcs-srow__badge">Masquée</span> : null}
     </span>
   );
+}
+
+/**
+ * En-tête d'une section dans le champ blocs de Payload (masqué dans les
+ * Pages, où SectionsField montre son propre plan, mais utilisé ailleurs :
+ * versions, champ nu).
+ */
+export function SectionRowLabel() {
+  const { data, rowNumber } = useRowLabel<Row>();
+  return <SectionSummary data={data} index={rowNumber ?? 0} />;
 }
 
 export default SectionRowLabel;
