@@ -46,6 +46,7 @@ import { ProfileChangeDiff as ProfileChangeDiff_11f9be35772f79e1f76f3709f367390a
 import { DocumentFileField as DocumentFileField_41437d2dea046d876d3cdc3be11d0d72 } from '@/components/admin/DocumentFileField'
 import { InviteLinkField as InviteLinkField_69fa934fc4e270bd820c3aa1c0ab9caf } from '@/components/admin/InviteLinkField'
 import { MemberRequestReview as MemberRequestReview_0ab365f27952cce5827b24c4e6b4903f } from '@/components/admin/MemberRequestReview'
+import { MembersGuide as MembersGuide_89a44b4b817abb092e48716301c0ecb7 } from '@/components/admin/MembersGuide'
 import { HomeSectionsField as HomeSectionsField_4f0be2871a168e5a6640850cd2d2a706 } from '@/components/admin/HomeSectionsField'
 import { ConcertLayoutField as ConcertLayoutField_5c2dc134ff87a1bc27aa82c9887f36fc } from '@/components/admin/ConcertLayoutField'
 import { MusicianFormCoreNote as MusicianFormCoreNote_06e40e52a38c8c46926f7949f0a13d21 } from '@/components/admin/MusicianFormRowLabel'
@@ -127,6 +128,7 @@ export const importMap = {
   "@/components/admin/DocumentFileField#DocumentFileField": DocumentFileField_41437d2dea046d876d3cdc3be11d0d72,
   "@/components/admin/InviteLinkField#InviteLinkField": InviteLinkField_69fa934fc4e270bd820c3aa1c0ab9caf,
   "@/components/admin/MemberRequestReview#MemberRequestReview": MemberRequestReview_0ab365f27952cce5827b24c4e6b4903f,
+  "@/components/admin/MembersGuide#MembersGuide": MembersGuide_89a44b4b817abb092e48716301c0ecb7,
   "@/components/admin/HomeSectionsField#HomeSectionsField": HomeSectionsField_4f0be2871a168e5a6640850cd2d2a706,
   "@/components/admin/ConcertLayoutField#ConcertLayoutField": ConcertLayoutField_5c2dc134ff87a1bc27aa82c9887f36fc,
   "@/components/admin/MusicianFormRowLabel#MusicianFormCoreNote": MusicianFormCoreNote_06e40e52a38c8c46926f7949f0a13d21,

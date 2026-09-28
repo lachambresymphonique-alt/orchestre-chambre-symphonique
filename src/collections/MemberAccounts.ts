@@ -28,8 +28,14 @@ export const MemberAccounts: CollectionConfig = {
     useAsTitle: 'email',
     group: 'Espace membres',
     description:
-      'Comptes de l’espace membres (musiciens, bureau, équipe technique). On invite quelqu’un depuis sa fiche dans Musiciens. Ces comptes n’ont aucun accès à l’administration.',
+      'Comptes de l’espace membres (musiciens, bureau, équipe technique). On donne accès par un lien d’inscription ou depuis la fiche d’un musicien : voir le mode d’emploi ci-dessous. Ces comptes n’ont aucun accès à l’administration.',
     defaultColumns: ['email', 'musician', 'status', 'lastLoginAt'],
+    components: { beforeListTable: ['@/components/admin/MembersGuide#MembersGuide'] },
+  },
+  access: {
+    // Pas de bouton « Créer » : un compte créé ici n'aurait pas de lien de connexion.
+    // Les accès s'ouvrent par une invitation ou une demande acceptée (API locale).
+    create: () => false,
   },
   defaultSort: '-updatedAt',
   hooks: {

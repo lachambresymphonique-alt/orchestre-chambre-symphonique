@@ -17,11 +17,14 @@ export const MemberRequests: CollectionConfig = {
       'Inscriptions reçues par les liens partagés. Acceptez pour relier la personne à sa fiche (ou la créer) et lui envoyer son lien de connexion.',
     defaultColumns: ['title', 'role', 'pupitre', 'status', 'createdAt'],
     components: {
+      beforeListTable: ['@/components/admin/MembersGuide#MembersGuide'],
       edit: {
         beforeDocumentControls: ['@/components/admin/MemberRequestReview#MemberRequestReview'],
       },
     },
   },
+  // Les demandes n'arrivent que par le formulaire d'inscription (API locale).
+  access: { create: () => false },
   defaultSort: '-createdAt',
   fields: [
     { name: 'title', type: 'text', label: 'Nom', admin: { hidden: true } },

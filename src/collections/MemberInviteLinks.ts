@@ -19,6 +19,7 @@ export const MemberInviteLinks: CollectionConfig = {
     description:
       'Liens à partager dans une discussion de groupe. Ils ne donnent aucun accès par eux-mêmes : chaque inscription arrive dans « Demandes d’accès », à valider.',
     defaultColumns: ['label', 'role', 'active', 'updatedAt'],
+    components: { beforeListTable: ['@/components/admin/MembersGuide#MembersGuide'] },
   },
   hooks: {
     beforeValidate: [
