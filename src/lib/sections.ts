@@ -37,11 +37,18 @@ export function hasRichText(value: unknown): boolean {
   return walk(root);
 }
 
-/** La section « Texte » qui reprend l'ancien contenu d'une page d'avant les sections. */
+/**
+ * La section « Texte » qui reprend l'ancien contenu d'une page d'avant les
+ * sections. Titre et sur-titre vides, écrits : à la lecture, Payload remplit
+ * les champs absents avec leur valeur par défaut, et ce serait le titre
+ * d'exemple des nouvelles sections (« Un titre pour cette section »).
+ */
 function legacyTextSection(content: unknown): SectionBlock {
   return {
     id: 'ancien-contenu',
     blockType: 'text',
+    eyebrow: '',
+    title: '',
     content,
     variant: 'plain',
     settings: { background: 'auto', width: 'auto', spacing: 'normal', hidden: false },
