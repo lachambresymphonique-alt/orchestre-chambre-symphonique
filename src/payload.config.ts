@@ -24,6 +24,8 @@ import { PageViews } from './collections/PageViews';
 import { MemberAccounts } from './collections/MemberAccounts';
 import { ProfileChanges } from './collections/ProfileChanges';
 import { MemberDocuments } from './collections/MemberDocuments';
+import { MemberRequests } from './collections/MemberRequests';
+import { MemberInviteLinks } from './collections/MemberInviteLinks';
 
 import { SiteSettings } from './globals/SiteSettings';
 import { HomePage } from './globals/HomePage';
@@ -200,6 +202,9 @@ export default buildConfig({
     Users,
     // Espace membres : comptes sans accès à l'admin (src/lib/memberSession.ts)
     MemberAccounts,
+    // Inscriptions par un lien partagé, à valider par l'équipe
+    MemberRequests,
+    MemberInviteLinks,
     // Partitions et documents des membres, dans un stockage privé (src/lib/r2.ts)
     MemberDocuments,
   ].map(adminByDefault),

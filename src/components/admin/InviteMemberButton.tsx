@@ -51,7 +51,7 @@ export function InviteMemberButton() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
   const [sentTo, setSentTo] = useState('');
-  const [link, setLink] = useState<{ url: string; reason: string } | null>(null);
+  const [link, setLink] = useState<{ url: string; reason: string; emailed: boolean } | null>(null);
 
   const inviteSlug = `invite-member-${id ?? 'new'}`;
   const linkSlug = `invite-member-link-${id ?? 'new'}`;
@@ -91,17 +91,18 @@ export function InviteMemberButton() {
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json?.error || `Erreur ${res.status}`);
       await load();
-      if (json.emailed) {
-        setSentTo(json.account?.email || email);
-      } else {
-        setLink({
-          url: json.link,
-          reason: json.mailError
+      // Le lien s'affiche toujours : on peut aussi le partager dans une discussion.
+      if (json.emailed) setSentTo(json.account?.email || email);
+      setLink({
+        url: json.link,
+        emailed: Boolean(json.emailed),
+        reason: json.emailed
+          ? `Le lien vient de partir par e-mail à ${json.account?.email || email}.`
+          : json.mailError
             ? `L’e-mail n’a pas pu partir (${json.mailError}).`
             : 'L’envoi d’e-mails n’est pas configuré sur le site.',
-        });
-        openModal(linkSlug);
-      }
+      });
+      openModal(linkSlug);
     } catch (err) {
       setError((err as Error).message || 'Une erreur est survenue.');
     } finally {
@@ -158,7 +159,7 @@ export function InviteMemberButton() {
               <li>
                 {state?.mailConfigured === false
                   ? 'L’envoi d’e-mails n’est pas configuré : vous obtiendrez un lien à transmettre vous-même.'
-                  : 'Un lien de connexion, valable 14 jours, part à cette adresse.'}
+                  : 'Un lien de connexion, valable 14 jours, part à cette adresse ; vous pourrez aussi le copier.'}
               </li>
               <li>
                 La personne retrouve sa fiche sur <em>/espace-membres</em>, sans mot de passe.
@@ -178,12 +179,13 @@ export function InviteMemberButton() {
 
       <ConfirmationModal
         modalSlug={linkSlug}
-        heading="Lien à transmettre"
+        heading="Lien de connexion"
         body={
           <div className="lcs-promote-modal-body">
             <p>
-              {link?.reason} Envoyez ce lien à <strong>{email}</strong> par le moyen de votre
-              choix. Il est valable 14 jours et ne sert qu’une fois.
+              {link?.reason} {link?.emailed ? 'Vous pouvez aussi l’envoyer' : 'Envoyez-le'} à <strong>{email}</strong> dans une
+              discussion (WhatsApp, Messenger…). Il est valable 14 jours, ne sert qu’une fois et
+              n’ouvre que l’espace de cette personne.
             </p>
             <input
               className="lcs-invite__input lcs-invite__link"

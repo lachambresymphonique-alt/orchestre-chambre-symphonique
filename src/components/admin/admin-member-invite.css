@@ -78,3 +78,54 @@
 .lcs-promote-modal-body .lcs-invite__hint + .lcs-promote-modal-list {
   margin-top: 0.9rem;
 }
+
+/* Lien d'inscription : adresse à partager (InviteLinkField) */
+.lcs-invite-link {
+  margin-bottom: var(--spacing-field, 1.5rem);
+}
+
+.lcs-invite-link__row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.lcs-invite-link__row .lcs-invite__input {
+  margin-bottom: 0;
+}
+
+/* Demande d'accès : choix de la fiche (MemberRequestReview) */
+.lcs-request__choices {
+  margin: 0 0 0.9rem;
+  padding: 0;
+  border: 0;
+}
+
+.lcs-request__choices legend {
+  margin-bottom: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--theme-elevation-800);
+}
+
+.lcs-request__choice {
+  display: flex;
+  gap: 0.6rem;
+  align-items: baseline;
+  padding: 0.45rem 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--theme-elevation-800);
+  cursor: pointer;
+}
+
+.lcs-request__choice input {
+  accent-color: var(--lcs-gold);
+}
+
+.lcs-request__new {
+  margin: 0 0 0.9rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--lcs-radius-sm);
+  background: var(--theme-elevation-50);
+}

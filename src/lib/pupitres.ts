@@ -1,3 +1,5 @@
+import type { SectionValue } from './musicianForm';
+
 /**
  * Pupitres de l'orchestre et destinataires des documents de l'espace membres
  * (partitions, fiches techniques…). Seule source de ces listes : le champ
@@ -18,25 +20,31 @@
  * nom des fiches musiciens.
  */
 
+/**
+ * `section` : section de la fiche musicien où ranger une nouvelle recrue de ce
+ * pupitre, typée par les sections de musicianForm (une section renommée ou
+ * retirée devient une erreur de compilation) ; `role` : rôle proposé sur sa fiche. Deux suggestions pour l'équipe,
+ * modifiables à la validation d'une demande d'accès.
+ */
 export const PUPITRES = [
-  { value: 'violons-1', label: 'Violons 1' },
-  { value: 'violons-2', label: 'Violons 2' },
-  { value: 'altos', label: 'Altos' },
-  { value: 'violoncelles', label: 'Violoncelles' },
-  { value: 'contrebasses', label: 'Contrebasses' },
-  { value: 'flutes', label: 'Flûtes' },
-  { value: 'hautbois', label: 'Hautbois' },
-  { value: 'clarinettes', label: 'Clarinettes' },
-  { value: 'bassons', label: 'Bassons' },
-  { value: 'cors', label: 'Cors' },
-  { value: 'trompettes', label: 'Trompettes' },
-  { value: 'trombones', label: 'Trombones' },
-  { value: 'tuba', label: 'Tuba' },
-  { value: 'timbales', label: 'Timbales' },
-  { value: 'percussions', label: 'Percussions' },
-  { value: 'harpe', label: 'Harpe' },
-  { value: 'claviers', label: 'Piano et claviers' },
-] as const;
+  { value: 'violons-1', label: 'Violons 1', section: 'cordes', role: 'Violoniste' },
+  { value: 'violons-2', label: 'Violons 2', section: 'cordes', role: 'Violoniste' },
+  { value: 'altos', label: 'Altos', section: 'cordes', role: 'Altiste' },
+  { value: 'violoncelles', label: 'Violoncelles', section: 'cordes', role: 'Violoncelliste' },
+  { value: 'contrebasses', label: 'Contrebasses', section: 'cordes', role: 'Contrebassiste' },
+  { value: 'flutes', label: 'Flûtes', section: 'vents', role: 'Flûtiste' },
+  { value: 'hautbois', label: 'Hautbois', section: 'vents', role: 'Hautboïste' },
+  { value: 'clarinettes', label: 'Clarinettes', section: 'vents', role: 'Clarinettiste' },
+  { value: 'bassons', label: 'Bassons', section: 'vents', role: 'Bassoniste' },
+  { value: 'cors', label: 'Cors', section: 'vents', role: 'Corniste' },
+  { value: 'trompettes', label: 'Trompettes', section: 'vents', role: 'Trompettiste' },
+  { value: 'trombones', label: 'Trombones', section: 'vents', role: 'Tromboniste' },
+  { value: 'tuba', label: 'Tuba', section: 'vents', role: 'Tubiste' },
+  { value: 'timbales', label: 'Timbales', section: 'claviers', role: 'Timbalier' },
+  { value: 'percussions', label: 'Percussions', section: 'claviers', role: 'Percussionniste' },
+  { value: 'harpe', label: 'Harpe', section: 'claviers', role: 'Harpiste' },
+  { value: 'claviers', label: 'Piano et claviers', section: 'claviers', role: 'Pianiste' },
+] as const satisfies readonly { value: string; label: string; section: SectionValue; role: string }[];
 
 /** Destinataires qui ne sont pas des pupitres. */
 export const AUDIENCE_GROUPS = [
@@ -97,4 +105,25 @@ export function documentExpiry(doc: {
   expiry.setDate(expiry.getDate() + DOCUMENT_GRACE_DAYS);
   expiry.setHours(23, 59, 59, 999);
   return expiry;
+}
+
+/** Pupitre d'orchestre par sa valeur (undefined si inconnu). */
+export function findPupitre(value: string | null | undefined) {
+  return PUPITRES.find((p) => p.value === value);
+}
+
+/**
+ * Rôles des liens d'inscription que l'équipe partage dans ses discussions
+ * (collection member-invite-links). Une demande reçue par un lien « Musiciens »
+ * indique son pupitre ; une demande « Équipe technique », non.
+ */
+export const JOIN_ROLES = [
+  { value: 'musicien', label: 'Musiciens' },
+  { value: 'technique', label: 'Équipe technique' },
+] as const;
+
+export type JoinRole = (typeof JOIN_ROLES)[number]['value'];
+
+export function joinRoleLabel(value: string | null | undefined): string {
+  return JOIN_ROLES.find((r) => r.value === value)?.label ?? '';
 }
