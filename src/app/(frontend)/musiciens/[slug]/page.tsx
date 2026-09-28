@@ -4,6 +4,8 @@ import { getPayloadClient } from '@/lib/payload';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { MusicianDetailLive } from '@/components/MusicianDetailLive';
 import type { Musician } from '@/components/MusicianDetail';
+import { isEditorRequest } from '@/lib/posts';
+import { isMusicianPublic } from '@/lib/musicianVisibility';
 
 async function getMusician(handle: string): Promise<Musician | null> {
   const payload = await getPayloadClient();
@@ -33,7 +35,7 @@ async function getMusician(handle: string): Promise<Musician | null> {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const m = await getMusician(slug);
-  if (!m) return { title: 'Musicien introuvable', robots: { index: false } };
+  if (!m || !isMusicianPublic(m as any)) return { title: 'Musicien introuvable', robots: { index: false } };
   const canonicalHandle = (m as any).slug || slug;
   const photoUrl = (m as any).photo?.url as string | undefined;
   return {
@@ -48,6 +50,9 @@ export default async function MusicianPage({ params }: { params: Promise<{ slug:
   const { slug } = await params;
   const m = await getMusician(slug);
   if (!m) notFound();
+  // Fiche qui n'est pas « En ligne » : introuvable pour le public ; l'équipe connectée la voit, avec un bandeau.
+  const offline = !isMusicianPublic(m as any);
+  if (offline && !(await isEditorRequest())) notFound();
 
   // Section names and fiche labels are editable in Pages → Page Musiciens.
   let labels: any = null;
@@ -61,6 +66,11 @@ export default async function MusicianPage({ params }: { params: Promise<{ slug:
   return (
     <>
       <RefreshOnSave />
+      {offline && (
+        <p role="status" style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 60, margin: 0, padding: '0.75rem var(--gutter)', background: 'var(--velvet)', color: 'var(--on-bordeaux, #fff)', fontFamily: 'var(--font-body)', fontSize: '0.85rem', textAlign: 'center' }}>
+          Fiche hors ligne : seule l’équipe connectée la voit. Passez-la « En ligne » dans l’admin pour la publier.
+        </p>
+      )}
       <MusicianDetailLive musician={m} labels={labels} />
     </>
   );

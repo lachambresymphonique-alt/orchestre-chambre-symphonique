@@ -171,7 +171,7 @@ export function MemberRequestReview() {
                   Rôle affiché
                 </label>
                 <input id={`${acceptSlug}-role`} className="lcs-invite__input" value={ficheRole} onChange={(e) => setFicheRole(e.target.value)} />
-                <p className="lcs-invite__hint">La fiche sera visible aussitôt sur la page Musiciens ; complétez-la ensuite.</p>
+                <p className="lcs-invite__hint">La fiche est créée en « Brouillon » : complétez-la, puis passez-la « En ligne ».</p>
               </div>
             )}
             <ul className="lcs-promote-modal-list">

@@ -5,6 +5,7 @@ import { PUPITRE_SECTIONS } from '@/lib/musicianForm';
 import { concertEvents, jsonLdString } from '@/lib/concertSeo';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { HomeClient } from './HomeClient';
+import { publicMusicians } from '@/lib/musicianVisibility';
 
 const SITE_URL = 'https://www.lachambresymphonique.fr';
 
@@ -37,7 +38,7 @@ export default async function Home() {
       payload.find({ collection: 'partners' as any }),
       payload.find({
         collection: 'musicians' as any,
-        where: { section: { equals: 'direction' } } as any,
+        where: publicMusicians({ section: { equals: 'direction' } }) as any,
         sort: 'order' as any,
         limit: 1,
         depth: 1,
@@ -47,7 +48,7 @@ export default async function Home() {
       // montrent que sur la page Musiciens.
       payload.find({
         collection: 'musicians' as any,
-        where: { section: { in: [...PUPITRE_SECTIONS] } } as any,
+        where: publicMusicians({ section: { in: [...PUPITRE_SECTIONS] } }) as any,
         sort: 'order' as any,
         limit: 12,
         depth: 1,

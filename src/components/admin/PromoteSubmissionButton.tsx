@@ -114,8 +114,8 @@ export function PromoteSubmissionButton() {
                 <em>« Recopié dans Musiciens »</em>.
               </li>
               <li>
-                Vous serez redirigé·e sur la nouvelle fiche pour ajuster
-                l’ordre, le slug ou la photo.
+                Elle est créée en « Brouillon » : vous serez redirigé·e dessus pour
+                la compléter, puis la passer « En ligne ».
               </li>
             </ul>
           </div>

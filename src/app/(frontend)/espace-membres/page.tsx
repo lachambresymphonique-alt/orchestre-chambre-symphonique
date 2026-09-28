@@ -7,6 +7,7 @@ import { getPayloadClient } from '@/lib/payload';
 import { latestProposal } from '@/lib/profileChanges';
 import { MemberLoginForm } from './MemberLoginForm';
 import { ProposalStatus } from './ProposalStatus';
+import { isMusicianPublic } from '@/lib/musicianVisibility';
 import '@/components/member-area.css';
 
 /**
@@ -110,7 +111,7 @@ function MemberHome({ session, proposal }: { session: MemberSession; proposal: a
                 Partitions et documents →
               </Link>
             </p>
-            {musician.slug && (
+            {musician.slug && isMusicianPublic(musician as any) && (
               <p>
                 <Link className="link-arrow" href={`/musiciens/${musician.slug}`}>
                   Voir ma fiche publique →

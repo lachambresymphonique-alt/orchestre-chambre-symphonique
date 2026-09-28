@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getPayloadClient } from '@/lib/payload';
+import { publicMusicians } from '@/lib/musicianVisibility';
 
 const BASE_URL = 'https://www.lachambresymphonique.fr';
 
@@ -38,6 +39,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }),
       payload.find({
         collection: 'musicians' as any,
+        where: publicMusicians() as any,
         limit: 500,
         depth: 0,
       }),

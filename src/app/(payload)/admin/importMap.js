@@ -31,6 +31,7 @@ import { SaveDraftButton as SaveDraftButton_e54a6941abe492cb694383bb32034ecc } f
 import { ConcertDateCell as ConcertDateCell_a4bec657baa40be44d47c8f1a300ac27 } from '@/components/admin/ConcertDateCell'
 import { MusicianInstrumentCell as MusicianInstrumentCell_61c121c7d89aba043d5febfd797c5d07 } from '@/components/admin/MusicianCells'
 import { MusicianPhotoCell as MusicianPhotoCell_61c121c7d89aba043d5febfd797c5d07 } from '@/components/admin/MusicianCells'
+import { MusicianStatusCell as MusicianStatusCell_61c121c7d89aba043d5febfd797c5d07 } from '@/components/admin/MusicianCells'
 import { ConcertPerformanceRowLabel as ConcertPerformanceRowLabel_3bdb41ae31c16bb59408a2f1f3625608 } from '@/components/admin/ConcertPerformanceRowLabel'
 import { ConcertsListNav as ConcertsListNav_2b5e84c20ff024dced76640216aaefa0 } from '@/components/admin/ConcertsListNav'
 import { UnsavedChanges as UnsavedChanges_937f98f92304cb030c9bd5ab6af069f0 } from '@/components/admin/UnsavedChanges'
@@ -114,6 +115,7 @@ export const importMap = {
   "@/components/admin/SaveDraftButton#SaveDraftButton": SaveDraftButton_e54a6941abe492cb694383bb32034ecc,
   "@/components/admin/ConcertDateCell#ConcertDateCell": ConcertDateCell_a4bec657baa40be44d47c8f1a300ac27,
   "@/components/admin/MusicianCells#MusicianPhotoCell": MusicianPhotoCell_61c121c7d89aba043d5febfd797c5d07,
+  "@/components/admin/MusicianCells#MusicianStatusCell": MusicianStatusCell_61c121c7d89aba043d5febfd797c5d07,
   "@/components/admin/MusicianCells#MusicianInstrumentCell": MusicianInstrumentCell_61c121c7d89aba043d5febfd797c5d07,
   "@/components/admin/ConcertPerformanceRowLabel#ConcertPerformanceRowLabel": ConcertPerformanceRowLabel_3bdb41ae31c16bb59408a2f1f3625608,
   "@/components/admin/ConcertsListNav#ConcertsListNav": ConcertsListNav_2b5e84c20ff024dced76640216aaefa0,

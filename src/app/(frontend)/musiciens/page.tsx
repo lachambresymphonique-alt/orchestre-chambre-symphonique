@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { cache } from 'react';
 import { getPayloadClient } from '@/lib/payload';
+import { publicMusicians } from '@/lib/musicianVisibility';
 import { MusiciansClient, type Musician } from './MusiciansClient';
 
 const getMusiciansPage = cache(async () => {
@@ -29,6 +30,7 @@ export default async function Musiciens() {
   const page = await getMusiciansPage();
   const musicians = await payload.find({
     collection: 'musicians' as any,
+    where: publicMusicians() as any,
     sort: 'order' as any,
     limit: 100,
     depth: 1,

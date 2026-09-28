@@ -3,6 +3,7 @@ import { getPayloadClient } from '@/lib/payload';
 import { requestIsAdmin } from '@/lib/profileChanges';
 import { inviteMember } from '@/lib/memberInvitations';
 import { findPupitre } from '@/lib/pupitres';
+import { NEW_MUSICIAN_STATUS } from '@/lib/musicianVisibility';
 
 /**
  * Acceptation d'une demande d'accès : relie la personne à une fiche existante
@@ -67,7 +68,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     try {
       musician = await payload.create({
         collection: 'musicians' as any,
-        data: { name, role, section, order, pupitres: pupitre ? [pupitre.value] : [] } as any,
+        data: { name, role, section, order, status: NEW_MUSICIAN_STATUS, pupitres: pupitre ? [pupitre.value] : [] } as any,
       });
     } catch (err: any) {
       const hint =

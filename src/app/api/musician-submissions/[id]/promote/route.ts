@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { getPayloadClient } from '@/lib/payload';
+import { NEW_MUSICIAN_STATUS } from '@/lib/musicianVisibility';
 import { isAdminUser } from '@/lib/access';
 import { SECTION_VALUES } from '@/lib/musicianForm';
 
@@ -156,6 +157,8 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     videoUrl: submission.videoUrl || undefined,
     quote: submission.quote || undefined,
     order: nextOrder,
+    // Pas encore publiée : l'équipe complète la fiche puis la passe « En ligne ».
+    status: NEW_MUSICIAN_STATUS,
   };
 
   let musician: any;

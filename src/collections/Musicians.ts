@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload';
 import { richTextAdmin } from '@/lib/richTextAdmin';
+import { MUSICIAN_STATUSES, NEW_MUSICIAN_STATUS } from '@/lib/musicianVisibility';
 import { PUPITRES } from '@/lib/pupitres';
 
 const slugify = (s: string) =>
@@ -17,7 +18,7 @@ export const Musicians: CollectionConfig = {
     useAsTitle: 'name',
     group: 'Contenu',
     description: 'Membres de l\'orchestre, classés par section.',
-    defaultColumns: ['photo', 'name', 'instrument', 'section'],
+    defaultColumns: ['photo', 'name', 'instrument', 'section', 'status'],
     components: {
       beforeList: ['@/components/admin/MusiciansTabsNav#MusiciansTabsNav'],
       edit: {
@@ -27,8 +28,31 @@ export const Musicians: CollectionConfig = {
     },
   },
   defaultSort: 'order',
+  hooks: {
+    // L'accès à l'espace membres et les propositions de modification n'existent
+    // que par la fiche : la base refuse de les garder sans elle.
+    beforeDelete: [
+      async ({ id, req }) => {
+        for (const collection of ['profile-changes', 'member-accounts']) {
+          await req.payload.delete({ collection: collection as any, where: { musician: { equals: id } }, req, overrideAccess: true });
+        }
+      },
+    ],
+  },
   fields: [
     { name: 'name', type: 'text', required: true, label: 'Nom complet' },
+    {
+      name: 'status',
+      type: 'select',
+      label: 'Statut',
+      defaultValue: NEW_MUSICIAN_STATUS,
+      options: MUSICIAN_STATUSES.map(({ value, label }) => ({ value, label })),
+      admin: {
+        position: 'sidebar',
+        description: 'Seules les fiches « En ligne » apparaissent sur le site : page Musiciens, accueil, page du musicien.',
+        components: { Cell: '@/components/admin/MusicianCells#MusicianStatusCell' },
+      },
+    },
     {
       name: 'slug',
       type: 'text',

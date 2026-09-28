@@ -4,6 +4,7 @@ import './admin-theme.css';
 import './admin-musicians-list.css';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { musicianStatus } from '@/lib/musicianVisibility';
 
 /**
  * Cellules de la liste Musiciens dans l'admin.
@@ -103,6 +104,11 @@ export function MusicianPhotoCell({ cellData, rowData, link, linkURL }: CellProp
 export function MusicianInstrumentCell({ cellData }: CellProps) {
   const value = typeof cellData === 'string' ? cellData.trim() : '';
   return value ? <span>{value}</span> : <span className="lcs-cell-empty" aria-label="Non renseigné">—</span>;
+}
+
+export function MusicianStatusCell({ cellData }: CellProps) {
+  const status = musicianStatus(cellData);
+  return <span className={`lcs-status lcs-status--${status.tone}`}>{status.label}</span>;
 }
 
 export default MusicianPhotoCell;

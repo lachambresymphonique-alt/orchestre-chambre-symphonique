@@ -4,6 +4,7 @@ import { getPayloadClient } from '@/lib/payload';
 import { DirectorClient, type Director } from './DirectorClient';
 import { resolveDirectorPage, type DirectorPageContent } from '@/lib/directorDefaults';
 import { toPlainText } from '@/lib/richText';
+import { publicMusicians } from '@/lib/musicianVisibility';
 
 type PageData = { content: DirectorPageContent; director: Director | null; global: any };
 
@@ -30,7 +31,7 @@ const getPageData = cache(async (): Promise<PageData> => {
   if (!director) {
     const result = await payload.find({
       collection: 'musicians' as any,
-      where: { section: { equals: 'direction' } } as any,
+      where: publicMusicians({ section: { equals: 'direction' } }) as any,
       sort: 'order' as any,
       limit: 1,
       depth: 1,
