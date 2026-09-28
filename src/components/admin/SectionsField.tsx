@@ -4,7 +4,7 @@ import './admin-sections.css';
 import { useCallback, useEffect, useRef, useState, type DragEvent, type FocusEvent } from 'react';
 import { BlocksField, ConfirmationModal, useField, useForm, useModal } from '@payloadcms/ui';
 import type { BlocksFieldClientProps, ClientBlock } from 'payload';
-import { SECTION_NAMES, type SectionMessage } from '@/lib/sections';
+import { DRAG_NEW_SECTION, SECTION_NAMES, type SectionMessage } from '@/lib/sections';
 
 /**
  * « Sections de la page » : la liste des sections (champ blocs natif de
@@ -19,7 +19,7 @@ import { SECTION_NAMES, type SectionMessage } from '@/lib/sections';
  * Shopify : celle qu'on vient d'ajouter ou de sélectionner.
  */
 
-const DRAG_TYPE = 'application/x-lcs-section';
+const DRAG_TYPE = DRAG_NEW_SECTION;
 
 type Drop = { index: number; top: number };
 
@@ -126,6 +126,13 @@ export function SectionsField(props: BlocksFieldClientProps) {
         moveFieldRow({ path, moveFromIndex: index, moveToIndex: index + 1 });
         openOnly(index + 1);
         scrollToRow(index + 1);
+      } else if (action === 'move' && typeof data.to === 'number' && index < count) {
+        const final = data.to > index ? data.to - 1 : data.to;
+        if (final !== index && final >= 0 && final < count) {
+          moveFieldRow({ path, moveFromIndex: index, moveToIndex: final });
+          openOnly(final);
+          scrollToRow(final);
+        }
       } else if (action === 'duplicate' && index < count) {
         dispatchFields({ type: 'DUPLICATE_ROW', path, rowIndex: index });
         setModified(true);

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Sections } from '@/components/sections/Sections';
-import { InsertPoint } from '@/components/sections/PreviewEditing';
+import { InsertPoint, PreviewDropZone } from '@/components/sections/PreviewEditing';
 import type { ConcertCard } from '@/lib/concerts';
 import { resolveSections } from '@/lib/sections';
 
@@ -35,6 +35,7 @@ export function FreePageContent({ title, layout, content, upcomingConcerts, plac
 
   return (
     <main className="free-page">
+      {placeholders && <PreviewDropZone />}
       <div className="page-header">
         <div className="container">
           <p className="breadcrumb">

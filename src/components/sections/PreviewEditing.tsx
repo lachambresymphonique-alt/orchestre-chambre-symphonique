@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { SECTION_CATALOG, type SectionMessage } from '@/lib/sections';
+import { DRAG_MOVE_SECTION, DRAG_NEW_SECTION, SECTION_CATALOG, type SectionMessage } from '@/lib/sections';
 
 /**
  * Outils d'édition posés sur l'aperçu en direct de l'admin (jamais sur le
@@ -14,8 +14,8 @@ import { SECTION_CATALOG, type SectionMessage } from '@/lib/sections';
 
 type Win = Window & { __lcsScrollTo?: number };
 
-function send(action: SectionMessage['action'], index: number, blockType?: string) {
-  const message: SectionMessage = { type: 'lcs:section', action, index, blockType };
+function send(action: SectionMessage['action'], index: number, blockType?: string, to?: number) {
+  const message: SectionMessage = { type: 'lcs:section', action, index, blockType, to };
   try {
     window.parent.postMessage(message, window.location.origin);
   } catch {
@@ -25,6 +25,80 @@ function send(action: SectionMessage['action'], index: number, blockType?: strin
   if (action === 'duplicate') (window as Win).__lcsScrollTo = index + 1;
   if (action === 'up') (window as Win).__lcsScrollTo = index - 1;
   if (action === 'down') (window as Win).__lcsScrollTo = index + 1;
+  if (action === 'move' && typeof to === 'number') (window as Win).__lcsScrollTo = to > index ? to - 1 : to;
+}
+
+type DropLine = { index: number; top: number };
+
+/**
+ * Glisser-déposer sur l'aperçu : une vignette de la palette de l'admin
+ * (nouvelle section) ou la poignée d'une section de l'aperçu (déplacement).
+ * Un trait doré montre où elle tombera ; au dépôt, le geste part vers l'admin.
+ */
+export function PreviewDropZone() {
+  const [line, setLine] = useState<DropLine | null>(null);
+
+  useEffect(() => {
+    const sections = () => [...document.querySelectorAll<HTMLElement>('section[data-live-field^="layout__"]')];
+    const dropAt = (y: number): DropLine => {
+      const list = sections();
+      if (list.length === 0) {
+        const anchor = document.querySelector<HTMLElement>('.page-header');
+        const r = anchor?.getBoundingClientRect();
+        return { index: 0, top: r ? r.bottom + 24 : 160 };
+      }
+      for (let i = 0; i < list.length; i++) {
+        const r = list[i].getBoundingClientRect();
+        if (y < r.top + r.height / 2) return { index: i, top: r.top };
+      }
+      return { index: list.length, top: list[list.length - 1].getBoundingClientRect().bottom };
+    };
+    const kinds = (e: DragEvent) => Array.from(e.dataTransfer?.types ?? []);
+    const accepts = (e: DragEvent) => kinds(e).includes(DRAG_NEW_SECTION) || kinds(e).includes(DRAG_MOVE_SECTION);
+
+    const onOver = (e: DragEvent) => {
+      if (!accepts(e)) return;
+      e.preventDefault();
+      if (e.dataTransfer) e.dataTransfer.dropEffect = kinds(e).includes(DRAG_MOVE_SECTION) ? 'move' : 'copy';
+      setLine(dropAt(e.clientY));
+    };
+    const onLeave = (e: DragEvent) => {
+      // Sortie de l'aperçu (vers l'admin, ou hors de la fenêtre).
+      if (!e.relatedTarget) setLine(null);
+    };
+    const onDrop = (e: DragEvent) => {
+      if (!accepts(e)) return;
+      e.preventDefault();
+      const target = dropAt(e.clientY);
+      setLine(null);
+      const blockType = e.dataTransfer?.getData(DRAG_NEW_SECTION);
+      if (blockType) {
+        send('add', target.index, blockType);
+        return;
+      }
+      const from = Number(e.dataTransfer?.getData(DRAG_MOVE_SECTION));
+      if (Number.isInteger(from) && target.index !== from && target.index !== from + 1) send('move', from, undefined, target.index);
+    };
+    const clear = () => setLine(null);
+
+    document.addEventListener('dragover', onOver);
+    document.addEventListener('dragleave', onLeave);
+    document.addEventListener('drop', onDrop);
+    document.addEventListener('dragend', clear);
+    return () => {
+      document.removeEventListener('dragover', onOver);
+      document.removeEventListener('dragleave', onLeave);
+      document.removeEventListener('drop', onDrop);
+      document.removeEventListener('dragend', clear);
+    };
+  }, []);
+
+  if (!line) return null;
+  return (
+    <div className="lcs-dropline" style={{ top: line.top }} aria-hidden data-lcs-editor>
+      <span>Déposer ici</span>
+    </div>
+  );
 }
 
 export function InsertPoint({ index, big = false }: { index: number; big?: boolean }) {
@@ -92,7 +166,23 @@ const Icon = ({ d }: { d: string }) => (
 export function SectionToolbar({ index, count, name, hidden }: { index: number; count: number; name: string; hidden: boolean }) {
   return (
     <div className="lcs-sectionbar" data-lcs-editor role="toolbar" aria-label={`Section ${name}`}>
-      <span className="lcs-sectionbar__name">{name}</span>
+      <span
+        className="lcs-sectionbar__grip"
+        draggable
+        title="Glisser pour déplacer la section"
+        onDragStart={(e) => {
+          e.dataTransfer.setData(DRAG_MOVE_SECTION, String(index));
+          e.dataTransfer.effectAllowed = 'move';
+          const section = (e.currentTarget as HTMLElement).closest('section');
+          if (section) e.dataTransfer.setDragImage(section, 40, 20);
+        }}
+      >
+        <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden fill="currentColor">
+          <circle cx="9" cy="6" r="1.6" /><circle cx="15" cy="6" r="1.6" /><circle cx="9" cy="12" r="1.6" />
+          <circle cx="15" cy="12" r="1.6" /><circle cx="9" cy="18" r="1.6" /><circle cx="15" cy="18" r="1.6" />
+        </svg>
+        <span className="lcs-sectionbar__name">{name}</span>
+      </span>
       <button type="button" onClick={() => send('up', index)} disabled={index === 0} title="Monter" aria-label="Monter">
         <Icon d="M12 19V5M5 12l7-7 7 7" />
       </button>

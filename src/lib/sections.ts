@@ -143,7 +143,13 @@ export const SECTION_CATALOG: { slug: string; name: string; hint: string; thumb:
 /** Message de l'aperçu vers l'admin (components/sections/PreviewEditing ↔ admin/SectionsField). */
 export type SectionMessage = {
   type: 'lcs:section';
-  action: 'add' | 'up' | 'down' | 'duplicate' | 'hide' | 'delete';
+  action: 'add' | 'up' | 'down' | 'move' | 'duplicate' | 'hide' | 'delete';
   index: number;
   blockType?: string;
+  /** `move` : emplacement de dépôt (0 = avant la première section). */
+  to?: number;
 };
+
+/** Types de données du glisser-déposer : une nouvelle section, ou une section déplacée. */
+export const DRAG_NEW_SECTION = 'application/x-lcs-section';
+export const DRAG_MOVE_SECTION = 'application/x-lcs-move';
