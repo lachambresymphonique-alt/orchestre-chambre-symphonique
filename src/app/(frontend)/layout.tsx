@@ -268,7 +268,9 @@ export default async function FrontendLayout({
     // boutons) en style, réglages fins en data-* (voir src/lib/theme.ts).
     <html lang="fr" className={fontClasses} style={themeVars as React.CSSProperties} {...attrs}>
       <body>
-        {/* Google tag (gtag.js) */}
+        {/* Google tag (gtag.js). Pas de mesure dans les aperçus de l'admin
+            (cadre ou fenêtre d'aperçu, adresses /apercu) ni pour les
+            navigateurs automatisés : mêmes règles que PageViewTracker. */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-PEYDBZWKSP"
           strategy="afterInteractive"
@@ -277,9 +279,20 @@ export default async function FrontendLayout({
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-
-            gtag('config', 'G-PEYDBZWKSP');
+            (function () {
+              var preview = window.self !== window.top
+                || location.pathname.indexOf('/apercu') === 0
+                || navigator.webdriver === true;
+              try {
+                var from = window.opener && window.opener.location;
+                if (from && from.origin === location.origin && from.pathname.indexOf('/admin') === 0) preview = true;
+              } catch (e) {
+                // fenêtre ouverte depuis un autre site : une vraie visite
+              }
+              if (preview) return;
+              gtag('js', new Date());
+              gtag('config', 'G-PEYDBZWKSP');
+            })();
           `}
         </Script>
         <ThemeLive />

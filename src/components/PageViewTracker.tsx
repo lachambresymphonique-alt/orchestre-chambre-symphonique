@@ -44,9 +44,18 @@ export function PageViewTracker() {
     last.current = pathname;
 
     try {
-      // Aperçu en direct de l'admin (iframe) et navigateurs automatisés : ignorés.
+      // Aperçus de l'admin (cadre, fenêtre d'aperçu, adresses /apercu) et
+      // navigateurs automatisés : ignorés. Mêmes règles que Google Analytics
+      // (app/(frontend)/layout.tsx).
       if (window.self !== window.top) return;
+      if (pathname.startsWith('/apercu')) return;
       if (navigator.webdriver) return;
+      try {
+        const from = window.opener?.location;
+        if (from && from.origin === window.location.origin && from.pathname.startsWith('/admin')) return;
+      } catch {
+        // fenêtre ouverte depuis un autre site : une vraie visite
+      }
 
       let referrer = '';
       let internal = false;
