@@ -50,6 +50,9 @@ export default buildConfig({
     user: Users.slug,
     // « 30 septembre 2026 à 20:49 » au lieu de « septembre 30 2026, 8:49 PM ».
     dateFormat: "d MMMM yyyy 'à' HH:mm",
+    // Connexion renouvelée sans la fenêtre « Rester connecté ? » : sans ce
+    // réglage, Payload déconnecte au bout du délai même en pleine saisie.
+    autoRefresh: true,
     importMap: {
       baseDir: path.resolve(dirname),
     },
