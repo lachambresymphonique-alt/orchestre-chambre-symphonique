@@ -18,8 +18,10 @@ import {
   DRAG_MOVE_SECTION,
   DRAG_NEW_SECTION,
   SECTION_NAMES,
+  PAGE_TEMPLATES,
   SECTION_PRESETS,
   findPreset,
+  type PageTemplate,
   type SectionMessage,
 } from '@/lib/sections';
 import { SectionIcon } from '@/components/sections/SectionIcon';
@@ -191,6 +193,9 @@ export function SectionsField(props: BlocksFieldClientProps) {
   const [MediaDrawer, , { openDrawer: openMediaDrawer, closeDrawer: closeMediaDrawer }] = useListDrawer({ collectionSlugs: ['media'] });
   const imagePath = useRef<string | null>(null);
 
+  // Page vide : « Par quoi commencer ? » tant qu'on n'a pas choisi « Page vierge ».
+  const [blankChosen, setBlankChosen] = useState(false);
+
   // Section ouverte (null : le plan de la page).
   const [selected, setSelectedState] = useState<number | null>(null);
   const selectedRef = useRef<number | null>(null);
@@ -344,6 +349,25 @@ export function SectionsField(props: BlocksFieldClientProps) {
     [select, tellPreview, openModal, deleteModal, whenIdle, addFieldRow, path, schemaPath, move, dispatchFields, setModified, getDataByPath, openMediaDrawer],
   );
 
+  /** Pose d'un coup les sections d'un modèle de page, puis montre le plan. */
+  const applyTemplate = (template: PageTemplate) => {
+    whenIdle(() => {
+      template.sections.forEach((section, i) => {
+        const preset = findPreset(section.preset);
+        if (!preset) return;
+        addFieldRow({
+          blockType: preset.blockType,
+          path,
+          rowIndex: countRef.current + i,
+          schemaPath,
+          subFieldState: presetFieldState({ ...preset.values, ...section.values }) as Parameters<typeof addFieldRow>[0]['subFieldState'],
+        });
+      });
+      countRef.current += template.sections.length;
+      select(null);
+    });
+  };
+
   const confirmDelete = () => {
     const index = pendingDelete;
     setPendingDelete(null);
@@ -486,8 +510,31 @@ export function SectionsField(props: BlocksFieldClientProps) {
           </div>
         </>
       ) : null}
+      {count === 0 && !blankChosen && !readOnly && (
+        <div className="lcs-templates">
+          <p className="lcs-templates__title">Par quoi commencer ?</p>
+          <p className="lcs-templates__hint">Un modèle pose des sections déjà rédigées, à adapter : tout reste modifiable.</p>
+          <ul className="lcs-templates__grid">
+            <li>
+              <button type="button" className="lcs-templates__card lcs-templates__card--blank" onClick={() => setBlankChosen(true)}>
+                <strong>Page vierge</strong>
+                <span>Ajouter les sections une à une</span>
+              </button>
+            </li>
+            {PAGE_TEMPLATES.map((template) => (
+              <li key={template.id}>
+                <button type="button" className="lcs-templates__card" onClick={() => applyTemplate(template)}>
+                  <strong>{template.name}</strong>
+                  <span>{template.hint}</span>
+                  <small>{template.sections.map((section) => findPreset(section.preset)?.name).filter(Boolean).join(' · ')}</small>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       <div ref={listRef} className="lcs-sections__list" onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop} onFocus={onFocus}>
-        {!focused && (
+        {!focused && (count > 0 || blankChosen || readOnly) && (
           <>
             <p className="lcs-outline__title">
               Sections de la page

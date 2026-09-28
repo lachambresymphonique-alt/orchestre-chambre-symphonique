@@ -189,6 +189,142 @@ export function findPreset(id: string | undefined | null): SectionPreset | undef
 }
 
 /**
+ * Modèles de page, proposés sur une page vide (« Par quoi commencer ? ») :
+ * une suite de modèles de sections, avec un contenu de départ à adapter.
+ */
+export type PageTemplate = {
+  id: string;
+  name: string;
+  hint: string;
+  sections: { preset: string; values?: Record<string, unknown> }[];
+};
+
+export const PAGE_TEMPLATES: PageTemplate[] = [
+  {
+    id: 'season',
+    name: 'Une saison',
+    hint: 'Présenter une saison ou un cycle de concerts',
+    sections: [
+      {
+        preset: 'mediaText',
+        values: {
+          eyebrow: 'Saison 2026-2027',
+          title: 'Une saison *à partager*',
+          text: 'Présentez la saison en quelques phrases : les grandes œuvres, les lieux, les artistes invités.\n\nUn second paragraphe peut annoncer les temps forts.',
+        },
+      },
+      { preset: 'concerts', values: { title: 'Les *concerts* de la saison' } },
+      { preset: 'quote', values: { quote: 'Une phrase de la direction musicale sur l’esprit de la saison.', author: 'Prénom Nom', role: 'Direction musicale' } },
+      { preset: 'cta', values: { eyebrow: 'Réservations', title: 'Venez nous *écouter*', text: 'Les places sont ouvertes à la réservation.' } },
+    ],
+  },
+  {
+    id: 'event',
+    name: 'Un événement',
+    hint: 'Un concert exceptionnel, un festival, une création',
+    sections: [
+      {
+        preset: 'mediaText:imageRight',
+        values: {
+          eyebrow: 'Samedi 12 juin · 20 h',
+          title: 'Un *événement* à ne pas manquer',
+          text: 'Présentez l’événement : l’occasion, le programme en deux mots, les artistes.\n\nPrécisez le lieu et la façon de s’y rendre.',
+        },
+      },
+      {
+        preset: 'columns:plain',
+        values: {
+          title: 'En *pratique*',
+          items: [
+            { title: 'Le programme', text: 'Les œuvres jouées, dans l’ordre du concert.' },
+            { title: 'Les artistes', text: 'Solistes, direction, formation.' },
+            { title: 'Infos pratiques', text: 'Lieu, horaires, tarifs, accès.' },
+          ],
+        },
+      },
+      { preset: 'video', values: { title: 'En *images*' } },
+      { preset: 'cta', values: { eyebrow: 'Billetterie', title: 'Réservez votre *place*', text: 'Les places sont limitées.', button: { label: 'Réserver', url: '/concerts' } } },
+    ],
+  },
+  {
+    id: 'support',
+    name: 'Nous soutenir',
+    hint: 'Mécénat, dons, partenariats',
+    sections: [
+      {
+        preset: 'mediaText',
+        values: {
+          eyebrow: 'Nous soutenir',
+          title: 'Faire vivre *l’orchestre*',
+          text: 'Dites pourquoi chaque soutien compte : les projets qu’il rend possibles, les publics qu’il permet de toucher.\n\nLes dons ouvrent droit à une réduction d’impôt.',
+        },
+      },
+      {
+        preset: 'columns',
+        values: {
+          title: 'Trois façons de *nous aider*',
+          items: [
+            { title: 'Particuliers', text: 'Un don ponctuel ou régulier, à partir de quelques euros.', link: { label: 'Faire un don', url: '/nous-soutenir' } },
+            { title: 'Entreprises', text: 'Mécénat, partenariat, concert privé pour vos équipes.', link: { label: 'Nous contacter', url: '/contact' } },
+            { title: 'Bénévoles', text: 'Accueil du public, communication, logistique : rejoignez-nous.', link: { label: 'Nous écrire', url: '/contact' } },
+          ],
+        },
+      },
+      { preset: 'quote', values: { quote: 'Le mot d’un mécène ou d’un partenaire sur ce qui l’a convaincu.', author: 'Prénom Nom', role: 'Mécène' } },
+      { preset: 'cta', values: { eyebrow: 'Mécénat', title: 'Devenir *mécène*', text: 'Parlons de votre projet.', button: { label: 'Nous contacter', url: '/contact' } } },
+    ],
+  },
+  {
+    id: 'young',
+    name: 'Jeunes publics',
+    hint: 'Concerts scolaires, ateliers, médiation',
+    sections: [
+      {
+        preset: 'mediaText',
+        values: {
+          eyebrow: 'Jeunes publics',
+          title: 'La musique *dès le plus jeune âge*',
+          text: 'Présentez les actions de l’orchestre auprès des enfants et des jeunes : concerts scolaires, ateliers, répétitions ouvertes.\n\nDites pour qui, où et comment.',
+        },
+      },
+      {
+        preset: 'columns:two',
+        values: {
+          title: 'Nos *actions*',
+          items: [
+            { title: 'Concerts scolaires', text: 'Des concerts pensés pour les classes, de la maternelle au lycée.' },
+            { title: 'Ateliers', text: 'Rencontrer les musiciens, découvrir les instruments, jouer ensemble.' },
+          ],
+        },
+      },
+      { preset: 'gallery', values: { title: 'En *images*' } },
+      { preset: 'cta:inline', values: { title: 'Enseignants : construisons un *projet* ensemble', text: '', button: { label: 'Nous écrire', url: '/contact' } } },
+    ],
+  },
+  {
+    id: 'pro',
+    name: 'Espace pro',
+    hint: 'Programmateurs et presse',
+    sections: [
+      { preset: 'text', values: { eyebrow: 'Professionnels', title: 'Espace *pro*' } },
+      {
+        preset: 'columns',
+        values: {
+          title: 'Ressources',
+          items: [
+            { title: 'Dossier de presse', text: 'Présentation, biographies, programme de la saison.', link: { label: 'Télécharger', url: '' } },
+            { title: 'Fiche technique', text: 'Effectif, plateau, besoins techniques.', link: { label: 'Télécharger', url: '' } },
+            { title: 'Photos', text: 'Photos en haute définition pour la presse.', link: { label: 'Voir les photos', url: '/medias' } },
+          ],
+        },
+      },
+      { preset: 'gallery:grid', values: { title: 'Photos *presse*' } },
+      { preset: 'cta:inline', values: { title: 'Un projet de *programmation* ?', text: 'Contactez-nous pour recevoir une proposition.', button: { label: 'Nous contacter', url: '/contact' } } },
+    ],
+  },
+];
+
+/**
  * Message de l'aperçu vers l'admin (components/sections/PreviewEditing ↔
  * admin/SectionsField). `select` : clic sur une section ; `ready` : l'aperçu
  * vient de se charger et demande quelle section est ouverte ; `field` : texte

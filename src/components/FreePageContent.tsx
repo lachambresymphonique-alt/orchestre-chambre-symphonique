@@ -57,7 +57,7 @@ export function FreePageContent({ title, layout, content, upcomingConcerts, plac
       ) : placeholders ? (
         <section className="section lcs-empty-page" data-live-field="layout">
           <div className="container">
-            <p style={placeholderStyle}>Votre page est vide. Ajoutez une première section : un texte, une photo, une citation…</p>
+            <p style={placeholderStyle}>Votre page est vide. Choisissez un modèle dans le panneau, ou ajoutez une première section : un texte, une photo, une citation…</p>
             <InsertPoint index={0} big />
           </div>
         </section>
