@@ -12,8 +12,15 @@ import {
   useModal,
   useWatchForm,
 } from '@payloadcms/ui';
-import type { BlocksFieldClientProps, ClientBlock } from 'payload';
-import { DRAG_MOVE_SECTION, DRAG_NEW_SECTION, SECTION_NAMES, type SectionMessage } from '@/lib/sections';
+import type { BlocksFieldClientProps } from 'payload';
+import {
+  DRAG_MOVE_SECTION,
+  DRAG_NEW_SECTION,
+  SECTION_NAMES,
+  SECTION_PRESETS,
+  findPreset,
+  type SectionMessage,
+} from '@/lib/sections';
 import { SectionIcon } from '@/components/sections/SectionIcon';
 import { PreviewDevices } from './PreviewDevices';
 import { SectionSummary, type Row } from './SectionRowLabel';
@@ -43,12 +50,35 @@ import { SectionSummary, type Row } from './SectionRowLabel';
 
 type Drop = { index: number; top: number };
 
-type Action = Pick<SectionMessage, 'action' | 'index' | 'blockType' | 'to'>;
+type Action = Pick<SectionMessage, 'action' | 'index' | 'preset' | 'to'>;
 
-const labelOf = (block: ClientBlock) => {
-  const singular = block.labels?.singular;
-  return typeof singular === 'string' ? singular : block.slug;
-};
+type FieldState = Record<string, { value: unknown; initialValue?: unknown; valid: boolean; passesCondition?: boolean; rows?: unknown[]; disableFormData?: boolean }>;
+
+const newRowId = () => Array.from(crypto.getRandomValues(new Uint8Array(12)), (b) => b.toString(16).padStart(2, '0')).join('');
+
+/**
+ * Valeurs d'un modèle en état de champs Payload pour une ligne neuve (clés
+ * relatives à la ligne) : le serveur complète le reste avec les valeurs par
+ * défaut du type de section.
+ */
+function presetFieldState(values: Record<string, unknown> | undefined, prefix = '', state: FieldState = {}): FieldState {
+  for (const [key, value] of Object.entries(values ?? {})) {
+    const path = prefix ? `${prefix}.${key}` : key;
+    if (Array.isArray(value)) {
+      const ids = value.map(() => newRowId());
+      state[path] = { value: value.length, initialValue: value.length, valid: true, passesCondition: true, disableFormData: true, rows: ids.map((id) => ({ id, collapsed: true })) };
+      value.forEach((item, i) => {
+        state[`${path}.${i}.id`] = { value: ids[i], initialValue: ids[i], valid: true, passesCondition: true };
+        presetFieldState(item as Record<string, unknown>, `${path}.${i}`, state);
+      });
+    } else if (value && typeof value === 'object') {
+      presetFieldState(value as Record<string, unknown>, path, state);
+    } else {
+      state[path] = { value, initialValue: value, valid: true, passesCondition: true };
+    }
+  }
+  return state;
+}
 
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -152,7 +182,8 @@ export function SectionsField(props: BlocksFieldClientProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [drop, setDrop] = useState<Drop | null>(null);
   const [dragging, setDragging] = useState(false);
-  const blocks = (field.blocks ?? []).filter((b): b is ClientBlock => typeof b !== 'string');
+  const blockSlugs = new Set((field.blocks ?? []).map((b) => (typeof b === 'string' ? b : b.slug)));
+  const presets = SECTION_PRESETS.filter((preset) => blockSlugs.has(preset.blockType));
   const readOnly = Boolean(props.readOnly);
 
   // Section ouverte (null : le plan de la page).
@@ -259,9 +290,16 @@ export function SectionsField(props: BlocksFieldClientProps) {
       }
       whenIdle(() => {
         const count = countRef.current;
-        if (action === 'add' && data.blockType) {
+        const preset = action === 'add' ? findPreset(data.preset) : undefined;
+        if (preset) {
           const at = Math.max(0, Math.min(index, count));
-          addFieldRow({ blockType: data.blockType, path, rowIndex: at, schemaPath });
+          addFieldRow({
+            blockType: preset.blockType,
+            path,
+            rowIndex: at,
+            schemaPath,
+            subFieldState: presetFieldState(preset.values) as Parameters<typeof addFieldRow>[0]['subFieldState'],
+          });
           countRef.current = count + 1;
           select(at);
         } else if (action === 'up' && index > 0 && index < count) {
@@ -364,9 +402,9 @@ export function SectionsField(props: BlocksFieldClientProps) {
     const target = dropAt(e.clientY);
     setDrop(null);
     setDragging(false);
-    const blockType = e.dataTransfer.getData(DRAG_NEW_SECTION);
-    if (blockType) {
-      act({ action: 'add', index: target.index, blockType });
+    const preset = e.dataTransfer.getData(DRAG_NEW_SECTION);
+    if (preset) {
+      act({ action: 'add', index: target.index, preset });
       return;
     }
     const from = Number(e.dataTransfer.getData(DRAG_MOVE_SECTION));
@@ -454,25 +492,23 @@ export function SectionsField(props: BlocksFieldClientProps) {
             <strong>Ajouter une section</strong> · glissez-la à l’endroit voulu, dans la liste ou sur l’aperçu, ou cliquez pour l’ajouter à la fin.
           </p>
           <ul className="lcs-sections__cards">
-            {blocks.map((block) => (
-              <li key={block.slug}>
+            {presets.map((preset) => (
+              <li key={preset.id}>
                 <button
                   type="button"
                   className="lcs-sections__card"
                   draggable
                   onDragStart={(e) => {
-                    e.dataTransfer.setData(DRAG_NEW_SECTION, block.slug);
+                    e.dataTransfer.setData(DRAG_NEW_SECTION, preset.id);
                     e.dataTransfer.effectAllowed = 'copy';
                     setDragging(true);
                   }}
-                  onClick={() => act({ action: 'add', index: count, blockType: block.slug })}
-                  title={`Glisser dans la page, ou cliquer pour ajouter « ${labelOf(block)} » à la fin`}
+                  onClick={() => act({ action: 'add', index: count, preset: preset.id })}
+                  title={`${preset.name} — ${preset.hint}. Glisser dans la page, ou cliquer pour l’ajouter à la fin.`}
                 >
-                  {block.imageURL && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={block.imageURL} alt="" draggable={false} />
-                  )}
-                  <span>{labelOf(block)}</span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={preset.thumb} alt="" draggable={false} />
+                  <span>{preset.name}</span>
                 </button>
               </li>
             ))}

@@ -128,17 +128,65 @@ export function needsUpcomingConcerts(sections: SectionBlock[]): number {
     .reduce((max, s) => Math.max(max, typeof s.limit === 'number' ? s.limit : 6), 0);
 }
 
-/** Types de sections proposés à l'ajout, dans l'ordre du sélecteur (voir src/blocks/index.ts). */
-export const SECTION_CATALOG: { slug: string; name: string; hint: string; thumb: string }[] = [
-  { slug: 'text', name: 'Texte', hint: 'Paragraphes, intertitres, listes', thumb: '/vignettes-sections/texte.svg' },
-  { slug: 'quote', name: 'Citation', hint: 'Faire entendre une voix', thumb: '/vignettes-sections/citation.svg' },
-  { slug: 'columns', name: 'Colonnes', hint: '2 à 4 cartes côte à côte', thumb: '/vignettes-sections/colonnes.svg' },
-  { slug: 'mediaText', name: 'Texte + image', hint: 'Une photo et un texte', thumb: '/vignettes-sections/texte-image.svg' },
-  { slug: 'gallery', name: 'Photos', hint: 'Mosaïque ou grille', thumb: '/vignettes-sections/photos.svg' },
-  { slug: 'video', name: 'Vidéo', hint: 'YouTube ou Vimeo', thumb: '/vignettes-sections/video.svg' },
-  { slug: 'cta', name: 'Appel à l’action', hint: 'Un titre et un bouton', thumb: '/vignettes-sections/appel.svg' },
-  { slug: 'concerts', name: 'Concerts', hint: 'Les prochaines dates', thumb: '/vignettes-sections/concerts.svg' },
+/**
+ * Modèles proposés à l'ajout (palette de l'admin, « + » de l'aperçu) : un type
+ * de section, une mise en page et, au besoin, un contenu de départ. Tout ce
+ * qu'un modèle ne précise pas prend la valeur par défaut du type (src/blocks).
+ * L'identifiant d'un modèle est « type:variante », ou le type seul.
+ */
+export type SectionPreset = {
+  id: string;
+  blockType: string;
+  name: string;
+  hint: string;
+  thumb: string;
+  values?: Record<string, unknown>;
+};
+
+const para = 'Une ou deux phrases pour la présenter.';
+
+export const SECTION_PRESETS: SectionPreset[] = [
+  { id: 'text', blockType: 'text', name: 'Texte', hint: 'Paragraphes, intertitres, listes', thumb: '/vignettes-sections/texte.svg' },
+  { id: 'text:lead', blockType: 'text', name: 'Introduction', hint: 'Premier paragraphe en exergue', thumb: '/vignettes-sections/texte-intro.svg', values: { variant: 'lead' } },
+  { id: 'quote', blockType: 'quote', name: 'Citation', hint: 'Bandeau centré', thumb: '/vignettes-sections/citation.svg' },
+  { id: 'quote:margin', blockType: 'quote', name: 'Citation en marge', hint: 'Alignée à gauche, discrète', thumb: '/vignettes-sections/citation-marge.svg', values: { variant: 'margin' } },
+  { id: 'columns', blockType: 'columns', name: 'Trois cartes', hint: 'Trois raisons, trois services…', thumb: '/vignettes-sections/colonnes.svg' },
+  {
+    id: 'columns:two',
+    blockType: 'columns',
+    name: 'Deux colonnes',
+    hint: 'Deux blocs côte à côte',
+    thumb: '/vignettes-sections/colonnes-deux.svg',
+    values: {
+      title: 'Deux façons de nous *rejoindre*',
+      items: [
+        { title: 'Pour les musiciens', text: para, link: { label: 'En savoir plus', url: '' } },
+        { title: 'Pour les mécènes', text: para, link: { label: 'En savoir plus', url: '' } },
+      ],
+    },
+  },
+  { id: 'columns:plain', blockType: 'columns', name: 'Colonnes sobres', hint: 'Séparées par des filets', thumb: '/vignettes-sections/colonnes-sobres.svg', values: { variant: 'plain' } },
+  { id: 'mediaText', blockType: 'mediaText', name: 'Photo et texte', hint: 'La photo à gauche', thumb: '/vignettes-sections/texte-image.svg' },
+  { id: 'mediaText:imageRight', blockType: 'mediaText', name: 'Texte et photo', hint: 'La photo à droite', thumb: '/vignettes-sections/texte-image-droite.svg', values: { variant: 'imageRight' } },
+  { id: 'gallery', blockType: 'gallery', name: 'Mosaïque', hint: 'La première photo en grand', thumb: '/vignettes-sections/photos.svg' },
+  { id: 'gallery:grid', blockType: 'gallery', name: 'Grille de photos', hint: 'Toutes de la même taille', thumb: '/vignettes-sections/photos-grille.svg', values: { variant: 'grid' } },
+  { id: 'video', blockType: 'video', name: 'Vidéo', hint: 'YouTube ou Vimeo', thumb: '/vignettes-sections/video.svg' },
+  { id: 'cta', blockType: 'cta', name: 'Appel à l’action', hint: 'Un titre et un bouton', thumb: '/vignettes-sections/appel.svg' },
+  { id: 'cta:inline', blockType: 'cta', name: 'Bandeau lien', hint: 'Une phrase et un lien', thumb: '/vignettes-sections/appel-ligne.svg', values: { variant: 'inline' } },
+  { id: 'concerts', blockType: 'concerts', name: 'Concerts', hint: 'Les prochaines dates, en affiches', thumb: '/vignettes-sections/concerts.svg' },
+  { id: 'concerts:strip', blockType: 'concerts', name: 'Concerts en bande', hint: 'Une bande qui défile', thumb: '/vignettes-sections/concerts-bande.svg', values: { variant: 'strip' } },
 ];
+
+/** Le modèle d'un identifiant (« type:variante » ou type seul). */
+export function findPreset(id: string | undefined | null): SectionPreset | undefined {
+  if (!id) return undefined;
+  const preset = SECTION_PRESETS.find((p) => p.id === id);
+  if (preset) return preset;
+  const blockType = id.split(':')[0];
+  return SECTION_NAMES[blockType]
+    ? { id: blockType, blockType, name: SECTION_NAMES[blockType], hint: '', thumb: '' }
+    : undefined;
+}
 
 /**
  * Message de l'aperçu vers l'admin (components/sections/PreviewEditing ↔
@@ -149,7 +197,8 @@ export type SectionMessage = {
   type: 'lcs:section';
   action: 'add' | 'select' | 'ready' | 'up' | 'down' | 'move' | 'duplicate' | 'hide' | 'delete';
   index: number;
-  blockType?: string;
+  /** `add` : le modèle à ajouter (voir SECTION_PRESETS). */
+  preset?: string;
   /** `move` : emplacement de dépôt (0 = avant la première section). */
   to?: number;
 };

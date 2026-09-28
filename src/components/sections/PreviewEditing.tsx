@@ -5,7 +5,7 @@ import { SectionIcon } from './SectionIcon';
 import {
   DRAG_MOVE_SECTION,
   DRAG_NEW_SECTION,
-  SECTION_CATALOG,
+  SECTION_PRESETS,
   type SectionMessage,
   type SelectedSectionMessage,
 } from '@/lib/sections';
@@ -21,8 +21,8 @@ import {
 
 type Win = Window & { __lcsScrollTo?: number };
 
-function send(action: SectionMessage['action'], index: number, blockType?: string, to?: number) {
-  const message: SectionMessage = { type: 'lcs:section', action, index, blockType, to };
+function send(action: SectionMessage['action'], index: number, preset?: string, to?: number) {
+  const message: SectionMessage = { type: 'lcs:section', action, index, preset, to };
   try {
     window.parent.postMessage(message, window.location.origin);
   } catch {
@@ -78,9 +78,9 @@ export function PreviewDropZone() {
       e.preventDefault();
       const target = dropAt(e.clientY);
       setLine(null);
-      const blockType = e.dataTransfer?.getData(DRAG_NEW_SECTION);
-      if (blockType) {
-        send('add', target.index, blockType);
+      const preset = e.dataTransfer?.getData(DRAG_NEW_SECTION);
+      if (preset) {
+        send('add', target.index, preset);
         return;
       }
       const from = Number(e.dataTransfer?.getData(DRAG_MOVE_SECTION));
@@ -140,13 +140,13 @@ export function InsertPoint({ index, big = false }: { index: number; big?: boole
         <div className="lcs-picker" role="dialog" aria-label="Ajouter une section">
           <p className="lcs-picker__title">Ajouter une section ici</p>
           <ul className="lcs-picker__grid">
-            {SECTION_CATALOG.map((s) => (
-              <li key={s.slug}>
+            {SECTION_PRESETS.map((s) => (
+              <li key={s.id}>
                 <button
                   type="button"
                   className="lcs-picker__card"
                   onClick={() => {
-                    send('add', index, s.slug);
+                    send('add', index, s.id);
                     setOpen(false);
                   }}
                 >
