@@ -24,14 +24,20 @@ import { PageViewTracker } from '@/components/PageViewTracker';
 import { ThemeLive } from '@/components/ThemeLive';
 import { getPayloadClient } from '@/lib/payload';
 import { isNavConfigured, legacyNavItems, resolveNavItems, type NavLink } from '@/lib/navigation';
+import { findNextConcertTeaser, type NextConcertTeaser } from '@/lib/nextConcert';
 import { resolveTheme, type ThemeDoc } from '@/lib/theme';
 
+// Préchargée seulement si elle sert : Fraunces (270 Ko, normale et
+// italique) et Source Serif sont les polices d'origine, que le thème choisi
+// dans l'admin peut remplacer. Préchargées d'office, elles passaient avant
+// la photo du bandeau sur mobile même quand aucune page ne les utilisait.
 const fraunces = Fraunces({
   variable: '--font-fraunces',
   subsets: ['latin'],
   style: ['normal', 'italic'],
   axes: ['SOFT', 'opsz'],
   display: 'swap',
+  preload: false,
 });
 
 // Polices proposées dans « Réglages → Apparence du site » (catalogue :
@@ -149,6 +155,7 @@ const sourceSerif = Source_Serif_4({
   style: ['normal', 'italic'],
   weight: ['400', '500', '600'],
   display: 'swap',
+  preload: false,
 });
 
 const SITE_URL = 'https://www.lachambresymphonique.fr';
@@ -222,21 +229,34 @@ async function getNavItems(
   }
 }
 
+/** Prochain concert, rappelé dans le menu mobile ; rien si la requête échoue. */
+async function getNextConcert(
+  payload: Awaited<ReturnType<typeof getPayloadClient>>,
+): Promise<NextConcertTeaser | null> {
+  try {
+    return await findNextConcertTeaser(payload as any);
+  } catch {
+    return null;
+  }
+}
+
 export default async function FrontendLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const payload = await getPayloadClient();
-  const [siteSettings, navItems, theme] = await Promise.all([
+  const [siteSettings, navItems, theme, nextConcert] = await Promise.all([
     payload.findGlobal({ slug: 'site-settings' as any }),
     getNavItems(payload),
     getTheme(payload),
+    getNextConcert(payload),
   ]);
 
   const settings = {
     description: (siteSettings as any).footerDescription,
     contact: (siteSettings as any).contact,
+    social: (siteSettings as any).social,
   };
 
   const { vars: themeVars, attrs } = resolveTheme(theme);
@@ -296,7 +316,12 @@ export default async function FrontendLayout({
           `}
         </Script>
         <ThemeLive />
-        <Header items={navItems} />
+        <Header
+          items={navItems}
+          nextConcert={nextConcert}
+          email={settings.contact?.email}
+          social={settings.social}
+        />
         {children}
         <Footer settings={settings} />
         {/* Compteur de visites interne (voir /admin/statistiques) */}

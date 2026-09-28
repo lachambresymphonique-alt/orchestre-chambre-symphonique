@@ -2,6 +2,25 @@ import './concert-soloists.css';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { ConcertCard } from '@/lib/concerts';
+import { mapsUrl } from '@/lib/concertCalendar';
+import { PinIcon } from './ConcertActions';
+
+/** « octobre » → « oct. » : la colonne du jour est étroite sur téléphone. */
+const MONTH_SHORT: Record<string, string> = {
+  janvier: 'janv.',
+  février: 'févr.',
+  mars: 'mars',
+  avril: 'avr.',
+  mai: 'mai',
+  juin: 'juin',
+  juillet: 'juil.',
+  août: 'août',
+  septembre: 'sept.',
+  octobre: 'oct.',
+  novembre: 'nov.',
+  décembre: 'déc.',
+};
+const shortMonth = (month: string) => MONTH_SHORT[month.toLowerCase()] ?? month;
 import { ExpandableText } from './ExpandableText';
 import { describeDateRange } from './ConcertPosters';
 
@@ -121,14 +140,31 @@ export function ConcertFeature({ concert, labels }: { concert: ConcertCard; labe
                 <li key={p.id} className="concert-feature__date">
                   <time className="concert-feature__stack" dateTime={p.date.iso}>
                     <span className="concert-feature__day">{p.date.day}</span>
-                    <span className="concert-feature__month">{p.date.month}</span>
+                    <span className="concert-feature__month">
+                      <span className="concert-feature__month-long">{p.date.month}</span>
+                      <span className="concert-feature__month-short" aria-hidden="true">
+                        {shortMonth(p.date.month)}
+                      </span>
+                    </span>
                   </time>
-                  <div className="concert-feature__where">
+                  <div className={`concert-feature__where${p.city ? ' has-city' : ''}`}>
                     <span className="concert-feature__weekday">
                       {p.date.weekday}
                       {p.date.time ? ` · ${p.date.time}` : ''}
                     </span>
-                    <span className="concert-feature__venue">{p.venue}</span>
+                    {/* Toucher la salle ouvre l'itinéraire dans l'application de cartes. */}
+                    {p.venue ? (
+                      <a
+                        href={mapsUrl(p.place)}
+                        className="concert-feature__venue"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Itinéraire vers ${p.place}`}
+                      >
+                        <span className="concert-feature__venue-name">{p.venue}</span>
+                        <PinIcon />
+                      </a>
+                    ) : null}
                     {p.city && <span className="concert-feature__city">{p.city}</span>}
                   </div>
                   <div className="concert-feature__action">

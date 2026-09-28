@@ -45,9 +45,9 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
         </div>
       </div>
 
-      <section style={{ background: 'var(--color-bg)' }} data-live-field="supportTypes">
+      <section data-live-field="supportTypes">
         <div className="container">
-          <p className="section-subtitle" style={{ textAlign: 'center' }}>
+          <p className="section-subtitle">
             {typesHeading.subtitle || 'Comment nous aider'}
           </p>
           <h2 className="section-title">{typesHeading.title || 'Les formes de soutien'}</h2>
@@ -75,18 +75,10 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
           <FadeIn className="container">
             <p className="section-subtitle">{taxInfo.subtitle}</p>
             <h2 className="section-title">{taxInfo.title}</h2>
-            <div
-              className="rich-text"
-              style={{
-                maxWidth: '600px',
-                margin: '0 auto 2rem',
-                color: 'var(--color-text-light)',
-                fontWeight: 300,
-              }}
-            >
+            <div className="tax-info__lede rich-text">
               <RichText text={taxInfo.description} />
             </div>
-            <div className="stats-grid" style={{ maxWidth: '600px', margin: '0 auto' }}>
+            <div className="stats-grid">
               {taxInfo.individualRate && (
                 <div className="stat-item">
                   <span className="highlight">{taxInfo.individualRate}</span>
@@ -101,17 +93,7 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
               )}
             </div>
             {taxInfo.example && (
-              <p
-                style={{
-                  maxWidth: '500px',
-                  margin: '2rem auto 0',
-                  fontSize: '0.85rem',
-                  color: 'var(--color-text-light)',
-                  fontWeight: 300,
-                }}
-              >
-                {taxInfo.example}
-              </p>
+              <p className="tax-info__example">{taxInfo.example}</p>
             )}
           </FadeIn>
         </section>
@@ -119,9 +101,9 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
 
       {simulator.enabled !== false && <DonationSimulator config={simulator} />}
 
-      <section style={{ background: 'var(--color-bg)' }} data-live-field="tiersHeading">
+      <section data-live-field="tiersHeading">
         <div className="container">
-          <p className="section-subtitle" style={{ textAlign: 'center' }}>
+          <p className="section-subtitle">
             {tiersHeading.subtitle || 'Cercle des mécènes'}
           </p>
           <h2 className="section-title">{tiersHeading.title || 'Nos cercles de soutien'}</h2>
@@ -129,14 +111,13 @@ export function SupportClient({ initialData, tiers }: SupportClientProps) {
           <div className="support-options">
             {liveTiers.map((tier: any, i: number) => (
               <FadeIn
-                className="support-card"
+                className={`support-card${tier.highlighted ? ' support-card--highlighted' : ''}`}
                 key={tier.id || i}
                 data-live-link={tier.id ? `/admin/collections/support-tiers/${tier.id}` : undefined}
-                style={tier.highlighted ? { borderColor: 'var(--color-gold)' } : undefined}
               >
                 <h3 data-live-item-field="name">{tier.name}</h3>
                 {tier.minAmount && (
-                  <p style={{ fontWeight: 500, marginBottom: '0.5rem' }} data-live-item-field="minAmount">
+                  <p className="support-card__amount" data-live-item-field="minAmount">
                     {amountTemplate.replace('{montant}', String(tier.minAmount))}
                   </p>
                 )}

@@ -105,10 +105,6 @@ body,
   background: var(--theme-bg);
 }
 
-.template-default__wrap {
-  padding-top: calc(var(--base) * 2);
-}
-
 /* ---------- Barre de navigation latérale ---------- */
 .nav {
   background: var(--theme-elevation-50);

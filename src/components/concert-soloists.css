@@ -41,7 +41,7 @@
   inset: 0;
   display: grid;
   place-items: center;
-  font-family: var(--font-display);
+  font-family: var(--font-h3);
   font-size: 1.8rem;
   font-style: italic;
   color: var(--bordeaux-bright);
@@ -64,7 +64,7 @@
 }
 
 .concert-feature__soloist-name {
-  font-family: var(--font-display);
+  font-family: var(--font-h3);
   font-style: italic;
   font-size: clamp(1.3rem, 1.8vw, 1.6rem);
   line-height: 1.15;

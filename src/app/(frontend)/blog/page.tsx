@@ -227,25 +227,28 @@ export default async function BlogPage({ searchParams }: { searchParams: SearchP
 
       <section className="journal">
         <div className="journal__inner">
-          <nav className="journal-filters" aria-label="Rubriques du blog">
-            <Link
-              href="/blog"
-              className={category ? '' : 'is-active'}
-              aria-current={category ? undefined : 'page'}
-            >
-              Tout
-            </Link>
-            {POST_CATEGORIES.map((c) => (
+          {/* Blog encore vide : pas de rubriques à trier, seulement l'annonce. */}
+          {(posts.length > 0 || category || page > 1) && (
+            <nav className="journal-filters" aria-label="Rubriques du blog">
               <Link
-                key={c.value}
-                href={blogHref(c.value)}
-                className={category === c.value ? 'is-active' : ''}
-                aria-current={category === c.value ? 'page' : undefined}
+                href="/blog"
+                className={category ? '' : 'is-active'}
+                aria-current={category ? undefined : 'page'}
               >
-                {c.plural}
+                Tout
               </Link>
-            ))}
-          </nav>
+              {POST_CATEGORIES.map((c) => (
+                <Link
+                  key={c.value}
+                  href={blogHref(c.value)}
+                  className={category === c.value ? 'is-active' : ''}
+                  aria-current={category === c.value ? 'page' : undefined}
+                >
+                  {c.plural}
+                </Link>
+              ))}
+            </nav>
+          )}
 
           {posts.length === 0 ? (
             <EmptyState filtered={!!category || page > 1} />

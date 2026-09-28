@@ -1,0 +1,478 @@
+/* ==========================================================================
+   Menu mobile (Header.tsx) : bouton « Menu » et panneau plein écran.
+   En dessous de 969 px, le menu en ligne (.nav-main) laisse la place à ce
+   bouton. Le panneau reprend les entrées de « Réglages → Menu du site »,
+   les sous-menus dépliés sous leur titre, puis le prochain concert, l'e-mail
+   et les réseaux (Paramètres du site).
+   Couleurs et polices : jetons du thème (réglables dans « Apparence du site »).
+   ========================================================================== */
+
+.menu-toggle,
+.mobile-menu {
+  display: none;
+}
+
+/* ── « Billets » (Header.tsx) ─────────────────────────────────────────────
+   Couleurs et rayon des boutons pleins du thème (--btn-*), réglables dans
+   « Apparence du site » : un rayon de 999px en fait une pastille. Ordinateur :
+   au bout du menu en ligne. */
+.header-tickets {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  height: 38px;
+  padding: 0 1.15rem;
+  border-radius: var(--btn-radius);
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--d-quick) var(--ease-curtain), color var(--d-quick) var(--ease-curtain);
+}
+
+.header-tickets:active {
+  background: var(--btn-hover);
+  color: var(--btn-ink);
+}
+
+/* Survol : souris seulement (au doigt, l'état resterait accroché après un toucher). */
+@media (hover: hover) {
+  .header-tickets:hover {
+    background: var(--btn-hover);
+    color: var(--btn-ink);
+  }
+}
+
+.header-tickets:focus-visible {
+  outline: 1px solid var(--bordeaux-bright);
+  outline-offset: 3px;
+}
+
+/* Boutons en contour (réglage du thème) : même traitement que .btn-filled. */
+:root[data-buttons='outline'] .header-tickets {
+  background: transparent;
+  color: var(--btn-bg);
+  box-shadow: inset 0 0 0 1px var(--btn-bg);
+}
+
+:root[data-buttons='outline'] .header-tickets:hover {
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+}
+
+@media (min-width: 969px) {
+  /* Le menu en ligne pousse vers la droite ; « Billets » le suit. */
+  .header .nav-main {
+    margin-left: auto;
+  }
+
+  .header-tickets {
+    margin-left: 2rem;
+  }
+}
+
+@media (max-width: 968px) {
+  /* La barre passe à 64 px (--header-height, dans globals.css). */
+  .header .nav-main {
+    display: none;
+  }
+
+  /* ── Bouton ──────────────────────────────────────────────────────────── */
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    min-height: 44px;
+    /* Zone de toucher élargie sans décaler le dessin vers l'intérieur. */
+    margin-right: -0.75rem;
+    padding: 0 0.75rem;
+    border: 0;
+    background: none;
+    color: var(--bordeaux);
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .menu-toggle:focus-visible {
+    outline: 1px solid var(--bordeaux-bright);
+    outline-offset: -4px;
+  }
+
+  .menu-toggle__label {
+    /* « Menu » et « Fermer » occupent la même largeur : l'icône ne saute pas. */
+    min-width: 4.4em;
+    text-align: right;
+  }
+
+  .menu-toggle__icon {
+    position: relative;
+    width: 22px;
+    height: 9px;
+  }
+
+  .menu-toggle__icon span {
+    position: absolute;
+    right: 0;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform var(--d-quick) var(--ease-curtain), width var(--d-quick) var(--ease-curtain);
+  }
+
+  .menu-toggle__icon span:first-child {
+    top: 0;
+    width: 100%;
+  }
+
+  .menu-toggle__icon span:last-child {
+    bottom: 0;
+    width: 62%;
+  }
+
+  .menu-toggle[aria-expanded='true'] .menu-toggle__icon span:first-child {
+    transform: translateY(3.75px) rotate(45deg);
+  }
+
+  .menu-toggle[aria-expanded='true'] .menu-toggle__icon span:last-child {
+    width: 100%;
+    transform: translateY(-3.75px) rotate(-45deg);
+  }
+
+  /* Petits écrans : l'icône seule, « Billets » garde sa place. */
+  @media (max-width: 374px) {
+    .menu-toggle__label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    .menu-toggle {
+      gap: 0;
+    }
+  }
+
+  /* Menu ouvert : le panneau rappelle déjà le prochain concert. */
+  .header.is-menu-open .header-tickets {
+    visibility: hidden;
+  }
+
+  /* Menu ouvert : la barre se fond dans le panneau. */
+  .header.is-menu-open {
+    background: var(--paper);
+    border-bottom-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  html.menu-is-open,
+  html.menu-is-open body {
+    overflow: hidden;
+  }
+
+  /* ── Panneau ─────────────────────────────────────────────────────────── */
+  .mobile-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    padding: calc(var(--header-height) + clamp(1rem, 4vh, 2.5rem)) var(--gutter)
+      calc(1.75rem + env(safe-area-inset-bottom));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--paper);
+    color: var(--bordeaux-deep);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--d-quick) var(--ease-curtain),
+      visibility 0s linear var(--d-quick);
+  }
+
+  .mobile-menu.is-open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 360ms var(--ease-curtain);
+  }
+
+  /* Halo de bougie, décor seul (DESIGN.md). Fixe : il ne rallonge pas le défilement. */
+  .mobile-menu__halo {
+    position: fixed;
+    z-index: -1;
+    left: -35vw;
+    bottom: -30vw;
+    width: 110vw;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      color-mix(in oklch, var(--bordeaux-bright) 14%, transparent) 0%,
+      transparent 62%
+    );
+    pointer-events: none;
+  }
+
+  .mobile-menu__list,
+  .mobile-menu__list ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* La police des grands titres (H1) : le menu se lit comme une page de titre. */
+  .mobile-menu__link {
+    display: block;
+    padding: 0.28rem 0;
+    font-family: var(--font-h1);
+    font-variation-settings: "opsz" 144, "SOFT" var(--soft-h1, 100);
+    font-size: clamp(1.85rem, 8vw, 2.6rem);
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: var(--bordeaux);
+    -webkit-tap-highlight-color: transparent;
+    transition: color var(--d-quick) var(--ease-curtain);
+  }
+
+  .mobile-menu__link:active {
+    color: var(--bordeaux-bright);
+  }
+
+  /* Page en cours : en italique, à la lumière de la bougie. */
+  .mobile-menu__link.active {
+    font-style: italic;
+    color: var(--bordeaux-bright);
+  }
+
+  /* Focus clavier : souligné, pas un cadre sur toute la largeur. */
+  .mobile-menu__link:focus-visible {
+    outline: none;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+    text-decoration-color: var(--bordeaux-bright);
+  }
+
+  .mobile-menu__concert:focus-visible,
+  .mobile-menu__all-concerts:focus-visible,
+  .mobile-menu__email:focus-visible,
+  .mobile-menu__social a:focus-visible {
+    outline: 1px solid var(--bordeaux-bright);
+    outline-offset: 2px;
+  }
+
+  /* Un sous-menu : son titre en petites capitales, ses liens dessous. */
+  .mobile-menu__group {
+    margin-bottom: 0.9rem;
+  }
+
+  .mobile-menu__group:not(:first-child) {
+    margin-top: 0.9rem;
+  }
+
+  /* Une entrée simple qui suit un sous-menu ne doit pas sembler en faire partie. */
+  .mobile-menu__group + li:not(.mobile-menu__group) {
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--paper-rule);
+  }
+
+  .mobile-menu__group-title {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin: 0 0 0.35rem;
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--rose-mute);
+  }
+
+  .mobile-menu__group-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--paper-rule);
+  }
+
+  /* ── Pied du panneau : prochain concert, contact ─────────────────────── */
+  .mobile-menu__foot {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--paper-rule);
+  }
+
+  .mobile-menu__concert {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 1.1rem;
+    padding: 0.25rem 0;
+    color: inherit;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-menu__concert-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 3.2rem;
+  }
+
+  .mobile-menu__concert-day {
+    font-family: var(--font-h1);
+    font-variation-settings: "opsz" 144, "SOFT" var(--soft-h1, 100);
+    font-size: 2.6rem;
+    line-height: 0.9;
+    font-variant-numeric: oldstyle-nums;
+    color: var(--bordeaux-bright);
+  }
+
+  .mobile-menu__concert-month {
+    margin-top: 0.4rem;
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rose-mute);
+  }
+
+  .mobile-menu__concert-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+  }
+
+  /* « Prochain concert » et la ville : séparés par l'écart et la couleur,
+     sans point qui resterait seul en fin de ligne. */
+  .mobile-menu__concert-eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.7rem;
+    font-family: var(--font-body);
+    font-size: 0.64rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--velvet);
+  }
+
+  .mobile-menu__concert-city {
+    white-space: nowrap;
+    color: var(--rose-mute);
+  }
+
+  .mobile-menu__concert-title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    font-family: var(--font-body-serif);
+    font-size: 1.02rem;
+    line-height: 1.4;
+    color: var(--bordeaux);
+  }
+
+  .mobile-menu__concert:active .mobile-menu__concert-title {
+    color: var(--bordeaux-bright);
+  }
+
+  .mobile-menu__all-concerts {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    align-self: flex-start;
+    min-height: 44px;
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--bordeaux-bright);
+  }
+
+  .mobile-menu__contact {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--paper-rule);
+  }
+
+  .mobile-menu__email {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--rose-mute);
+    overflow-wrap: anywhere;
+  }
+
+  /* Icônes alignées sur le texte : la zone de toucher déborde à gauche. */
+  .mobile-menu__social {
+    display: flex;
+    margin-left: -0.8rem;
+  }
+
+  .mobile-menu__social a {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    color: var(--rose-mute);
+    transition: color var(--d-quick) var(--ease-curtain);
+  }
+
+  .mobile-menu__social a:active,
+  .mobile-menu__email:active {
+    color: var(--bordeaux-bright);
+  }
+
+  /* ── Entrée en cascade ───────────────────────────────────────────────── */
+  .mobile-menu :is(.mobile-menu__link, .mobile-menu__group-title, .mobile-menu__foot) {
+    opacity: 0;
+    transform: translateY(14px);
+    /* À la fermeture, rien ne bouge avant que le panneau ait disparu. */
+    transition:
+      opacity 0s linear var(--d-quick),
+      transform 0s linear var(--d-quick),
+      color var(--d-quick) var(--ease-curtain);
+  }
+
+  .mobile-menu.is-open :is(.mobile-menu__link, .mobile-menu__group-title, .mobile-menu__foot) {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 520ms var(--ease-curtain) calc(80ms + var(--i, 0) * 45ms),
+      transform 760ms var(--ease-curtain) calc(80ms + var(--i, 0) * 45ms),
+      color var(--d-quick) var(--ease-curtain);
+  }
+}
+
+@media (max-width: 968px) and (prefers-reduced-motion: reduce) {
+  .mobile-menu.is-open :is(.mobile-menu__link, .mobile-menu__group-title, .mobile-menu__foot) {
+    transform: none;
+    transition-delay: 0s;
+  }
+}

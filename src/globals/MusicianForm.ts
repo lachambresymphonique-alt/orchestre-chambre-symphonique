@@ -17,7 +17,7 @@ import {
 import { richTextAdmin } from '@/lib/richTextAdmin';
 
 /**
- * Formulaire musiciens — questions posées sur /musiciens/contribuer.
+ * Formulaire musiciens — questions posées sur /recrutement/musicien.
  *
  * Le catalogue des questions possibles vit dans `src/lib/musicianForm.ts` :
  * chacune correspond à un champ de la collection « Fiches musiciens reçues ».

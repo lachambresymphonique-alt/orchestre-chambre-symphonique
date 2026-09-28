@@ -1,8 +1,8 @@
 /* ==========================================================================
    Sous-menus du menu principal (Header.tsx, Réglages → Menu du site).
-   Un titre (bouton) et ses liens. Ordinateur : panneau sous le titre, ouvert
-   au survol, au clic ou au clavier. Mobile : les liens se déplient sous le
-   titre dans le panneau latéral.
+   Un titre (bouton) et ses liens, en panneau sous le titre, ouvert au survol,
+   au clic ou au clavier. Sur mobile, le menu en ligne est remplacé par le
+   panneau plein écran de mobile-menu.css, où les sous-menus sont dépliés.
    Couleurs et polices : jetons du thème (réglables dans « Apparence du site »).
    ========================================================================== */
 
@@ -151,51 +151,5 @@
 
   .nav-group:hover .nav-group__chevron {
     transform: translateY(0.08rem) rotate(-135deg);
-  }
-}
-
-/* ── Mobile : liens dépliés sous le titre, dans le panneau latéral ──── */
-@media (max-width: 968px) {
-  .nav-group {
-    width: 100%;
-    border-bottom: 1px solid var(--paper-rule);
-  }
-
-  .nav-group__toggle {
-    width: 100%;
-    justify-content: space-between;
-    padding: 0.85rem 0;
-    font-size: 0.85rem;
-  }
-
-  .nav-group__toggle::after {
-    display: none;
-  }
-
-  .nav-submenu {
-    display: none;
-  }
-
-  .nav-group.is-open > .nav-submenu {
-    display: block;
-    padding-bottom: 0.5rem;
-  }
-
-  /* Liens du sous-menu : en retrait, sans filet entre eux */
-  .nav-main .nav-submenu a {
-    display: block;
-    padding: 0.6rem 0 0.6rem 1rem;
-    border-bottom: 0;
-    font-size: 0.78rem;
-    color: var(--rose-mute);
-  }
-
-  .nav-main .nav-submenu a.active,
-  .nav-main .nav-submenu a:hover {
-    color: var(--bordeaux-bright);
-  }
-
-  .nav-main .nav-submenu a::after {
-    display: none;
   }
 }

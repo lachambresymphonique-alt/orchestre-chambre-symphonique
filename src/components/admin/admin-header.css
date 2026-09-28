@@ -91,3 +91,145 @@
     white-space: nowrap;
   }
 }
+
+/* ---------- Place de la barre ----------
+   La barre est le premier enfant de .template-default__wrap : un padding-top
+   sur ce conteneur (il y en avait un dans admin-theme.css, retiré) la
+   descendrait sous une bande vide, loin du bouton du menu resté en haut.
+   L'air entre la barre et la page se règle ici, sous la barre. */
+.template-default__wrap > .app-header {
+  margin-bottom: calc(var(--base) * 1.25);
+}
+
+/* ---------- Logo dans le fil d'Ariane ----------
+   Payload réserve à l'icône une case de 18 px (16 px sous 1024 px), faite
+   pour son pictogramme carré : le logo de l'orchestre, quatre fois plus
+   large, y était coupé et ne montrait que « CH ». */
+.step-nav .step-nav__home {
+  width: auto;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.step-nav .step-nav__home .lcs-admin-icon {
+  display: inline-flex;
+  width: auto;
+}
+
+/* AdminIcon embarque sa feuille dans un <style> ; la règle de Payload
+   « .step-nav * { display: block } » l'affichait en texte à côté du logo. */
+.step-nav style {
+  display: none !important;
+}
+
+/* ---------- « Accueil » du tableau de bord ----------
+   C'est un menu déroulant de Payload rendu inerte (admin-overview.css) ; il
+   gardait le cadre blanc d'un champ de formulaire. Ici, du texte, comme les
+   autres étapes du fil d'Ariane. */
+/* !important : le thème impose le cadre des champs à tous les .rs__control. */
+.step-nav .dashboard-breadcrumb-select .rs__control {
+  min-height: 0;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+.step-nav .dashboard-breadcrumb-select .rs__value-container {
+  padding: 0;
+}
+
+/* ---------- Téléphone ----------
+   Barre un peu plus haute et zones de toucher de 44 px (menu, « Voir le
+   site », compte) : les boutons faisaient 22 à 32 px. Les marges négatives
+   gardent les icônes alignées sur les bords du contenu. */
+@media (max-width: 768px) {
+  :root {
+    --app-header-height: 56px;
+  }
+
+  .template-default__wrap > .app-header {
+    margin-bottom: var(--base);
+  }
+
+  .app-header__mobile-nav-toggler {
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-left: -11px;
+  }
+
+  .app-header__mobile-nav-toggler .hamburger {
+    width: 24px;
+    height: 24px;
+  }
+
+  .lcs-header-link {
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-color: transparent;
+    background: none;
+  }
+
+  .lcs-header-link svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .app-header__actions-wrapper {
+    margin-right: 0;
+  }
+
+  .app-header__actions {
+    gap: 0;
+  }
+
+  .app-header__account {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-right: -10px;
+  }
+
+  .step-nav .step-nav__home .lcs-admin-icon,
+  .step-nav .step-nav__home .lcs-admin-icon svg {
+    height: 20px;
+  }
+
+  /* Le fil d'Ariane ne pousse jamais les boutons hors de l'écran : la
+     dernière étape se coupe en « … ». */
+  .app-header__controls-wrapper,
+  .app-header__step-nav-wrapper,
+  .step-nav {
+    min-width: 0;
+  }
+
+  /* Seule la dernière étape rétrécit ; les « / » gardent leur largeur. */
+  .step-nav > * {
+    flex-shrink: 0;
+  }
+
+  .step-nav > :last-child {
+    min-width: 0;
+    flex-shrink: 1;
+  }
+
+  /* Tableau de bord : le logo mène déjà à l'accueil, « / Accueil » répète. */
+  .step-nav:has(.dashboard-breadcrumb-select) > :not(.step-nav__home) {
+    display: none;
+  }
+}
+
+/* ---------- Barre d'actions d'une fiche, au défilement ----------
+   Sous 1024 px, Payload colle la barre d'actions (« Sauvegarder », aperçu,
+   « Partager le lien ») avec top: -56px, pour que la ligne « Dernière
+   modification » passe sous le bord et que les boutons restent visibles.
+   Sur une page globale, cette ligne ne fait que 32 px : les boutons étaient
+   coupés de moitié. On lui donne les 56 px que Payload escompte. */
+@media (max-width: 1024px) {
+  .doc-controls.gutter .doc-controls__content {
+    min-height: 56px;
+  }
+}

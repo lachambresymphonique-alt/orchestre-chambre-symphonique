@@ -11,9 +11,10 @@ export type MediaTabLabels = {
 };
 
 interface MediaTabsProps {
-  videos: ReactNode;
-  audio: ReactNode;
-  photos: ReactNode;
+  /** `null` : rubrique vide, sans onglet ni intertitre. */
+  videos: ReactNode | null;
+  audio: ReactNode | null;
+  photos: ReactNode | null;
   /** Labels editable in Pages → Page Médias; defaults below. */
   labels?: MediaTabLabels | null;
 }
@@ -29,42 +30,48 @@ export function MediaTabs({ videos, audio, photos, labels }: MediaTabsProps) {
     photos: labels?.photosLabel || 'Photos',
     gallery: labels?.galleryTitle || 'Galerie photos',
   };
-  const tabs: { key: TabKey; label: string }[] = [
-    { key: 'all', label: l.all },
-    { key: 'videos', label: l.videos },
-    { key: 'audio', label: l.audio },
-    { key: 'photos', label: l.photos },
-  ];
+  const sections = [
+    { key: 'videos', label: l.videos, content: videos },
+    { key: 'audio', label: l.audio, content: audio },
+    { key: 'photos', label: l.photos, content: photos },
+  ].filter((t) => t.content !== null) as { key: TabKey; label: string }[];
+  // Des onglets seulement s'il y a de quoi choisir.
+  const tabs = sections.length > 1 ? [{ key: 'all' as TabKey, label: l.all }, ...sections] : [];
+  const shows = (key: TabKey) => active === 'all' || active === key;
 
   return (
     <>
-      <div className="media-tabs">
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            className={`media-tab${active === tab.key ? ' active' : ''}`}
-            onClick={() => setActive(tab.key)}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      {tabs.length > 0 && (
+        <div className="media-tabs">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              type="button"
+              className={`media-tab${active === tab.key ? ' active' : ''}`}
+              aria-pressed={active === tab.key}
+              onClick={() => setActive(tab.key)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      )}
 
-      {(active === 'all' || active === 'videos') && (
+      {videos !== null && shows('videos') && (
         <div style={{ marginBottom: '3rem' }}>
           <div className="section-divider"><h3>{l.videos}</h3></div>
           {videos}
         </div>
       )}
 
-      {(active === 'all' || active === 'audio') && (
+      {audio !== null && shows('audio') && (
         <div style={{ marginBottom: '3rem' }}>
           <div className="section-divider"><h3>{l.audio}</h3></div>
           {audio}
         </div>
       )}
 
-      {(active === 'all' || active === 'photos') && (
+      {photos !== null && shows('photos') && (
         <div>
           <div className="section-divider"><h3>{l.gallery}</h3></div>
           {photos}

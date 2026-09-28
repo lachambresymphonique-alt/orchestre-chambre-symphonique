@@ -453,7 +453,7 @@ export function DonationSimulator({ config }: { config?: any } = {}) {
             rel="noopener noreferrer"
             className="donation-sim__cta"
           >
-            {withAmount(cfg.ctaText)} →
+            {withAmount(cfg.ctaText)}{'\u00a0'}→
           </a>
         </div>
       </div>

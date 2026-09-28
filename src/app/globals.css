@@ -377,6 +377,11 @@ p {
   max-width: 100%;
 }
 
+@media (max-width: 968px) {
+  /* Barre plus basse sur mobile : le bouton « Menu » remplace le menu en ligne. */
+  :root { --header-height: 64px; }
+}
+
 @media (max-width: 600px) {
   .logo svg { height: 30px; }
 }
@@ -419,29 +424,8 @@ p {
   color: var(--bordeaux-bright);
 }
 
-/* Hamburger */
-.hamburger {
-  display: none;
-  flex-direction: column;
-  cursor: pointer;
-  gap: 5px;
-  background: none;
-  border: none;
-  padding: 0;
-  z-index: 1001;
-}
-
-.hamburger span {
-  width: 22px;
-  height: 1.5px;
-  background: var(--paper-soft);
-  transition: all var(--d-quick) var(--ease-curtain);
-  display: block;
-}
-
-.hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 4px); }
-.hamburger.active span:nth-child(2) { opacity: 0; }
-.hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -4px); }
+/* Mobile (≤ 968 px) : bouton « Menu » et panneau plein écran,
+   voir src/components/mobile-menu.css. */
 
 /* ============================================================
    FOOTER
@@ -473,17 +457,18 @@ p {
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  grid-template-columns: 1.6fr 1.3fr 1fr;
   gap: 3rem;
   margin-bottom: 3.5rem;
 }
 
 @media (max-width: 900px) {
   .footer-grid { grid-template-columns: 1fr 1fr; }
+  .footer-about { grid-column: 1 / -1; }
 }
 
 @media (max-width: 600px) {
-  .footer-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .footer-grid { grid-template-columns: 1fr; gap: 2.75rem; }
 }
 
 .footer-about .logo {
@@ -546,6 +531,29 @@ p {
   border-bottom-color: var(--on-bordeaux-glow);
 }
 
+/* Toutes les pages, sur deux colonnes : la liste reste courte. */
+.footer-links--pages {
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  column-gap: clamp(2rem, 4vw, 3rem);
+}
+
+.footer-address {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--on-bordeaux-mute);
+}
+
+@media (max-width: 600px) {
+  /* Au doigt : des lignes assez hautes pour viser sans se tromper. */
+  .footer-links { row-gap: 0; }
+  .footer-links a { padding-block: 0.55rem; }
+  .footer-address { margin-top: 0.55rem; }
+}
+
 .footer-social {
   display: flex;
   gap: 0.85rem;
@@ -583,7 +591,22 @@ p {
   letter-spacing: 0.01em;
 }
 
-.footer-bottom a:hover {
+.footer-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: 0.01em;
+  color: inherit;
+  cursor: pointer;
+  transition: color var(--d-quick) var(--ease-curtain);
+}
+
+.footer-top:hover {
   color: var(--on-bordeaux-glow);
 }
 
@@ -658,6 +681,17 @@ p {
 }
 
 .breadcrumb-current {
+  color: var(--on-bordeaux-mute);
+}
+
+/* Dans un en-tête de page, la règle .page-header p (plus spécifique) donnait
+   au fil d'Ariane le dessin du chapeau, sans marge : il collait au titre. */
+.page-header p.breadcrumb {
+  max-width: none;
+  margin: 0 0 clamp(1.25rem, 3vw, 2.25rem);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  line-height: 1.5;
   color: var(--on-bordeaux-mute);
 }
 
@@ -803,6 +837,63 @@ p {
   font-weight: 400;
 }
 
+/* Prochain concert et « Réserver » : l'appel principal de la bannière. */
+.hero-next {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  margin: 0 0 1.75rem;
+  color: var(--on-bordeaux);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hero-next__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.hero-next__eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--on-bordeaux-glow);
+}
+
+.hero-next__when {
+  font-family: var(--font-h2);
+  font-variation-settings: "opsz" 144, "SOFT" var(--soft-h2, 100);
+  font-style: italic;
+  font-size: clamp(1.35rem, 2.2vw, 1.7rem);
+  line-height: 1.15;
+  color: var(--on-bordeaux);
+}
+
+.hero-next__where {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--on-bordeaux-mute);
+}
+
+.hero-next__cta.btn-filled {
+  padding: 1rem 1.9rem;
+}
+
+.hero-next:hover .hero-next__cta {
+  background: var(--btn-hover);
+}
+
+.hero-next:focus-visible {
+  outline: 1px solid var(--on-bordeaux-glow);
+  outline-offset: 6px;
+}
+
 .hero-modern__cues {
   display: flex;
   flex-wrap: wrap;
@@ -818,6 +909,19 @@ p {
   align-self: stretch;
   background: var(--paper-deep);
   overflow: hidden;
+}
+
+/* Lent recul de la photo à l'ouverture, comme une caméra qui se pose.
+   Transformation seule ; effacé si l'appareil demande moins d'animations
+   (règle globale prefers-reduced-motion). */
+@keyframes hero-settle {
+  from { transform: scale(1.08); }
+  to   { transform: scale(1); }
+}
+
+.hero-modern__portrait img {
+  transform-origin: 50% 35%;
+  animation: hero-settle 14s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .hero-modern__portrait::after {
@@ -1137,6 +1241,8 @@ p {
     "director history";
   gap: 1px;
   background: var(--paper-rule);
+  /* Le fond ne sert qu'aux filets entre les cartes, pas aux marges. */
+  background-clip: content-box;
   max-width: var(--max-width-wide);
   margin: 0 auto;
   padding: 0 var(--gutter);
@@ -1208,8 +1314,15 @@ p {
   .bento-card--director {
     flex-direction: column;
   }
+  /* Portrait 4:5 au-dessus du texte ; sans min-height, la photo prenait
+     toute la hauteur de la carte et rognait le nom. */
   .bento-card--director .bento-card__media {
-    flex: 0 0 280px;
+    flex: none;
+    min-height: 0;
+    aspect-ratio: 4 / 5;
+  }
+  .bento-card--director .bento-card__media::after {
+    background: linear-gradient(to bottom, transparent 70%, oklch(11% 0.012 55 / 0.35));
   }
 }
 
@@ -1243,29 +1356,183 @@ p {
   flex-direction: column;
 }
 
-.bento-card__collage {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  flex: 1;
-  min-height: 220px;
-  gap: 1px;
-  background: var(--paper-rule);
+/* ---- Bande de portraits (MusiciansStrip.tsx) ----
+   Un portrait vertical (3:4) par musicien, le nom et l'instrument dessous ;
+   la bande défile au doigt et se termine par « Voir tous les musiciens ».
+   La carte n'est plus un lien entier : pas d'effet de survol sur son fond. */
+.bento-card.bento-card--musicians {
+  cursor: auto;
 }
 
-.bento-card__collage-item {
+.bento-card.bento-card--musicians:hover {
+  background: var(--paper);
+}
+
+.musicians-strip__track {
+  list-style: none;
+  margin: 0;
+  padding: clamp(1.5rem, 2.5vw, 2.25rem) clamp(1.5rem, 2.5vw, 2.25rem) 0.25rem;
+  display: flex;
+  gap: 0.85rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: clamp(1.5rem, 2.5vw, 2.25rem);
+  scrollbar-width: none;
+}
+
+.musicians-strip__track::-webkit-scrollbar {
+  display: none;
+}
+
+.musicians-strip__track > li {
+  flex: 0 0 clamp(8.5rem, 38vw, 10.5rem);
+  scroll-snap-align: start;
+}
+
+.musicians-strip__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.musicians-strip__photo {
   position: relative;
-  background: var(--paper-deep);
+  display: block;
+  aspect-ratio: 3 / 4;
+  margin-bottom: 0.5rem;
   overflow: hidden;
-  filter: grayscale(0.2);
-  transition: filter var(--d-medium) var(--ease-curtain);
+  background: var(--paper-deep);
 }
 
-.bento-card--musicians:hover .bento-card__collage-item {
-  filter: grayscale(0);
+.musicians-strip__photo img {
+  transition: transform var(--d-slow) var(--ease-curtain);
+}
+
+.musicians-strip__item:hover .musicians-strip__photo img {
+  transform: scale(1.04);
+}
+
+.musicians-strip__name {
+  font-family: var(--font-h3);
+  font-variation-settings: "opsz" 144, "SOFT" var(--soft-h3, 100);
+  font-style: italic;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  color: var(--bordeaux);
+  transition: color var(--d-quick) var(--ease-curtain);
+}
+
+.musicians-strip__item:hover .musicians-strip__name,
+.musicians-strip__item:active .musicians-strip__name {
+  color: var(--bordeaux-bright);
+}
+
+.musicians-strip__role {
+  overflow: hidden;
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--velvet);
+}
+
+.musicians-strip__item:focus-visible,
+.musicians-strip__all:focus-visible {
+  outline: 1px solid var(--bordeaux-bright);
+  outline-offset: 3px;
+}
+
+/* Dernière vignette : même format qu'un portrait, en appel à continuer. */
+.musicians-strip__all {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  aspect-ratio: 3 / 4;
+  padding: 1.1rem;
+  border: 1px solid var(--paper-rule);
+  background:
+    radial-gradient(circle at 30% 20%, color-mix(in oklch, var(--bordeaux-bright) 14%, transparent), transparent 65%),
+    var(--paper-soft);
+  color: var(--bordeaux);
+  transition: border-color var(--d-quick) var(--ease-curtain);
+}
+
+.musicians-strip__all:hover,
+.musicians-strip__all:active {
+  border-color: var(--bordeaux-bright);
+}
+
+.musicians-strip__all-label {
+  font-family: var(--font-h3);
+  font-variation-settings: "opsz" 144, "SOFT" var(--soft-h3, 100);
+  font-style: italic;
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+.musicians-strip__all-arrow {
+  font-size: 1.1rem;
+  color: var(--bordeaux-bright);
+  transition: transform var(--d-quick) var(--ease-curtain);
+}
+
+.musicians-strip__all:hover .musicians-strip__all-arrow {
+  transform: translateX(4px);
+}
+
+/* Flèches : seulement avec une souris, et si la bande déborde. Posées en
+   bas à droite de la carte (positionnée), sur la ligne du lien, pour ne
+   masquer aucun visage. */
+.musicians-strip__nav {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .musicians-strip__nav {
+    position: absolute;
+    right: clamp(1.5rem, 2.5vw, 2.25rem);
+    bottom: clamp(1.5rem, 2.5vw, 2.25rem);
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .musicians-strip__nav.is-hidden {
+    display: none;
+  }
+
+  .musicians-strip__btn {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--paper-rule);
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--paper) 80%, transparent);
+    color: var(--bordeaux);
+    cursor: pointer;
+    transition: border-color var(--d-quick) var(--ease-curtain), color var(--d-quick) var(--ease-curtain);
+  }
+
+  .musicians-strip__btn:hover {
+    border-color: var(--bordeaux-bright);
+    color: var(--bordeaux-bright);
+  }
+}
+
+.bento-card__cta {
+  align-self: flex-start;
+  min-height: 44px;
 }
 
 .bento-card--musicians .bento-card__text {
+  flex: 1;
   padding: clamp(1.5rem, 2.5vw, 2.25rem);
   display: flex;
   flex-direction: column;
@@ -2059,7 +2326,14 @@ button.musician-card:hover .musician-name {
 }
 
 @media (max-width: 700px) {
-  .musician-card.featured { grid-column: span 1; }
+  /* Deux portraits par rangée ; le chef garde toute la largeur. */
+  .musicians-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 1rem;
+  }
+  .musician-card.featured { grid-column: 1 / -1; }
+  .musician-photo { margin-bottom: 0.9rem; }
+  .musician-card .role { letter-spacing: 0.16em; }
 }
 
 /* ============================================================
@@ -2206,6 +2480,7 @@ button.musician-card:hover .musician-name {
   font-size: 1rem;
   line-height: 1.8;
   color: var(--bordeaux-deep);
+  margin-top: 2rem;
   margin-bottom: 2.5rem;
 }
 
@@ -3700,6 +3975,11 @@ button.musician-card:hover .musician-name {
 }
 
 @media (max-width: 700px) {
+  /* Deux chiffres par rangée : le bloc tient dans un écran. */
+  .about-stats__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 1.25rem;
+  }
   .about-stats__list li { border-left: none; padding-left: 0; }
 }
 
@@ -3806,6 +4086,19 @@ button.musician-card:hover .musician-name {
 
 @media (max-width: 900px) {
   .contact-grid { grid-template-columns: 1fr; }
+
+  /* 16 px au moins : iOS ne zoome plus sur le champ touché. Préfixe de
+     section : la règle générale des champs, plus bas, l'emporterait. */
+  .contact-section .contact-form input,
+  .contact-section .contact-form select { font-size: 1rem; }
+}
+
+@media (max-width: 600px) {
+  /* Le bouton d'envoi, pleine largeur, sous le pouce. */
+  .contact-form .btn-filled {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .contact-form__title {
@@ -3990,6 +4283,56 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   color: var(--bordeaux);
 }
 
+@media (max-width: 600px) {
+  /* Une seule rangée qui défile au doigt, plutôt que deux lignes bancales. */
+  .media-tabs {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    margin-inline: calc(-1 * var(--gutter));
+    margin-bottom: 2.5rem;
+    padding-inline: var(--gutter);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .media-tabs::-webkit-scrollbar { display: none; }
+
+  .media-tab {
+    flex: none;
+    min-height: 44px;
+    padding: 0 1.15rem;
+  }
+}
+
+/* Intertitres « Vidéos », « Enregistrements », « Galerie photos » :
+   même dessin que les pupitres de la page Musiciens. */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin: 0 0 clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.section-divider h3 {
+  margin: 0;
+  font-family: var(--font-h2);
+  font-variation-settings: "opsz" 144, "SOFT" var(--soft-h2, 100);
+  font-style: italic;
+  font-size: clamp(1.75rem, 3.2vw, 2.6rem);
+  font-weight: 400;
+  letter-spacing: -0.018em;
+  color: var(--bordeaux);
+}
+
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--paper-rule);
+}
+
 .media-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -4063,6 +4406,35 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   gap: 1rem;
 }
 
+@media (max-width: 600px) {
+  .media-grid--audio { gap: 1rem; }
+
+  .media-grid--audio .media-card {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .media-grid--audio .media-thumbnail {
+    aspect-ratio: auto;
+    min-height: 100%;
+  }
+
+  .media-grid--audio .media-thumbnail .play-icon,
+  .media-grid--audio .media-thumbnail svg {
+    transform: scale(0.8);
+  }
+
+  .media-grid--audio .media-info { padding: 1.1rem 1.25rem; }
+  .media-grid--audio .media-info h3 { font-size: 1.15rem; }
+
+  .media-info { padding: 1.25rem; }
+  .media-info h3 { font-size: 1.2rem; }
+
+  /* Galerie : deux photos par rangée, pas une par écran. */
+  .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+}
+
 .gallery-item {
   aspect-ratio: 1;
   background: var(--paper-deep);
@@ -4116,6 +4488,144 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   margin-bottom: 1.5rem;
 }
 
+.tax-info {
+  background: var(--paper-soft);
+  text-align: center;
+}
+
+.tax-info .highlight {
+  font-family: var(--font-h3);
+  font-style: italic;
+  font-size: clamp(2.5rem, 4vw, 3.25rem);
+  color: var(--velvet);
+  font-weight: 400;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.tax-info__lede {
+  max-width: 36rem;
+  margin: 0 auto 2.5rem;
+  font-family: var(--font-body-serif);
+  font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+  line-height: 1.6;
+  color: var(--rose-shadow);
+}
+
+.tax-info__example {
+  max-width: 32rem;
+  margin: 2.25rem auto 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--rose-mute);
+}
+
+/* Les deux taux côte à côte, même sur téléphone. */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 34rem;
+  margin: 0 auto;
+  border-block: 1px solid var(--paper-rule);
+}
+
+.stat-item {
+  padding: 1.75rem 0.75rem;
+}
+
+.stat-item + .stat-item {
+  border-left: 1px solid var(--paper-rule);
+}
+
+.stat-item .label {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+}
+
+/* Sur-titre et titre de section de la page Nous soutenir. */
+.section-subtitle {
+  display: block;
+  margin: 0 0 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--velvet);
+}
+
+.section-title {
+  max-width: 20ch;
+  margin: 0 auto clamp(2.5rem, 5vw, 4rem);
+  font-family: var(--font-h2);
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  text-align: center;
+  text-wrap: balance;
+  color: var(--bordeaux);
+}
+
+/* Appel à l'action d'une carte de soutien : texte et flèche, en or. */
+.support-card .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bordeaux-bright);
+}
+
+.support-card .btn::after {
+  content: '→';
+  transition: transform var(--d-quick) var(--ease-curtain);
+}
+
+.support-card .btn:hover::after {
+  transform: translateX(4px);
+}
+
+.support-card .btn-outline {
+  padding: 0 1.4rem;
+  border: 1px solid color-mix(in oklch, var(--bordeaux-bright) 55%, transparent);
+  transition: background var(--d-quick) var(--ease-curtain), color var(--d-quick) var(--ease-curtain);
+}
+
+.support-card .btn-outline:hover {
+  background: var(--bordeaux-bright);
+  color: var(--btn-ink);
+}
+
+.support-card--highlighted {
+  border-top-color: var(--bordeaux-bright);
+}
+
+.support-card__amount {
+  font-weight: 500;
+  color: var(--bordeaux);
+}
+
+.support-card p.support-card__amount {
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .support-options { gap: 1rem; }
+  .support-card { padding: 1.75rem 1.5rem; }
+  .support-card p { margin-bottom: 1rem; }
+}
+
 /* Description mise en forme d'une carte (lib/richText) : l'espace sous le
    bloc, pas sous chaque paragraphe. */
 .support-card__text {
@@ -4136,21 +4646,6 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
 .tax-info .rich-text__list {
   padding-left: 0;
   list-style-position: inside;
-}
-
-.tax-info {
-  background: var(--paper-soft);
-  text-align: center;
-}
-
-.tax-info .highlight {
-  font-family: var(--font-h3);
-  font-style: italic;
-  font-size: clamp(2.5rem, 4vw, 3.25rem);
-  color: var(--velvet);
-  font-weight: 400;
-  display: block;
-  margin-bottom: 0.5rem;
 }
 
 /* ============================================================
@@ -4180,17 +4675,35 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   color: var(--bordeaux-deep);
 }
 
+.free-page__body {
+  padding-bottom: clamp(5rem, 9vw, 8rem);
+}
+
+/* Un titre de niveau 1 dans le texte : chapeau de la page, pas un second H1 géant. */
+.rich-text-content h1 {
+  margin: 0 0 1.5rem;
+  font-family: var(--font-h1);
+  font-variation-settings: "opsz" 144, "SOFT" var(--soft-h1, 100);
+  font-size: clamp(1.85rem, 4.5vw, 2.75rem);
+  line-height: 1.12;
+  text-wrap: balance;
+  color: var(--bordeaux);
+}
+
 .rich-text-content h2 {
   font-family: var(--font-h2);
   font-style: italic;
-  font-size: 2.25rem;
+  font-size: clamp(1.6rem, 4vw, 2.25rem);
+  line-height: 1.15;
   margin: 2.5rem 0 1rem;
+  text-wrap: balance;
   color: var(--bordeaux);
 }
 
 .rich-text-content h3 {
   font-family: var(--font-h3);
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  line-height: 1.25;
   margin: 2rem 0 0.75rem;
 }
 
@@ -4212,43 +4725,13 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
 /* ============================================================
    RESPONSIVE
    ============================================================ */
-@media (max-width: 968px) {
-  .nav-main {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 320px;
-    max-width: 85vw;
-    height: 100vh;
-    background: var(--paper);
-    flex-direction: column;
-    padding: 6rem 2rem 2rem;
-    gap: 1.25rem;
-    transition: right var(--d-medium) var(--ease-curtain);
-    box-shadow: -10px 0 40px oklch(11% 0.012 55 / 0.12);
-    align-items: flex-start;
-  }
-
-  .nav-main.open { right: 0; }
-
-  .nav-main a {
-    font-size: 0.85rem;
-    padding: 0.85rem 0;
-    border-bottom: 1px solid var(--paper-rule);
-    width: 100%;
-  }
-
-  .hamburger { display: flex; }
-}
-
 @media (max-width: 600px) {
   .container { padding: 0 1.25rem; }
 
-  .newsletter-form { flex-direction: column; align-items: flex-start; }
-  .newsletter-form button { padding-left: 0; padding-top: 1rem; }
+  .newsletter-form input[type="email"] { min-width: 0; font-size: 1rem; }
+  .newsletter-form button { padding-left: 1rem; white-space: nowrap; }
 
-  .media-grid,
-  .gallery-grid { grid-template-columns: 1fr; }
+  .media-grid { grid-template-columns: 1fr; }
 }
 
 /* ============================================================
@@ -4655,14 +5138,10 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.donation-sim__impact-main::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 3px;
-  height: 100%;
-  background: linear-gradient(to bottom, var(--velvet), transparent);
+/* Filet du haut à la couleur de la bougie, comme les cartes de soutien
+   (pas de filet latéral : DESIGN.md). */
+.donation-sim__impact-main {
+  border-top-color: color-mix(in oklch, var(--velvet) 75%, transparent);
 }
 
 .donation-sim__icon {
@@ -4772,16 +5251,6 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   color: var(--bordeaux);
 }
 
-.donation-sim__rung.is-current::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 60%;
-  background: var(--velvet);
-}
 
 .donation-sim__rung.is-current .donation-sim__rung-amount {
   color: var(--velvet);
@@ -4819,6 +5288,20 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   letter-spacing: 0.22em;
 }
 
+@media (max-width: 600px) {
+  /* Pleine largeur et sur une ligne : « Faire ce don de 500 € → ». */
+  .donation-sim__cta {
+    width: 100%;
+    padding-inline: 1rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+  }
+
+  .donation-sim__cta:hover {
+    letter-spacing: 0.14em;
+  }
+}
+
 /* ============================================================
    HERO — grands écrans : largeur de contenu bornée, hauteur plafonnée
    ============================================================ */
@@ -4826,6 +5309,117 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   /* Fond pleine largeur, grille centrée et bornée comme les autres sections */
   padding-inline: max(var(--gutter), calc((100% - var(--max-width-wide)) / 2));
   min-height: min(100vh, 58rem);
+}
+
+/* ============================================================
+   HERO — téléphone et tablette : le texte posé sur la photo
+   La photo puis le texte l'un sous l'autre demandaient un écran et demi
+   avant le premier lien. La photo remplit désormais l'écran, bord à bord ;
+   titre, texte et liens se posent sur son bas, assombri en fondu jusqu'au
+   fond de la section. Le titre garde son calcul en cqi : la colonne de
+   texte a la même largeur qu'avant (écran moins les marges).
+   ============================================================ */
+@media (max-width: 900px) {
+  .hero-modern,
+  .hero-modern:not(:has(.hero-modern__credit)) {
+    grid-template-rows: auto;
+    grid-template-areas: "stack";
+    gap: 0;
+    min-height: 0;
+    padding-inline: 0;
+    padding-bottom: 0;
+  }
+
+  .hero-modern:has(.hero-modern__credit) {
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "stack"
+      "credit";
+    row-gap: 1.25rem;
+    padding-bottom: 2rem;
+  }
+
+  .hero-modern__portrait {
+    grid-area: stack;
+    aspect-ratio: auto;
+    min-height: min(calc(100svh - var(--header-height)), 46rem);
+  }
+
+  .hero-modern__portrait img {
+    object-position: 50% 30%;
+  }
+
+  .hero-modern__portrait::after {
+    background: linear-gradient(
+      to top,
+      var(--paper-soft) 0%,
+      color-mix(in oklch, var(--paper-soft) 90%, transparent) 30%,
+      color-mix(in oklch, var(--paper-soft) 58%, transparent) 55%,
+      transparent 82%
+    );
+  }
+
+  /* La légende monte en haut de la photo : le bas est au texte. */
+  .hero-modern__portrait-caption {
+    top: 1.1rem;
+    bottom: auto;
+    left: var(--gutter);
+  }
+
+  /* En haut, la place de la légende de la photo : sur un petit écran, le
+     texte plus haut que la photo ne remonte pas dessous. */
+  .hero-modern__content {
+    grid-area: stack;
+    align-self: end;
+    padding: 3.25rem var(--gutter) 2.25rem;
+  }
+
+  .hero-modern__title {
+    margin: 0.75rem 0 0.25rem;
+  }
+
+  .hero-modern__lede {
+    margin: 1rem 0 1.5rem;
+    font-size: 1.05rem;
+  }
+
+  .hero-modern__cues {
+    gap: 0.5rem 1.75rem;
+  }
+
+  /* Téléphone : la date à gauche, « Réserver » à droite, sur une rangée. */
+  .hero-next {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding: 1rem 0;
+    border-block: 1px solid color-mix(in oklch, var(--on-bordeaux) 16%, transparent);
+  }
+
+  .hero-next__when {
+    font-size: 1.3rem;
+  }
+
+  .hero-next__cta.btn-filled {
+    flex: none;
+    padding: 0.95rem 1.2rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+  }
+
+  .hero-next__cta span[aria-hidden] {
+    display: none;
+  }
+
+  .hero-next__where {
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+  }
+
+  .hero-modern__credit {
+    padding-inline: var(--gutter);
+  }
 }
 
 /* ============================================================
@@ -5024,6 +5618,21 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   outline-offset: 3px;
 }
 
+/* Bloc replié (ExpandableBlock) : seulement sur téléphone, en fondu. */
+@media (max-width: 700px) {
+  .expandable-block__body.is-clamped {
+    max-height: var(--clamp-height, 15rem);
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, black 65%, transparent);
+    mask-image: linear-gradient(to bottom, black 65%, transparent);
+  }
+
+  .expandable-block .expandable__toggle {
+    min-height: 44px;
+    margin-top: 0;
+  }
+}
+
 /* ============================================================
    BLOG — liste des articles (/blog)
    Lead éditorial (dernier article en grand) puis rangées datées,
@@ -5082,6 +5691,28 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
 .journal-filters a:hover::after,
 .journal-filters a.is-active::after {
   transform: scaleX(1);
+}
+
+@media (max-width: 600px) {
+  /* Une seule rangée qui défile au doigt, bord à bord. */
+  .journal-filters {
+    flex-wrap: nowrap;
+    gap: 1.6rem;
+    margin-inline: calc(-1 * var(--gutter));
+    padding-inline: var(--gutter);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .journal-filters::-webkit-scrollbar { display: none; }
+
+  .journal-filters a {
+    flex: none;
+    padding-top: 0.75rem;
+  }
+
+  /* Le défilement rogne ce qui dépasse : le trait se pose sur le filet. */
+  .journal-filters a::after { bottom: 0; }
 }
 
 /* Lead — le dernier article, image large + titre */
@@ -6046,6 +6677,14 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   opacity: 0.8;
 }
 
+@media (max-width: 600px) {
+  .concert-poster__title {
+    font-size: 1.2rem;
+    line-height: 1.3;
+    text-wrap: pretty;
+  }
+}
+
 .concert-poster.is-cancelled .concert-poster__title {
   text-decoration: line-through;
   text-decoration-color: var(--velvet);
@@ -6397,6 +7036,10 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   color: var(--rose-mute);
 }
 
+.concert-feature__month-short {
+  display: none;
+}
+
 .concert-feature__where {
   display: flex;
   flex-direction: column;
@@ -6417,6 +7060,30 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   font-size: 1.05rem;
   line-height: 1.35;
   color: var(--bordeaux);
+}
+
+/* La salle mène à l'itinéraire (Google Maps) : souligné discret, repère de lieu. */
+a.concert-feature__venue {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: color-mix(in oklch, var(--rose-mute) 28%, transparent);
+  transition: color var(--d-quick) var(--ease-curtain), text-decoration-color var(--d-quick) var(--ease-curtain);
+}
+
+a.concert-feature__venue:hover,
+a.concert-feature__venue:active {
+  color: var(--bordeaux-bright);
+  text-decoration-color: currentColor;
+}
+
+.concert-feature__venue svg {
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  margin-left: 0.35em;
+  vertical-align: -0.05em;
+  color: var(--rose-mute);
 }
 
 .concert-feature__city {
@@ -6516,6 +7183,37 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
   padding-inline: 0;
 }
 
+@media (max-width: 640px) {
+  /* « Aussi à l'affiche » sur téléphone : une rangée par concert, l'affiche
+     en vignette. En pleine largeur, chaque affiche prenait un écran entier ;
+     le programme reste sur la page du concert. */
+  .home-concerts__more .concerts-posters {
+    gap: 1.75rem;
+  }
+
+  .home-concerts__more .concerts-posters > .concert-poster {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    column-gap: 1.1rem;
+    align-items: start;
+  }
+
+  .home-concerts__more .concert-poster__stub,
+  .home-concerts__more .concert-poster__body > .expandable {
+    display: none;
+  }
+
+  .home-concerts__more .concert-poster__body {
+    padding-top: 0;
+    gap: 0.35rem;
+  }
+
+  .home-concerts__more .concert-poster__title {
+    font-size: 1.12rem;
+    line-height: 1.25;
+  }
+}
+
 @media (max-width: 900px) {
   .concert-feature {
     grid-template-columns: minmax(0, 1fr);
@@ -6528,17 +7226,135 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
 }
 
 @media (max-width: 520px) {
-  .concert-feature__date {
-    grid-template-columns: 3.5rem minmax(0, 1fr);
+  /* Sur-titre sur deux lignes nettes, sans point orphelin. */
+  .concert-feature__eyebrow {
+    flex-direction: column;
+    gap: 0.4rem;
   }
 
-  .concert-feature__action {
-    grid-column: 2;
-    justify-self: start;
+  .concert-feature__eyebrow > span[aria-hidden] {
+    display: none;
+  }
+
+  /* Le titre d'un concert est souvent tout son programme : à 26 px, cinq
+     lignes serrées sur deux tiers de l'écran (l'équilibrage des lignes).
+     Plus petit, plus aéré, sur toute la largeur. */
+  .concert-feature__title {
+    font-size: 1.3rem;
+    line-height: 1.32;
+    letter-spacing: -0.005em;
+    text-wrap: pretty;
+  }
+
+  /* Une date = une rangée, comme une billetterie : le jour, puis le jour de
+     la semaine et l'heure, la ville en évidence, la salle en petit (elle
+     mène à l'itinéraire), et « Réserver » à droite, sous le pouce. Quatre
+     dates tiennent dans un écran au lieu de deux. */
+  .concert-feature__date {
+    grid-template-columns: 2.6rem minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 0.9rem;
+    padding: 0.85rem 0;
+  }
+
+  .concert-feature__stack {
+    align-items: center;
   }
 
   .concert-feature__day {
-    font-size: 2.2rem;
+    font-size: 1.9rem;
+    font-variant-numeric: lining-nums;
+  }
+
+  .concert-feature__month {
+    margin-top: 0.25rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+  }
+
+  /* Le mois entier reste lu par les lecteurs d'écran. */
+  .concert-feature__month-long {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .concert-feature__month-short {
+    display: inline;
+  }
+
+  .concert-feature__where {
+    gap: 0.15rem;
+  }
+
+  .concert-feature__weekday {
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+  }
+
+  .concert-feature__where.has-city .concert-feature__city {
+    order: 1;
+    margin: 0;
+    font-family: var(--font-body-serif);
+    font-size: 1.08rem;
+    font-weight: 400;
+    line-height: 1.25;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--bordeaux);
+  }
+
+  .concert-feature__where.has-city .concert-feature__venue {
+    order: 2;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    line-height: 1.35;
+    color: var(--rose-mute);
+  }
+
+  /* Salle sur une ligne, coupée en « … » : l'icône reste accrochée au nom. */
+  a.concert-feature__venue {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .concert-feature__venue-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .concert-feature__venue svg {
+    flex: none;
+  }
+
+  .concert-feature__action {
+    grid-column: 3;
+    justify-self: end;
+  }
+
+  .concert-feature__book {
+    min-height: 40px;
+    padding: 0 0.85rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+  }
+
+  .concert-feature__book span[aria-hidden] {
+    display: none;
+  }
+
+  .concert-feature__soon {
+    display: block;
+    max-width: 5.5rem;
+    font-size: 0.58rem;
+    line-height: 1.35;
+    text-align: right;
+    white-space: normal;
   }
 }
 
@@ -6576,6 +7392,7 @@ section { padding: clamp(4rem, 7vw, 5rem) 0; }
 
 :root[data-mode='light'] :is(
   .header,
+  .mobile-menu,
   .footer,
   .page-header,
   .hero-modern,

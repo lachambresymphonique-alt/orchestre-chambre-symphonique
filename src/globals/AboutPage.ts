@@ -69,8 +69,8 @@ export const AboutPage: GlobalConfig = {
     {
       name: 'timeline',
       type: 'group',
-      label: 'Section Frise',
-      admin: { description: 'Titres de la frise chronologique. Les dates elles-mêmes se gèrent dans Contenu → Frise chronologique.' },
+      label: 'Section Chronologie',
+      admin: { description: 'Titres de la section. Les dates elles-mêmes se gèrent dans Contenu → Chronologie.' },
       fields: [
         { name: 'eyebrow', type: 'text', label: 'Sur-titre', defaultValue: 'Le parcours' },
         {

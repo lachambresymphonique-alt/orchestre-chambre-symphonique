@@ -107,7 +107,7 @@ export function MediasClient({
   );
 
   const audio = (
-    <div className="media-grid">
+    <div className="media-grid media-grid--audio">
       {audioItems.map((item: any, i: number) => {
         const img = uploadUrl(item.thumbnail, 'card');
         return (
@@ -213,7 +213,13 @@ export function MediasClient({
       {/* MEDIA CONTENT */}
       <section style={{ background: 'var(--color-bg)' }} data-live-field="tabs">
         <div className="container">
-          <MediaTabs videos={videos} audio={audio} photos={photos} labels={page?.tabs} />
+          {/* Une rubrique vide (aucune photo encore) n'a ni onglet ni intertitre. */}
+          <MediaTabs
+            videos={videoItems.length > 0 ? videos : null}
+            audio={audioItems.length > 0 ? audio : null}
+            photos={photoItems.length > 0 ? photos : null}
+            labels={page?.tabs}
+          />
         </div>
       </section>
     </>

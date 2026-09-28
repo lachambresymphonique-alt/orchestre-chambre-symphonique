@@ -19,7 +19,7 @@ import {
 } from '@/lib/musicianForm';
 
 /**
- * Réception des fiches musiciens envoyées depuis /musiciens/contribuer.
+ * Réception des fiches musiciens envoyées depuis /recrutement/musicien.
  *
  * Les questions posées sont réglées dans l'admin (global « Formulaire
  * musiciens »). Cette route lit la même configuration que le formulaire :

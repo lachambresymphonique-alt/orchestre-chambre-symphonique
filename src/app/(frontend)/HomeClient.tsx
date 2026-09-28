@@ -10,11 +10,13 @@ import { NewsletterForm } from '@/components/NewsletterForm';
 import { ExpandableText } from '@/components/ExpandableText';
 import { ConcertDates, ConcertPosters } from '@/components/ConcertPosters';
 import { ConcertFeature } from '@/components/ConcertFeature';
-import { stockImages, placeholderForMusician, directorPlaceholder } from '@/lib/unsplash';
+import { ExpandableBlock } from '@/components/ExpandableBlock';
+import { stockImages, directorPlaceholder } from '@/lib/unsplash';
 import { toConcertCard, type ConcertCard, type ConcertDoc } from '@/lib/concerts';
 import { renderEmphasis } from '@/lib/emphasis';
 import { RichText, renderInline } from '@/lib/richText';
 import { resolveHomeSections, type HomeSectionKey } from '@/lib/homeSections';
+import { MusiciansStrip } from '@/components/MusiciansStrip';
 
 interface HomeClientProps {
   initialData: any;
@@ -68,6 +70,11 @@ export function HomeClient({
   // dans l'admin (le plus proche si plusieurs), sinon le prochain concert.
   const spotlight: ConcertCard | undefined = concerts.find((c) => c.featured) ?? concerts[0];
   const otherConcerts = spotlight ? concerts.filter((c) => c.id !== spotlight.id) : concerts;
+  // Bannière : le prochain concert maintenu, sa prochaine date, et « Réserver »
+  // (vers ses dates et sa billetterie). Sans concert à venir, le lien réglé
+  // dans l'admin (« Voir la saison ») reprend sa place.
+  const heroNext = concerts.find((c) => c.status !== 'cancelled' && c.performances.length > 0);
+  const heroNextPerf = heroNext?.performances[0];
 
   const directorSlug = director?.slug || director?.id;
 
@@ -114,6 +121,13 @@ export function HomeClient({
     concertsCfg.layout === 'list' || concertsCfg.layout === 'strip' ? concertsCfg.layout : 'posters';
 
   const bento = data?.bento || {};
+  // « Découvrir » était le libellé d'origine du lien de la carte ; la carte
+  // mène désormais à toute la troupe, d'où ce libellé explicite. Un libellé
+  // choisi dans l'admin reste prioritaire.
+  const musiciansAllLabel =
+    bento.musiciansLinkLabel && bento.musiciansLinkLabel.trim() !== 'Découvrir'
+      ? bento.musiciansLinkLabel.trim()
+      : 'Voir tous les musiciens';
   const partnersCfg = data?.partners || {};
 
   // Ordre et visibilité des sections sous la bannière : réglés dans l'admin
@@ -378,25 +392,11 @@ export function HomeClient({
               </div>
             </Link>
 
-            {/* Musicians sample — collage */}
-            <Link
-              href="/musiciens"
-              className="bento-card bento-card--musicians"
-              data-live-link="/admin/collections/musicians"
-            >
-              <div className="bento-card__collage">
-                {musiciansSample.slice(0, 4).map((m: any) => (
-                  <div key={m.id || m.name} className="bento-card__collage-item">
-                    <Image
-                      src={m.photo?.url || placeholderForMusician(m.name)}
-                      alt={m.name}
-                      fill
-                      sizes="(max-width: 900px) 50vw, 25vw"
-                      style={{ objectFit: 'cover' }}
-                    />
-                  </div>
-                ))}
-              </div>
+            {/* Les musiciens : une bande de portraits qui défile, puis le texte.
+                La carte n'est plus un lien entier : chaque portrait mène à sa
+                page, « Voir tous les musiciens » à la page Musiciens. */}
+            <div className="bento-card bento-card--musicians" data-live-link="/admin/collections/musicians">
+              <MusiciansStrip musicians={musiciansSample} allLabel={musiciansAllLabel} />
               <div className="bento-card__text">
                 <p className="eyebrow eyebrow--accent">{bento.musiciansEyebrow || 'L\'ensemble'}</p>
                 <h3 className="bento-card__title">
@@ -408,9 +408,11 @@ export function HomeClient({
                       'Issus de conservatoires français, suisses et belges. Étudiants, amateurs éclairés, jeunes professionnels.',
                   )}
                 </p>
-                <span className="link-arrow">{bento.musiciansLinkLabel || 'Découvrir'} →</span>
+                <Link href="/musiciens" className="link-arrow bento-card__cta">
+                  {musiciansAllLabel} →
+                </Link>
               </div>
-            </Link>
+            </div>
 
             {/* History — small card */}
             <Link href={bento.historyLink || '/a-propos'} className="bento-card bento-card--history">
@@ -521,15 +523,20 @@ export function HomeClient({
                   <em>{presentation?.title || 'La musique en partage'}</em>
                 </h2>
                 <hr className="velvet-rule" />
-                <div className="home-presentation__prose rich-text">
+                {/* Replié sur téléphone (« Lire la suite ») : le texte entier y
+                    prenait plusieurs écrans. */}
+                <ExpandableBlock className="home-presentation__prose rich-text">
                   <RichText text={presentation?.paragraphs} lead />
-                </div>
+                </ExpandableBlock>
                 <div className="home-presentation__foot">
                   <Link href={presentation?.ctaLink || '/a-propos'} className="link-arrow">
                     {presentation?.ctaText || 'Lire la suite'} →
                   </Link>
                   {presentation?.signature && (
-                    <p className="home-presentation__signature">— {presentation.signature}</p>
+                    <p className="home-presentation__signature">
+                      {/* Le tiret est ajouté ici : on retire celui qu'a pu saisir l'admin. */}
+                      — {presentation.signature.replace(/^[\s—–-]+/, '')}
+                    </p>
                   )}
                 </div>
               </FadeIn>
@@ -640,8 +647,30 @@ export function HomeClient({
               <p className="hero-modern__lede">{renderInline(hero.description)}</p>
             )}
 
+            {heroNext && heroNextPerf && (
+              <Link href={`${heroNext.url || '/concerts'}#concert-dates`} className="hero-next">
+                <span className="hero-next__text">
+                  <span className="hero-next__eyebrow">
+                    {heroNextPerf.date.isToday ? 'Ce soir' : 'Prochain concert'}
+                  </span>
+                  <span className="hero-next__when">
+                    {heroNextPerf.date.day} {heroNextPerf.date.month}
+                  </span>
+                  {(heroNextPerf.city || heroNextPerf.venue) && (
+                    <span className="hero-next__where">
+                      {heroNextPerf.city || heroNextPerf.venue}
+                      {heroNext.performances.length > 1 ? ` et ${heroNext.performances.length - 1} autres dates` : ''}
+                    </span>
+                  )}
+                </span>
+                <span className="btn-filled hero-next__cta">
+                  Réserver <span aria-hidden="true">→</span>
+                </span>
+              </Link>
+            )}
+
             <div className="hero-modern__cues">
-              {!ctaPrimaryDead && (
+              {!heroNext && !ctaPrimaryDead && (
                 <a href={ctaPrimaryLink} className="link-arrow link-arrow--on-dark">
                   {hero?.ctaPrimaryText || 'Voir la saison'} →
                 </a>

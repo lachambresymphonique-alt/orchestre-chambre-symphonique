@@ -42,14 +42,14 @@ export default async function Home() {
         limit: 1,
         depth: 1,
       }),
-      payload.find({
-        collection: 'musicians' as any,
       // Bande « Les musiciens » de l'accueil : les pupitres seulement. La
       // direction a sa propre carte ; le bureau et l'équipe technique ne se
       // montrent que sur la page Musiciens.
+      payload.find({
+        collection: 'musicians' as any,
         where: { section: { in: [...PUPITRE_SECTIONS] } } as any,
         sort: 'order' as any,
-        limit: 4,
+        limit: 12,
         depth: 1,
       }),
       payload.findGlobal({ slug: 'site-settings' as any }).catch(() => null),

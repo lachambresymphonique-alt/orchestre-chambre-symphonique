@@ -6,7 +6,9 @@ import Link from 'next/link';
 import { useLiveDoc } from '@/hooks/useLiveDocument';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { toConcertCard, type ConcertCard, type ConcertDoc } from '@/lib/concerts';
-import { bookable, citiesOf, periodOf } from '@/lib/concertSeo';
+import { absoluteUrl, bookable, citiesOf, periodOf } from '@/lib/concertSeo';
+import { calendarPath, mapsUrl } from '@/lib/concertCalendar';
+import { BookingBar, CalendarIcon, PinIcon, ShareButton, type BookingBarDate } from '@/components/ConcertActions';
 import { RichText } from '@/lib/richText';
 
 const capitalize = (s: string) => (s ? s.charAt(0).toLocaleUpperCase('fr-FR') + s.slice(1) : s);
@@ -49,9 +51,22 @@ export function ConcertDetail({
     .filter(Boolean);
   const hasDescription = Boolean(card.description.trim());
   const years = new Set(card.allPerformances.map((p) => p.date.year));
+  // Dates à venir dont la billetterie est ouverte : la barre « Réserver » du téléphone.
+  const onSale: BookingBarDate[] = cancelled
+    ? []
+    : card.performances
+        .filter((p) => bookable(p.bookingLink))
+        .map((p) => ({
+          id: p.id,
+          label: `${p.date.day} ${p.date.month}${p.city || p.venue ? ` · ${p.city || p.venue}` : ''}`,
+          city: p.city || p.venue,
+          href: p.bookingLink as string,
+        }));
 
   return (
-    <div className={`concert-page${cancelled ? ' is-cancelled' : ''}`}>
+    <div
+      className={`concert-page${cancelled ? ' is-cancelled' : ''}${onSale.length > 0 ? ' has-booking-bar' : ''}`}
+    >
       <header className="page-header concert-page__header">
         <div className="container">
           <p className="breadcrumb">
@@ -64,6 +79,7 @@ export function ConcertDetail({
             {card.title}
           </h1>
           {cities.length > 0 && <p className="concert-page__cities">{cities.join(' · ')}</p>}
+          {card.url && <ShareButton title={card.title} url={absoluteUrl(card.url)} className="concert-page__share" />}
         </div>
       </header>
 
@@ -77,6 +93,9 @@ export function ConcertDetail({
                   alt=""
                   aria-hidden="true"
                   fill
+                  // Premier élément peint de la page sur téléphone : chargé
+                  // tout de suite, pas en différé (200 px, quelques Ko).
+                  priority
                   sizes="200px"
                   className="concert-page__poster-backdrop"
                   style={{ objectFit: 'cover' }}
@@ -129,7 +148,20 @@ export function ConcertDetail({
                           {capitalize(p.date.weekday)}
                           {p.date.time ? ` · ${p.date.time}` : ''}
                         </p>
-                        {p.place && <p className="concert-page__date-place">{p.place}</p>}
+                        {p.place && (
+                          <p className="concert-page__date-place">
+                            {/* Toucher la salle ouvre l'itinéraire dans l'application de cartes. */}
+                            <a
+                              href={mapsUrl(p.place)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`Itinéraire vers ${p.place}`}
+                            >
+                              {p.place}
+                              <PinIcon />
+                            </a>
+                          </p>
+                        )}
                       </div>
                       <div className="concert-page__date-action">
                         {cancelled ? (
@@ -147,6 +179,12 @@ export function ConcertDetail({
                           </a>
                         ) : (
                           <span className="concert-page__date-state">Billetterie à venir</span>
+                        )}
+                        {!past && !cancelled && card.url && (
+                          <a href={calendarPath(card.url, p.id)} className="concert-page__calendar">
+                            <CalendarIcon />
+                            Ajouter à l’agenda
+                          </a>
                         )}
                       </div>
                     </li>
@@ -234,6 +272,8 @@ export function ConcertDetail({
           </Link>
         </div>
       </section>
+
+      <BookingBar dates={onSale} datesId="concert-dates" />
     </div>
   );
 }

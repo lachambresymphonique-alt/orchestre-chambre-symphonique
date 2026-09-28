@@ -38,7 +38,7 @@
 }
 
 .soloist-detail__concert-title {
-  font-family: var(--font-display);
+  font-family: var(--font-h3);
   font-size: clamp(1.2rem, 1.8vw, 1.5rem);
   line-height: 1.2;
   color: var(--bordeaux);

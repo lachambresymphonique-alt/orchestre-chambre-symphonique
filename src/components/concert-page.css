@@ -27,6 +27,17 @@
   text-wrap: balance;
 }
 
+@media (max-width: 600px) {
+  /* Les titres de concert sont longs (œuvres, soliste) : plus petits et sur
+     toute la largeur, plutôt que cinq lignes resserrées. */
+  .page-header h1.concert-page__title {
+    max-width: none;
+    font-size: 1.55rem;
+    line-height: 1.22;
+    text-wrap: pretty;
+  }
+}
+
 .concert-page.is-cancelled .concert-page__title {
   text-decoration: line-through;
   text-decoration-thickness: 1px;
@@ -42,6 +53,39 @@
   font-size: 0.8rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+}
+
+/* « Partager » : feuille de partage du téléphone, sinon lien copié. */
+.concert-share {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  margin-top: 1.5rem;
+  padding: 0 1.1rem;
+  border: 1px solid color-mix(in oklch, var(--on-bordeaux) 30%, transparent);
+  border-radius: var(--btn-radius);
+  background: transparent;
+  color: var(--on-bordeaux);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color var(--d-quick) var(--ease-curtain), color var(--d-quick) var(--ease-curtain);
+}
+
+.concert-share:hover,
+.concert-share:active {
+  border-color: var(--on-bordeaux-glow);
+  color: var(--on-bordeaux-glow);
+}
+
+.concert-share:focus-visible {
+  outline: 1px solid var(--on-bordeaux-glow);
+  outline-offset: 3px;
 }
 
 /* ---------- Corps : affiche à gauche, contenu à droite ---------- */
@@ -140,6 +184,8 @@
 }
 
 .concert-page__h2 {
+  /* Cible de « Choisir une date » : pas sous la barre fixe de l'en-tête. */
+  scroll-margin-top: calc(var(--header-height) + 1.5rem);
   margin: 0 0 1.25rem;
   font-family: var(--font-body);
   font-size: 0.72rem;
@@ -216,6 +262,59 @@
   color: var(--bordeaux);
 }
 
+/* La salle mène à l'itinéraire : souligné discret, repère de lieu. */
+.concert-page__date-place a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: color-mix(in oklch, var(--rose-mute) 28%, transparent);
+  transition: color var(--d-quick) var(--ease-curtain), text-decoration-color var(--d-quick) var(--ease-curtain);
+}
+
+.concert-page__date-place a:hover,
+.concert-page__date-place a:active {
+  color: var(--bordeaux-bright);
+  text-decoration-color: currentColor;
+}
+
+.concert-page__date-place svg {
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  margin-left: 0.35em;
+  vertical-align: -0.05em;
+  color: var(--rose-mute);
+}
+
+/* La billetterie, puis l'agenda dessous : la réservation d'abord. */
+.concert-page__date-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+}
+
+.concert-page__calendar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  margin-bottom: -0.6rem;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+  transition: color var(--d-quick) var(--ease-curtain);
+}
+
+.concert-page__calendar:hover,
+.concert-page__calendar:active {
+  color: var(--bordeaux-bright);
+}
+
 .concert-page__date-state {
   font-family: var(--font-body);
   font-size: 0.68rem;
@@ -239,6 +338,7 @@
 
   .concert-page__date-action {
     grid-column: 2;
+    align-items: flex-start;
   }
 }
 
@@ -328,6 +428,80 @@
 .concert-page__others {
   background: var(--paper-soft);
   padding: clamp(3rem, 6vw, 5rem) var(--gutter);
+}
+
+/* ---------- Barre « Réserver » du téléphone (ConcertActions.tsx) ---------- */
+.booking-bar {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .booking-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* Sous l'en-tête (1000) et le menu plein écran (999). */
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.7rem var(--gutter) calc(0.7rem + env(safe-area-inset-bottom));
+    background: var(--paper-soft);
+    border-top: 1px solid var(--paper-rule);
+    transition:
+      transform var(--d-medium) var(--ease-curtain),
+      visibility 0s;
+  }
+
+  .booking-bar.is-hidden {
+    transform: translateY(100%);
+    visibility: hidden;
+    transition:
+      transform var(--d-quick) var(--ease-curtain),
+      visibility 0s linear var(--d-quick);
+  }
+
+  .booking-bar__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .booking-bar__eyebrow {
+    font-family: var(--font-body);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--velvet);
+  }
+
+  .booking-bar__when {
+    overflow: hidden;
+    font-family: var(--font-h3);
+    font-size: 1.02rem;
+    line-height: 1.25;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--bordeaux);
+  }
+
+  .booking-bar__cta.btn-filled {
+    flex: none;
+    padding: 0.85rem 1.15rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    white-space: nowrap;
+  }
+
+  /* Le bas de page ne passe pas sous la barre. */
+  .concert-page.has-booking-bar .concert-page__others {
+    padding-bottom: calc(clamp(3rem, 6vw, 5rem) + 4.5rem);
+  }
 }
 
 .concert-page__others-inner {
