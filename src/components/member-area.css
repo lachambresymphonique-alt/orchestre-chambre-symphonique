@@ -192,3 +192,65 @@
 .member-profile > .btn-filled + .member-area__help {
   margin-top: 1rem;
 }
+
+/* Partitions et documents (/espace-membres/documents) */
+.member-docs__group {
+  margin-bottom: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+.member-docs__group .contact-form__title {
+  margin-bottom: 0.4rem;
+}
+
+.member-docs__list {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--paper-rule);
+}
+
+.member-docs__item {
+  border-bottom: 1px solid var(--paper-rule);
+}
+
+.member-docs__link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 1rem 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.member-docs__title {
+  font-family: var(--font-body-serif);
+  font-size: 1.15rem;
+  line-height: 1.35;
+  color: var(--bordeaux-deep);
+  transition: color var(--d-quick) var(--ease-curtain);
+}
+
+.member-docs__link:hover .member-docs__title,
+.member-docs__link:focus-visible .member-docs__title {
+  color: var(--bordeaux);
+}
+
+.member-docs__meta {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rose-mute);
+}
+
+.member-docs__note {
+  margin: -0.4rem 0 1rem;
+  font-family: var(--font-body-serif);
+  font-style: italic;
+  font-size: 0.98rem;
+  color: var(--bordeaux-deep);
+}
+
+.member-docs__back {
+  margin-top: 1rem;
+}

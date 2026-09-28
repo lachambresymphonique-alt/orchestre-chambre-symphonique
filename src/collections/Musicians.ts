@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload';
 import { richTextAdmin } from '@/lib/richTextAdmin';
+import { PUPITRES } from '@/lib/pupitres';
 
 const slugify = (s: string) =>
   s
@@ -69,6 +70,17 @@ export const Musicians: CollectionConfig = {
         { label: 'Bureau', value: 'bureau' },
         { label: 'Équipe technique', value: 'technique' },
       ],
+    },
+    {
+      name: 'pupitres',
+      type: 'select',
+      hasMany: true,
+      label: 'Pupitres',
+      admin: {
+        description:
+          'Pour les partitions de l’espace membres : le musicien voit les documents adressés à ces pupitres. Inutile pour la direction, qui voit tout.',
+      },
+      options: PUPITRES.map((p) => ({ label: p.label, value: p.value })),
     },
     { name: 'photo', type: 'upload', relationTo: 'media', label: 'Photo' },
     {

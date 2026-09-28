@@ -42,6 +42,7 @@ export type MemberMusician = {
   role?: string | null;
   instrument?: string | null;
   section?: string | null;
+  pupitres?: string[] | null;
   photo?: { url?: string | null; alt?: string | null } | number | null;
 };
 

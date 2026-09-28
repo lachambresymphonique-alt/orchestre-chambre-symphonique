@@ -105,6 +105,11 @@ function MemberHome({ session, proposal }: { session: MemberSession; proposal: a
                 Modifier ma fiche →
               </Link>
             </p>
+            <p>
+              <Link className="link-arrow" href="/espace-membres/documents">
+                Partitions et documents →
+              </Link>
+            </p>
             {musician.slug && (
               <p>
                 <Link className="link-arrow" href={`/musiciens/${musician.slug}`}>

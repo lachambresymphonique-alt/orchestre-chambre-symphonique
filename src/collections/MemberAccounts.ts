@@ -26,7 +26,7 @@ export const MemberAccounts: CollectionConfig = {
   labels: { singular: 'Accès membre', plural: 'Accès membres' },
   admin: {
     useAsTitle: 'email',
-    group: 'Réglages',
+    group: 'Espace membres',
     description:
       'Comptes de l’espace membres (musiciens, bureau, équipe technique). On invite quelqu’un depuis sa fiche dans Musiciens. Ces comptes n’ont aucun accès à l’administration.',
     defaultColumns: ['email', 'musician', 'status', 'lastLoginAt'],
