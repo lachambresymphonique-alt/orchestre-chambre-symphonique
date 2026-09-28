@@ -21,15 +21,21 @@ export const Pages: CollectionConfig = {
     livePreview: {
       url: '/apercu/pages',
     },
-    // Pastille « Brouillon / En ligne » et état de l'enregistrement.
-    components: { edit: { beforeDocumentControls: ['@/components/admin/PageStatus#PageStatus'] } },
+    // Pastille « Brouillon / En ligne », et un « Enregistrer » qui dit où
+    // en est l'enregistrement (« ✓ Enregistré à 14:33 »).
+    components: {
+      edit: {
+        beforeDocumentControls: ['@/components/admin/PageStatus#PageStatus'],
+        SaveDraftButton: '@/components/admin/SaveDraftButton#SaveDraftButton',
+      },
+    },
   },
   versions: {
     // Enregistrement automatique des brouillons : « Créer » ouvre tout de suite
     // la page en brouillon (Payload la crée), donc avec son aperçu en direct ;
     // plus rien ne se perd, et seul « Publier » met en ligne.
-    // « Enregistrer le brouillon » (et ⌘S) en plus : on peut enregistrer
-    // quand on veut, sans attendre ni publier.
+    // Bouton « Enregistrer » (et ⌘S) en plus : on peut enregistrer quand on
+    // veut, sans attendre ni publier (voir admin/SaveDraftButton).
     drafts: { autosave: { interval: 1500, showSaveDraftButton: true } },
   },
   hooks: {

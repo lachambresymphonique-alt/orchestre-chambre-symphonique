@@ -8,17 +8,15 @@ import {
   useConfig,
   useDocumentInfo,
   useForm,
-  useFormBackgroundProcessing,
   useFormFields,
-  useFormModified,
-  useFormProcessing,
   useModal,
 } from '@payloadcms/ui';
 
 /**
  * Statut d'une page libre, en tête de l'écran (à côté de « Publier ») : une
  * pastille qu'on ouvre pour passer de « Brouillon » à « En ligne » et
- * inversement, et l'état de l'enregistrement (« Enregistré à 13:38 »).
+ * inversement. L'état de l'enregistrement est sur le bouton d'à côté
+ * (SaveDraftButton).
  *
  * - Publier : comme le bouton « Publier » de Payload.
  * - Retirer du site : la page repasse en brouillon avec son contenu actuel
@@ -43,7 +41,7 @@ const LABELS: Record<Status, string> = {
 const timeFormat = new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
 /** Une heure lisible, ou null (Payload donne parfois une date invalide). */
-function timeOf(value: unknown): string | null {
+export function timeOf(value: unknown): string | null {
   const ms =
     value instanceof Date ? value.getTime() : typeof value === 'number' ? value : typeof value === 'string' ? Date.parse(value) : NaN;
   return Number.isFinite(ms) && ms > 0 ? timeFormat.format(ms) : null;
@@ -55,7 +53,6 @@ export function PageStatus() {
     collectionSlug,
     hasPublishedDoc,
     unpublishedVersionCount,
-    lastUpdateTime,
     docPermissions,
     setHasPublishedDoc,
     setUnpublishedVersionCount,
@@ -63,12 +60,7 @@ export function PageStatus() {
     incrementVersionCount,
   } = useDocumentInfo();
   const { submit, reset } = useForm();
-  const modified = useFormModified();
-  const saving = useFormBackgroundProcessing();
-  const processing = useFormProcessing();
   const slug = useFormFields(([fields]) => fields.slug?.value);
-  // Mis à jour à chaque enregistrement (valeur renvoyée par le serveur).
-  const updatedAt = useFormFields(([fields]) => fields.updatedAt?.value);
   const { openModal, closeModal } = useModal();
   const {
     config: {
@@ -105,8 +97,6 @@ export function PageStatus() {
   const canPublish = Boolean(docPermissions?.update) && !testServer;
   const docURL = `${api}/${collectionSlug}/${id}?depth=0&fallback-locale=null`;
 
-  const savedAt = timeOf(updatedAt) ?? timeOf(lastUpdateTime);
-  const saveState = saving || processing ? 'Enregistrement…' : modified ? 'Modifications en cours…' : savedAt ? `Enregistré à ${savedAt}` : 'Enregistré';
 
   const publish = async () => {
     setOpen(false);
@@ -186,9 +176,6 @@ export function PageStatus() {
       <style>{`.doc-controls__list-item:has(.status), .doc-controls__list-item:has(.autosave) { display: none; }${
         testServer ? ' #action-save { display: none; }' : ''
       }`}</style>
-      <span className={`lcs-pagestatus__save${modified || saving ? ' is-pending' : ''}`} aria-live="polite">
-        {saveState}
-      </span>
       <button
         type="button"
         className={`lcs-pagestatus__pill is-${status}`}
