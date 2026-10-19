@@ -6,7 +6,6 @@ import { skipOptimization } from '@/lib/imageOptimization';
 import { useLiveGlobal, useLiveList } from '@/hooks/useLiveDocument';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FadeIn } from '@/components/FadeIn';
-import { stockImages } from '@/lib/unsplash';
 import { renderEmphasis } from '@/lib/emphasis';
 import { RichText, renderInline } from '@/lib/richText';
 
@@ -51,15 +50,17 @@ export function AboutClient({ initialData, timelineEvents }: AboutClientProps) {
         <section className="about-intro">
           <div className="about-intro__inner">
             <FadeIn className="about-intro__media">
-              <Image
-                src={intro?.image?.url || stockImages.conductor}
-                unoptimized={skipOptimization(intro?.image)}
-                alt={intro?.image?.alt || "Photo de l'orchestre"}
-                width={900}
-                height={1100}
-                sizes="(max-width: 900px) 100vw, 45vw"
-                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-              />
+              {intro?.image?.url && (
+                <Image
+                  src={intro.image.url}
+                  unoptimized={skipOptimization(intro?.image)}
+                  alt={intro?.image?.alt || "Photo de l'orchestre"}
+                  width={900}
+                  height={1100}
+                  sizes="(max-width: 900px) 100vw, 45vw"
+                  style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                />
+              )}
             </FadeIn>
 
             <FadeIn className="about-intro__text">

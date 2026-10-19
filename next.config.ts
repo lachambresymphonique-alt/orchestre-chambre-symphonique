@@ -32,23 +32,19 @@ const nextConfig: NextConfig = {
     imageSizes: [256],
     // Une seule qualité : les URL /_next/image à une autre qualité sont refusées.
     qualities: [75],
+    // Seules les sources du site peuvent être transformées : toute autre URL
+    // passée à /_next/image est refusée, sinon n'importe qui pourrait faire
+    // optimiser ses propres images sur le quota du site. `search: ''` refuse
+    // aussi les paramètres ajoutés, qui créeraient autant de variantes.
+    // Les photos de la médiathèque passent par Payload (/api/media/file/…).
+    localPatterns: [{ pathname: '/api/media/file/**', search: '' }],
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**.public.blob.vercel-storage.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '**.blob.vercel-storage.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
+      // Store Vercel Blob du site (« lcs-blob-public »), pour une adresse
+      // directe ; les pages utilisent aujourd'hui /api/media/file/….
+      { protocol: 'https', hostname: '1ldpmsfyd0bqeu5s.public.blob.vercel-storage.com', pathname: '/**', search: '' },
       // Miniatures dérivées des liens vidéo (page Médias)
-      { protocol: 'https', hostname: 'i.ytimg.com' },
-      { protocol: 'https', hostname: 'img.youtube.com' },
-      { protocol: 'https', hostname: 'i.vimeocdn.com' },
+      { protocol: 'https', hostname: 'i.ytimg.com', pathname: '/vi/**', search: '' },
+      { protocol: 'https', hostname: 'i.vimeocdn.com', pathname: '/video/**' },
     ],
   },
 };

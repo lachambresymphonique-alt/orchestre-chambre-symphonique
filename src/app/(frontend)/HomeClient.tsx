@@ -12,7 +12,7 @@ import { ExpandableText } from '@/components/ExpandableText';
 import { ConcertDates, ConcertPosters } from '@/components/ConcertPosters';
 import { ConcertFeature } from '@/components/ConcertFeature';
 import { ExpandableBlock } from '@/components/ExpandableBlock';
-import { stockImages, directorPlaceholder } from '@/lib/unsplash';
+import { placeholderForMusician } from '@/lib/unsplash';
 import { toConcertCard, type ConcertCard, type ConcertDoc } from '@/lib/concerts';
 import { renderEmphasis } from '@/lib/emphasis';
 import { RichText, renderInline } from '@/lib/richText';
@@ -146,12 +146,12 @@ export function HomeClient({
       <>
         {/* STATEMENT — manifesto with atmospheric counterpoint */}
         <section className="home-statement" data-live-field="statement">
-          <div className={`home-statement__inner${statement.hideImage ? ' home-statement__inner--text' : ''}`}>
-            {/* « Sans photo » coché dans l'admin : le manifeste seul, sur toute la largeur. */}
-            {!statement.hideImage && (
+          <div className={`home-statement__inner${statement.hideImage || !statement.image?.url ? ' home-statement__inner--text' : ''}`}>
+            {/* « Sans photo » coché dans l'admin, ou aucune photo choisie : le manifeste seul, sur toute la largeur. */}
+            {!statement.hideImage && statement.image?.url && (
               <figure className="home-statement__media">
                 <Image
-                  src={statement.image?.url || stockImages.violin}
+                  src={statement.image.url}
                   unoptimized={skipOptimization(statement.image)}
                   alt={statement.image?.alt || ''}
                   fill
@@ -262,14 +262,16 @@ export function HomeClient({
                               : undefined
                           }
                         >
-                          <Image
-                            src={concert.image?.url || stockImages.concertHall}
-                            unoptimized={concert.image?.unoptimized}
-                            alt={concert.image?.alt || concert.title}
-                            fill
-                            sizes="(max-width: 900px) 100vw, 45vw"
-                            style={{ objectFit: 'cover' }}
-                          />
+                          {concert.image && (
+                            <Image
+                              src={concert.image.url}
+                              unoptimized={concert.image.unoptimized}
+                              alt={concert.image.alt || concert.title}
+                              fill
+                              sizes="(max-width: 900px) 100vw, 45vw"
+                              style={{ objectFit: 'cover' }}
+                            />
+                          )}
                         </div>
                       )}
                       <div className="concert-row__details">
@@ -378,7 +380,7 @@ export function HomeClient({
             >
               <div className="bento-card__media">
                 <Image
-                  src={director?.photo?.url || directorPlaceholder}
+                  src={director?.photo?.url || placeholderForMusician(director?.name || 'Loïc Emmelin')}
                   unoptimized={skipOptimization(director?.photo)}
                   alt={director?.name || 'Loïc Emmelin'}
                   fill
@@ -512,15 +514,17 @@ export function HomeClient({
           <section className="home-presentation">
             <div className="home-presentation__inner">
               <FadeIn className="home-presentation__media">
-                <Image
-                  src={presentation?.image?.url || stockImages.orchestraWide}
-                  unoptimized={skipOptimization(presentation?.image)}
-                  alt={presentation?.image?.alt || "L'orchestre en concert"}
-                  width={900}
-                  height={1100}
-                  sizes="(max-width: 900px) 100vw, 50vw"
-                  style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                />
+                {presentation?.image?.url && (
+                  <Image
+                    src={presentation.image.url}
+                    unoptimized={skipOptimization(presentation?.image)}
+                    alt={presentation?.image?.alt || "L'orchestre en concert"}
+                    width={900}
+                    height={1100}
+                    sizes="(max-width: 900px) 100vw, 50vw"
+                    style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                  />
+                )}
               </FadeIn>
 
               <FadeIn className="home-presentation__text">
@@ -692,7 +696,7 @@ export function HomeClient({
 
           <div className="hero-modern__portrait">
             <Image
-              src={hero?.portraitImage?.url || director?.photo?.url || directorPlaceholder}
+              src={hero?.portraitImage?.url || director?.photo?.url || placeholderForMusician(director?.name || 'Loïc Emmelin')}
               unoptimized={skipOptimization(hero?.portraitImage?.url ? hero.portraitImage : director?.photo)}
               alt={hero?.portraitImage?.alt || director?.name || 'Loïc Emmelin, directeur artistique'}
               fill

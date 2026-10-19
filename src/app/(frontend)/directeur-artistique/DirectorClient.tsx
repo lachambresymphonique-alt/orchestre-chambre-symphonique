@@ -6,7 +6,7 @@ import { skipOptimization } from '@/lib/imageOptimization';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { useLiveDoc, useLiveGlobal } from '@/hooks/useLiveDocument';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
-import { directorPlaceholder } from '@/lib/unsplash';
+import { placeholderForMusician } from '@/lib/unsplash';
 import { toEmbedUrl } from '@/lib/videoEmbed';
 import { resolveDirectorPage } from '@/lib/directorDefaults';
 import { renderEmphasis } from '@/lib/emphasis';
@@ -173,7 +173,7 @@ export function DirectorClient({
             style={{ ['--ratio' as string]: photoRatio } as React.CSSProperties}
           >
             <Image
-              src={photo?.url || directorPlaceholder}
+              src={photo?.url || placeholderForMusician(director.name)}
               unoptimized={skipOptimization(photo)}
               alt={photo?.alt || `${director.name}, ${director.role}`}
               fill
