@@ -36,7 +36,11 @@ export const MediaItems: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
       label: 'Miniature',
-      admin: { description: 'Image d\'aperçu affichée dans la galerie.' },
+      admin: {
+        description:
+          'Image affichée dans la galerie de la page Médias. Pour une vidéo YouTube ou Vimeo, inutile : sa miniature est reprise automatiquement.',
+        components: { Cell: '@/components/admin/MediaCells#MediaItemThumbCell' },
+      },
     },
     {
       name: 'url',

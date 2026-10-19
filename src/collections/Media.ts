@@ -22,20 +22,43 @@ export const Media: CollectionConfig = {
   admin: {
     useAsTitle: 'alt',
     group: 'Bibliothèque d’images',
-    description: 'Toutes les photos, logos et illustrations utilisés sur le site. Vous pouvez les téléverser ici puis les sélectionner depuis n’importe quelle page.',
-    // La colonne « nom du fichier » porte la vignette de l'image : en la
-    // mettant en tête, la liste se parcourt à l'œil plutôt qu'au texte.
+    description: 'Toutes les photos, logos et affiches du site. Ajoutez-en ici, une ou plusieurs à la fois, puis choisissez-les depuis n’importe quelle page.',
+    // La première colonne montre l'image (MediaFileCell) : la liste se
+    // parcourt à l'œil plutôt qu'au nom de fichier.
     defaultColumns: ['filename', 'alt', 'updatedAt'],
+    listSearchableFields: ['alt', 'filename'],
   },
   fields: [
     {
       name: 'alt',
       type: 'text',
-      required: true,
-      label: 'Texte alternatif',
+      // Facultatif : sans description, les pages reprennent le titre du
+      // concert, le nom du musicien… La liste signale « Sans description ».
+      label: 'Description de l’image',
       admin: {
-        description: 'Description de l\'image pour l\'accessibilité et le référencement.',
+        description:
+          'Ce que montre l’image, en quelques mots : elle est lue aux personnes malvoyantes et aide le référencement. Proposée d’après le nom du fichier quand il est parlant.',
+        placeholder: 'Ex. : Le chœur et l’orchestre au théâtre de Dole',
+        components: {
+          Field: '@/components/admin/AltTextField#AltTextField',
+          Cell: '@/components/admin/MediaCells#MediaAltCell',
+        },
       },
+      hooks: {
+        // La colonne refuse l'absence de valeur (ancien champ obligatoire) :
+        // une description vide est enregistrée comme texte vide.
+        // Absente d'une mise à jour partielle : la description en place est gardée.
+        beforeChange: [({ value, originalDoc }) => (typeof value === 'string' ? value.trim() : (originalDoc?.alt ?? ''))],
+      },
+    },
+    {
+      // Champ ajouté par Payload aux collections d'images : seule sa cellule
+      // de liste change (vignette, nom, dimensions).
+      name: 'filename',
+      type: 'text',
+      // Sans libellé, Payload afficherait « Filename » en tête de colonne.
+      label: 'Fichier',
+      admin: { components: { Cell: '@/components/admin/MediaCells#MediaFileCell' } },
     },
   ],
 };

@@ -48,6 +48,8 @@ const dirname = path.dirname(filename);
 export default buildConfig({
   admin: {
     user: Users.slug,
+    // « 30 septembre 2026 à 20:49 » au lieu de « septembre 30 2026, 8:49 PM ».
+    dateFormat: "d MMMM yyyy 'à' HH:mm",
     importMap: {
       baseDir: path.resolve(dirname),
     },
@@ -238,6 +240,13 @@ export default buildConfig({
           createNew: 'Créer',
           createNewLabel: 'Créer : {{label}}',
           creatingNewLabel: 'Création : {{label}}',
+        },
+        // Champs image : on choisit dans la Bibliothèque d'images.
+        fields: {
+          chooseFromExisting: 'Choisir dans la bibliothèque',
+        },
+        upload: {
+          bulkUpload: 'Ajouter plusieurs images',
         },
       },
     },

@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { skipOptimization } from '@/lib/imageOptimization';
 import { useEffect, useState } from 'react';
 import { musicianStatus } from '@/lib/musicianVisibility';
+import { loadMedia, mediaFromCell, type MediaDoc } from './mediaCache';
 
 /**
  * Cellules de la liste Musiciens dans l'admin.
@@ -16,34 +17,12 @@ import { musicianStatus } from '@/lib/musicianVisibility';
  * tiret discret quand il n'est pas renseigné, plutôt que « <Pas de …> ».
  */
 
-type Media = { id: number | string; url?: string | null; alt?: string | null; focalX?: number | null; focalY?: number | null };
-
 type CellProps = {
   cellData?: unknown;
   rowData?: Record<string, any>;
   link?: boolean;
   linkURL?: string;
 };
-
-/** Médias déjà demandés, partagés entre les lignes de la liste. */
-const mediaCache = new Map<string, Promise<Media | null>>();
-
-function loadMedia(id: string): Promise<Media | null> {
-  if (!mediaCache.has(id)) {
-    mediaCache.set(
-      id,
-      fetch(`/api/media/${encodeURIComponent(id)}?depth=0`, { credentials: 'include' })
-        .then((res) => (res.ok ? (res.json() as Promise<Media>) : null))
-        .catch(() => null)
-        .then((media) => {
-          // Un échec n'est pas retenu : la photo sera redemandée au prochain affichage.
-          if (!media) mediaCache.delete(id);
-          return media;
-        }),
-    );
-  }
-  return mediaCache.get(id)!;
-}
 
 function initials(name: unknown): string {
   const words = String(name ?? '')
@@ -54,9 +33,8 @@ function initials(name: unknown): string {
 }
 
 export function MusicianPhotoCell({ cellData, rowData, link, linkURL }: CellProps) {
-  const inline = cellData && typeof cellData === 'object' && 'url' in (cellData as object) ? (cellData as Media) : null;
-  const id = inline ? '' : cellData == null || cellData === '' ? '' : String(cellData);
-  const [media, setMedia] = useState<Media | null>(inline);
+  const { media: inline, id } = mediaFromCell(cellData);
+  const [media, setMedia] = useState<MediaDoc | null>(inline);
 
   useEffect(() => {
     if (!id) return;

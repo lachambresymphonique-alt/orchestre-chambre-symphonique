@@ -78,6 +78,10 @@ import { StatsNavLink as StatsNavLink_c38f5c2294e7b361485df8d43bc7a146 } from '@
 import { AnalyticsNavLink as AnalyticsNavLink_fb17e397022e83cc802d5c55b8837bc2 } from '@/components/admin/AnalyticsNavLink'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 import { BlobUploadHandler as BlobUploadHandler_7565af2e9d421faba2f4f09d13ec3bd7 } from '@/components/admin/BlobUploadHandler'
+import { MediaItemThumbCell as MediaItemThumbCell_6585ce0931c965b4e1775d15c7378897 } from '@/components/admin/MediaCells'
+import { MediaFileCell as MediaFileCell_6585ce0931c965b4e1775d15c7378897 } from '@/components/admin/MediaCells'
+import { MediaAltCell as MediaAltCell_6585ce0931c965b4e1775d15c7378897 } from '@/components/admin/MediaCells'
+import { AltTextField as AltTextField_c54882bfd775178999331bd7c687c4e8 } from '@/components/admin/AltTextField'
 import { AnalyticsView as AnalyticsView_db43129b90862b042c8e58805b1c34d3 } from '@/components/admin/AnalyticsView'
 import { StatsView as StatsView_019064b858e8ae6d080010e39be16092 } from '@/components/admin/StatsView'
 import { ContentOverview as ContentOverview_fd1a60f6a06df1c7c572d2606eb412b0 } from '@/components/admin/ContentOverview'
@@ -164,6 +168,10 @@ export const importMap = {
   "@/components/admin/AnalyticsNavLink#AnalyticsNavLink": AnalyticsNavLink_fb17e397022e83cc802d5c55b8837bc2,
   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
   "@/components/admin/BlobUploadHandler#BlobUploadHandler": BlobUploadHandler_7565af2e9d421faba2f4f09d13ec3bd7,
+  "@/components/admin/MediaCells#MediaItemThumbCell": MediaItemThumbCell_6585ce0931c965b4e1775d15c7378897,
+  "@/components/admin/MediaCells#MediaFileCell": MediaFileCell_6585ce0931c965b4e1775d15c7378897,
+  "@/components/admin/MediaCells#MediaAltCell": MediaAltCell_6585ce0931c965b4e1775d15c7378897,
+  "@/components/admin/AltTextField#AltTextField": AltTextField_c54882bfd775178999331bd7c687c4e8,
   "@/components/admin/AnalyticsView#AnalyticsView": AnalyticsView_db43129b90862b042c8e58805b1c34d3,
   "@/components/admin/StatsView#StatsView": StatsView_019064b858e8ae6d080010e39be16092,
   "@/components/admin/ContentOverview#ContentOverview": ContentOverview_fd1a60f6a06df1c7c572d2606eb412b0,

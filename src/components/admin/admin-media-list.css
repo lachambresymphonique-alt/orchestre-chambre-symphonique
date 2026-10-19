@@ -1,0 +1,159 @@
+/* Listes d'images de l'admin (MediaCells) : l'image d'abord, le nom ensuite. */
+
+.lcs-cell-link {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: var(--lcs-radius-sm);
+}
+
+.lcs-cell-link:focus-visible {
+  outline: 2px solid var(--lcs-gold);
+  outline-offset: 3px;
+}
+
+/* Vignette : même cadre pour toutes les lignes, image recadrée dedans. */
+.lcs-thumb {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 72px;
+  height: 54px;
+  overflow: hidden;
+  border-radius: var(--lcs-radius-sm);
+  background: var(--theme-elevation-50);
+  box-shadow: 0 0 0 1px var(--theme-elevation-150);
+}
+
+.lcs-thumb--wide {
+  width: 88px;
+  height: 55px;
+}
+
+/* Le thème impose 56 × 56 px aux images des colonnes de vignettes
+   (.table .cell-thumbnail img, admin-theme.css) : ici, l'image remplit le cadre. */
+.lcs-thumb img,
+.table td .lcs-thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none;
+  object-fit: cover;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+.table td .lcs-thumb--whole img {
+  padding: 4px;
+  object-fit: contain;
+}
+
+/* Pas d'image : un cadre teinté d'or, comme les initiales de la liste Musiciens,
+   visible aussi sur les lignes teintées du tableau. */
+.lcs-thumb__empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--lcs-gold) 12%, var(--theme-elevation-0));
+  color: var(--lcs-gold-dark);
+}
+
+.lcs-thumb__badge {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--theme-elevation-1000) 72%, transparent);
+  color: var(--theme-elevation-0);
+}
+
+.lcs-cell-link:hover .lcs-thumb {
+  box-shadow: 0 0 0 1px var(--lcs-gold);
+}
+
+/* Bibliothèque : vignette, puis nom du fichier et dimensions. */
+.lcs-file {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.875rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.lcs-file__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.lcs-file__name {
+  max-width: 30ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+  color: var(--theme-elevation-800);
+}
+
+.lcs-cell-link:hover .lcs-file__name {
+  color: var(--theme-elevation-1000);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.lcs-file__meta {
+  font-size: 0.78rem;
+  color: var(--theme-elevation-500);
+  font-variant-numeric: tabular-nums;
+}
+
+.lcs-alt {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.lcs-alt--missing {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--lcs-gold-dark);
+}
+
+/* Colonnes et lignes des deux listes. */
+.collection-list--media-items .table .cell-thumbnail {
+  width: 104px;
+}
+
+.collection-list--media .table .cell-filename {
+  width: 42%;
+}
+
+.collection-list--media-items .table td,
+.collection-list--media .table td {
+  vertical-align: middle;
+}
+
+.collection-list--media .table .cell-updatedAt {
+  white-space: nowrap;
+}
