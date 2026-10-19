@@ -39,6 +39,7 @@ import { MusicianForm } from './globals/MusicianForm';
 import { ThemeSettings } from './globals/ThemeSettings';
 import { Navigation } from './globals/Navigation';
 import { unsavedChangesPlugin } from './lib/unsavedChangesPlugin';
+import { uniqueClientUploadNames } from './lib/blobClientUploads';
 import { adminByDefault, globalAdminByDefault, lockPayloadInternals } from './lib/access';
 
 const filename = fileURLToPath(import.meta.url);
@@ -286,7 +287,12 @@ export default buildConfig({
             // durée que l'optimiseur d'images reprend pour ses variantes.
             addRandomSuffix: false,
             cacheControlMaxAge: 60 * 60 * 24 * 365,
+            // L'admin envoie les images directement à Blob : Vercel refuse tout
+            // envoi de plus de 4,5 Mo vers une fonction (photos d'appareil).
+            clientUploads: true,
           }),
+          // … sous un nom unique (aucune photo existante écrasée).
+          uniqueClientUploadNames,
         ]
       : []),
   ],

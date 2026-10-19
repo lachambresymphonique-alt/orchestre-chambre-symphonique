@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import type { ProfileField } from '@/lib/profileFields';
+import { shrinkPhoto } from '@/lib/shrinkPhoto';
 
 const MAX_PHOTO_BYTES = 4 * 1024 * 1024;
 
@@ -29,14 +30,20 @@ export function ProfileForm({ fields, values, photoUrl, photoPending }: Props) {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const photo = data.get('photo');
-    if (photo instanceof File && photo.size > MAX_PHOTO_BYTES) {
-      setStatus('error');
-      setMessage('Photo trop lourde : 4 Mo au plus.');
-      return;
-    }
     setStatus('sending');
     setMessage('');
+    // Photo réduite avant l'envoi (1920 px, JPEG) : celles des téléphones
+    // dépassent souvent la limite (voir lib/shrinkPhoto).
+    const photo = data.get('photo');
+    if (photo instanceof File && photo.size > 0) {
+      const small = await shrinkPhoto(photo);
+      if (small.size > MAX_PHOTO_BYTES) {
+        setStatus('error');
+        setMessage('Photo trop lourde : 4 Mo au plus.');
+        return;
+      }
+      data.set('photo', small, small.name);
+    }
     try {
       const res = await fetch('/api/membres/fiche', { method: 'POST', body: data });
       const json = await res.json().catch(() => ({}));

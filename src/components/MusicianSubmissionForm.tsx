@@ -3,6 +3,7 @@
 import { useState, FormEvent, useRef, ChangeEvent, CSSProperties } from 'react';
 import { Turnstile } from '@/components/Turnstile';
 import { renderInline } from '@/lib/richText';
+import { MAX_UPLOAD_BYTES, shrinkPhoto } from '@/lib/shrinkPhoto';
 import {
   allQuestions,
   layoutQuestions,
@@ -105,6 +106,21 @@ export function MusicianSubmissionForm({ formToken, turnstileSiteKey, form }: Mu
     setStatus('sending');
     setErrorMsg('');
 
+    // Photos de téléphone ou d'appareil réduites avant l'envoi : au-delà de
+    // 4,5 Mo, Vercel refuse la requête (voir lib/shrinkPhoto).
+    for (const question of allQuestions(form)) {
+      if (question.kind !== 'photo') continue;
+      const photo = fd.get(question.key);
+      if (!(photo instanceof File) || photo.size === 0) continue;
+      const small = await shrinkPhoto(photo);
+      if (small.size > MAX_UPLOAD_BYTES) {
+        setErrorMsg('Photo trop lourde : choisissez une image de moins de 4 Mo.');
+        setStatus('error');
+        return;
+      }
+      fd.set(question.key, small, small.name);
+    }
+
     try {
       const res = await fetch('/api/musician-submissions', {
         method: 'POST',
@@ -112,8 +128,11 @@ export function MusicianSubmissionForm({ formToken, turnstileSiteKey, form }: Mu
       });
 
       if (!res.ok) {
-        const json = await res.json();
-        throw new Error(json.error || 'Erreur lors de l’envoi.');
+        const json = await res.json().catch(() => ({}));
+        throw new Error(
+          json.error ||
+            (res.status === 413 ? 'Envoi trop lourd : choisissez une photo plus légère.' : 'Erreur lors de l’envoi.'),
+        );
       }
 
       setStatus('success');
