@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { skipOptimization } from '@/lib/imageOptimization';
 import { FadeIn } from '@/components/FadeIn';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { useLiveGlobal, useLiveList } from '@/hooks/useLiveDocument';
@@ -33,6 +34,7 @@ function MusicianCard({ musician, featured = false }: { musician: Musician; feat
       <div className="musician-photo">
         <Image
           src={photoUrl}
+          unoptimized={skipOptimization(photo)}
           alt={photo?.alt || name}
           fill
           sizes={featured ? '(max-width: 700px) 100vw, 480px' : '(max-width: 700px) 50vw, 280px'}

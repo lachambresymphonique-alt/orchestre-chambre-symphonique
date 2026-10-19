@@ -3,6 +3,7 @@
 import { Fragment, type ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { skipOptimization } from '@/lib/imageOptimization';
 import { useLiveGlobal, useLiveList } from '@/hooks/useLiveDocument';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FadeIn } from '@/components/FadeIn';
@@ -151,6 +152,7 @@ export function HomeClient({
               <figure className="home-statement__media">
                 <Image
                   src={statement.image?.url || stockImages.violin}
+                  unoptimized={skipOptimization(statement.image)}
                   alt={statement.image?.alt || ''}
                   fill
                   sizes="(max-width: 900px) 100vw, 38vw"
@@ -262,6 +264,7 @@ export function HomeClient({
                         >
                           <Image
                             src={concert.image?.url || stockImages.concertHall}
+                            unoptimized={concert.image?.unoptimized}
                             alt={concert.image?.alt || concert.title}
                             fill
                             sizes="(max-width: 900px) 100vw, 45vw"
@@ -376,6 +379,7 @@ export function HomeClient({
               <div className="bento-card__media">
                 <Image
                   src={director?.photo?.url || directorPlaceholder}
+                  unoptimized={skipOptimization(director?.photo)}
                   alt={director?.name || 'Loïc Emmelin'}
                   fill
                   sizes="(max-width: 900px) 100vw, 50vw"
@@ -461,6 +465,7 @@ export function HomeClient({
                       {photoUrl ? (
                         <Image
                           src={photoUrl}
+                          unoptimized={skipOptimization(s?.photo)}
                           alt={s.photo?.alt || s.name}
                           fill
                           sizes="(max-width: 700px) 80vw, 360px"
@@ -509,6 +514,7 @@ export function HomeClient({
               <FadeIn className="home-presentation__media">
                 <Image
                   src={presentation?.image?.url || stockImages.orchestraWide}
+                  unoptimized={skipOptimization(presentation?.image)}
                   alt={presentation?.image?.alt || "L'orchestre en concert"}
                   width={900}
                   height={1100}
@@ -687,6 +693,7 @@ export function HomeClient({
           <div className="hero-modern__portrait">
             <Image
               src={hero?.portraitImage?.url || director?.photo?.url || directorPlaceholder}
+              unoptimized={skipOptimization(hero?.portraitImage?.url ? hero.portraitImage : director?.photo)}
               alt={hero?.portraitImage?.alt || director?.name || 'Loïc Emmelin, directeur artistique'}
               fill
               priority

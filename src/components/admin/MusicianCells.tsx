@@ -3,6 +3,7 @@
 import './admin-theme.css';
 import './admin-musicians-list.css';
 import Image from 'next/image';
+import { skipOptimization } from '@/lib/imageOptimization';
 import { useEffect, useState } from 'react';
 import { musicianStatus } from '@/lib/musicianVisibility';
 
@@ -74,6 +75,7 @@ export function MusicianPhotoCell({ cellData, rowData, link, linkURL }: CellProp
       {media?.url ? (
         <Image
           src={media.url}
+          unoptimized={skipOptimization(media)}
           alt={media.alt || name}
           width={88}
           height={88}

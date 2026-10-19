@@ -4,6 +4,7 @@
  * Réexporté par `posts.ts`.
  */
 import type { PostCategory } from './postCategories';
+import { skipOptimization } from './imageOptimization';
 
 export type MediaDoc = {
   id?: string | number;
@@ -15,7 +16,8 @@ export type MediaDoc = {
   sizes?: Record<string, { url?: string | null; width?: number | null; height?: number | null }>;
 };
 
-export type ImageView = { url: string; alt: string; width?: number; height?: number };
+/** `unoptimized` : SVG ou image de moins de 50 Ko, servie telle quelle (voir imageOptimization). */
+export type ImageView = { url: string; alt: string; width?: number; height?: number; unoptimized?: boolean };
 
 export type MusicianRef = { id?: string | number; slug?: string | null; name?: string | null };
 
@@ -71,6 +73,7 @@ export function imageOf(value: unknown, size?: 'thumbnail' | 'card'): ImageView 
     alt: doc.alt || '',
     width: width || undefined,
     height: height || undefined,
+    unoptimized: skipOptimization(doc, size),
   };
 }
 

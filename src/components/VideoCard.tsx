@@ -17,6 +17,8 @@ type VideoCardProps = {
   /** Miniature de repli si `poster` n'existe pas (ex. YouTube sans HD). */
   posterFallback?: string | null;
   posterAlt?: string | null;
+  /** `poster` est un SVG ou une image de moins de 50 Ko : servie telle quelle. */
+  posterUnoptimized?: boolean;
 };
 
 // Recouvre toute la miniature pour que le clic fonctionne partout,
@@ -53,6 +55,7 @@ export function VideoCard({
   poster,
   posterFallback,
   posterAlt,
+  posterUnoptimized = false,
 }: VideoCardProps) {
   const [playing, setPlaying] = useState(false);
   const [posterSrc, setPosterSrc] = useState<string | null>(poster ?? null);
@@ -79,6 +82,7 @@ export function VideoCard({
             {posterSrc && (
               <Image
                 src={posterSrc}
+                unoptimized={posterUnoptimized && posterSrc === poster}
                 alt={posterAlt || title}
                 fill
                 sizes="(max-width: 700px) 100vw, 600px"

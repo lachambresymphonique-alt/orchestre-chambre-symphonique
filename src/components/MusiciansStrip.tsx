@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import { skipOptimization } from '@/lib/imageOptimization';
 import Link from 'next/link';
 import { placeholderForMusician } from '@/lib/unsplash';
 import { objectPositionOf } from '@/lib/focalPoint';
@@ -55,6 +56,7 @@ export function MusiciansStrip({ musicians, allLabel }: { musicians: StripMusici
                 <span className="musicians-strip__photo">
                   <Image
                     src={m.photo?.url || placeholderForMusician(m.name)}
+                    unoptimized={skipOptimization(m.photo)}
                     alt=""
                     fill
                     sizes="(max-width: 900px) 42vw, 11rem"

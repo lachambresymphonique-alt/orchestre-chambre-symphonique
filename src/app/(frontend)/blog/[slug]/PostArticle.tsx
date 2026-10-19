@@ -115,6 +115,7 @@ export function PostArticle({
           <div className="post-cover__frame">
             <Image
               src={cover.url}
+              unoptimized={cover.unoptimized}
               alt={cover.alt || post.title}
               fill
               priority
@@ -147,6 +148,7 @@ export function PostArticle({
                 <div className="post-gallery__frame">
                   <Image
                     src={g.image.url}
+                    unoptimized={g.image.unoptimized}
                     alt={g.image.alt || g.caption || `${post.title} — photo ${i + 1}`}
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 33vw"

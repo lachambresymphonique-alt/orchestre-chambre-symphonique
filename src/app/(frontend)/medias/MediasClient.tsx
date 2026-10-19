@@ -3,6 +3,7 @@
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { skipOptimization } from '@/lib/imageOptimization';
 import { FadeIn } from '@/components/FadeIn';
 import { ImagePlaceholder } from '@/components/PlaceholderIcon';
 import { MediaTabs } from '@/components/MediaTabs';
@@ -84,12 +85,14 @@ export function MediasClient({
         poster = vimeoPosters[String(item.id)] ?? null;
       }
     }
-    return { item, info, poster, posterFallback };
+    // Miniature uploadée légère : servie telle quelle (une miniature YouTube/Vimeo reste optimisée).
+    const posterUnoptimized = !!uploadUrl(item.thumbnail, 'card') && skipOptimization(item.thumbnail, 'card');
+    return { item, info, poster, posterFallback, posterUnoptimized };
   });
 
   const videos = (
     <div className="media-grid">
-      {videoCards.map(({ item, info, poster, posterFallback }, i: number) => (
+      {videoCards.map(({ item, info, poster, posterFallback, posterUnoptimized }, i: number) => (
         <FadeIn className="media-card" key={item.id || i} data-live-link={item.id ? `/admin/collections/media-items/${item.id}` : undefined}>
           <VideoCard
             title={item.title}
@@ -99,6 +102,7 @@ export function MediasClient({
             embedUrl={info?.embedUrl}
             poster={poster}
             posterFallback={posterFallback}
+            posterUnoptimized={posterUnoptimized}
             posterAlt={item.thumbnail?.alt}
           />
         </FadeIn>
@@ -116,6 +120,7 @@ export function MediasClient({
               {img && (
                 <Image
                   src={img}
+                  unoptimized={skipOptimization(item.thumbnail, 'card')}
                   alt={item.thumbnail?.alt || item.title}
                   fill
                   sizes="(max-width: 700px) 100vw, 600px"
@@ -167,6 +172,7 @@ export function MediasClient({
                 >
                   <Image
                     src={img}
+                    unoptimized={skipOptimization(item.thumbnail, 'card')}
                     alt={alt}
                     fill
                     sizes="(max-width: 700px) 50vw, 300px"
@@ -176,6 +182,7 @@ export function MediasClient({
               ) : (
                 <Image
                   src={img}
+                  unoptimized={skipOptimization(item.thumbnail, 'card')}
                   alt={alt}
                   fill
                   sizes="(max-width: 700px) 50vw, 300px"

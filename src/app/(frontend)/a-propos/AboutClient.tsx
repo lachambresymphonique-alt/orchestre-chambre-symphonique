@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { skipOptimization } from '@/lib/imageOptimization';
 import { useLiveGlobal, useLiveList } from '@/hooks/useLiveDocument';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { FadeIn } from '@/components/FadeIn';
@@ -52,6 +53,7 @@ export function AboutClient({ initialData, timelineEvents }: AboutClientProps) {
             <FadeIn className="about-intro__media">
               <Image
                 src={intro?.image?.url || stockImages.conductor}
+                unoptimized={skipOptimization(intro?.image)}
                 alt={intro?.image?.alt || "Photo de l'orchestre"}
                 width={900}
                 height={1100}

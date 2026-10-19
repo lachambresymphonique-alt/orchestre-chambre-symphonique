@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import { skipOptimization } from '@/lib/imageOptimization';
 
 type Photo = {
   id?: string;
@@ -55,6 +56,7 @@ export function PhotoGrid({ photos, variant }: { photos: Photo[]; variant: 'mosa
               <span className="lcs-photo">
                 <Image
                   src={p.image.url!}
+                  unoptimized={skipOptimization(p.image)}
                   alt={p.image.alt ?? ''}
                   fill
                   sizes={variant === 'mosaic' && i === 0 ? '(max-width: 800px) 100vw, 66vw' : '(max-width: 800px) 50vw, 33vw'}

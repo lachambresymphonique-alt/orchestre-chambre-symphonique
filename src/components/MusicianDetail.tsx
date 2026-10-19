@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { skipOptimization } from '@/lib/imageOptimization';
 import { placeholderForMusician } from '@/lib/unsplash';
 import { toEmbedUrl } from '@/lib/videoEmbed';
 import { RichText, renderInline } from '@/lib/richText';
@@ -83,6 +84,7 @@ export function MusicianDetail({ musician: m, previewMode = false, labels }: Pro
         <div className="musician-feature__portrait" data-live-field="photo">
           <Image
             src={m.photo?.url || placeholderForMusician(m.name)}
+            unoptimized={skipOptimization(m.photo)}
             alt={m.photo?.alt || m.name}
             fill
             priority

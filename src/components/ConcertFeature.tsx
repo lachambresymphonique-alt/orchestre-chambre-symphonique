@@ -57,6 +57,7 @@ export function ConcertFeature({ concert, labels }: { concert: ConcertCard; labe
           <>
             <Image
               src={concert.image.url}
+              unoptimized={concert.image.unoptimized}
               alt=""
               aria-hidden="true"
               fill
@@ -66,6 +67,7 @@ export function ConcertFeature({ concert, labels }: { concert: ConcertCard; labe
             />
             <Image
               src={concert.image.url}
+              unoptimized={concert.image.unoptimized}
               alt={concert.image.alt}
               fill
               sizes="(max-width: 900px) 100vw, 45vw"
@@ -112,7 +114,7 @@ export function ConcertFeature({ concert, labels }: { concert: ConcertCard; labe
                 >
                   <span className="concert-feature__soloist-photo" aria-hidden="true">
                     {s.photo ? (
-                      <Image src={s.photo.url} alt="" fill sizes="96px" style={{ objectFit: 'cover' }} />
+                      <Image src={s.photo.url} unoptimized={s.photo.unoptimized} alt="" fill sizes="96px" style={{ objectFit: 'cover' }} />
                     ) : (
                       <span className="concert-feature__soloist-initial">{s.name.charAt(0)}</span>
                     )}

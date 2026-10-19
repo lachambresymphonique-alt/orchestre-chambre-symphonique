@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { skipOptimization } from '@/lib/imageOptimization';
 import {
   RichText,
   LinkJSXConverter,
@@ -62,6 +63,7 @@ const converters: JSXConvertersFunction = ({ defaultConverters }) => ({
         {value.width && value.height ? (
           <Image
             src={value.url}
+            unoptimized={skipOptimization(value)}
             alt={alt}
             width={value.width}
             height={value.height}

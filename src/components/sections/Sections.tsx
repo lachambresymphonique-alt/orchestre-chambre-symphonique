@@ -1,6 +1,7 @@
 import './sections.css';
 import { Fragment, type ReactNode } from 'react';
 import Image from 'next/image';
+import { skipOptimization } from '@/lib/imageOptimization';
 import Link from 'next/link';
 import { PostRichText } from '@/components/PostRichText';
 import { ConcertPosters } from '@/components/ConcertPosters';
@@ -115,7 +116,7 @@ function SectionHead({ block, ed = NO_EDIT }: { block: SectionBlock; ed?: Edit }
 function Photo({ image, sizes, className, attrs }: { image: Media; sizes: string; className?: string; attrs?: Record<string, string> }) {
   return (
     <div className={`lcs-photo ${className ?? ''}`} {...attrs}>
-      <Image src={image.url!} alt={image.alt ?? ''} fill sizes={sizes} style={{ objectFit: 'cover' }} />
+      <Image src={image.url!} unoptimized={skipOptimization(image)} alt={image.alt ?? ''} fill sizes={sizes} style={{ objectFit: 'cover' }} />
     </div>
   );
 }

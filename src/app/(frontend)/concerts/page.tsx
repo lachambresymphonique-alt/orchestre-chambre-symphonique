@@ -96,6 +96,7 @@ export default async function ConcertsPage() {
                         // Image décorative dans un lien déjà nommé par le titre.
                         <Image
                           src={c.image.url}
+                          unoptimized={c.image.unoptimized}
                           alt=""
                           fill
                           sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"

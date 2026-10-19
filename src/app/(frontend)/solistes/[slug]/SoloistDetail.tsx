@@ -2,6 +2,7 @@
 
 import './soloist.css';
 import Image from 'next/image';
+import { skipOptimization } from '@/lib/imageOptimization';
 import Link from 'next/link';
 import { useLiveDoc } from '@/hooks/useLiveDocument';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
@@ -44,6 +45,7 @@ export function SoloistDetail({ soloist, concerts }: { soloist: SoloistDoc; conc
         <div className="musician-feature__portrait" data-live-field="photo">
           <Image
             src={photo?.url || placeholderForMusician(s.name || 'Soliste')}
+            unoptimized={skipOptimization(photo)}
             alt={photo?.alt || s.name}
             fill
             priority

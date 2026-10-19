@@ -279,6 +279,13 @@ export default buildConfig({
             enabled: true,
             collections: { media: true },
             token: process.env.BLOB_READ_WRITE_TOKEN,
+            // Valeurs par défaut du module, écrites ici pour qu'une mise à jour
+            // ne les change pas en silence : pas de suffixe aléatoire (une
+            // photo garde son adresse, et donc les variantes déjà en cache),
+            // et un an de cache sur les fichiers et sur /api/media/file/…,
+            // durée que l'optimiseur d'images reprend pour ses variantes.
+            addRandomSuffix: false,
+            cacheControlMaxAge: 60 * 60 * 24 * 365,
           }),
         ]
       : []),

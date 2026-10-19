@@ -86,6 +86,7 @@ function LeadPost({ post }: { post: PostDoc }) {
           {cover ? (
             <Image
               src={cover.url}
+              unoptimized={cover.unoptimized}
               alt={cover.alt || post.title}
               fill
               priority
@@ -139,6 +140,7 @@ function PostRow({ post }: { post: PostDoc }) {
             {thumb ? (
               <Image
                 src={thumb.url}
+                unoptimized={thumb.unoptimized}
                 alt={thumb.alt || post.title}
                 fill
                 sizes="(max-width: 700px) 100vw, 220px"

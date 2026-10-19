@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { skipOptimization } from '@/lib/imageOptimization';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { useLiveDoc, useLiveGlobal } from '@/hooks/useLiveDocument';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
@@ -173,6 +174,7 @@ export function DirectorClient({
           >
             <Image
               src={photo?.url || directorPlaceholder}
+              unoptimized={skipOptimization(photo)}
               alt={photo?.alt || `${director.name}, ${director.role}`}
               fill
               priority

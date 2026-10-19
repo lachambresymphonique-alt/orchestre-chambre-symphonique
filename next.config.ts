@@ -19,6 +19,19 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    // Vercel facture une transformation par variante (image × largeur ×
+    // qualité × format) à chaque fois que son cache expire : peu de
+    // variantes, gardées longtemps.
+    // 31 jours. Avec les 60 s par défaut, le cache suivait celui de la
+    // source : 2 h pour les miniatures YouTube, retransformables toutes les 2 h.
+    minimumCacheTTL: 2678400,
+    formats: ['image/webp'],
+    // 5 largeurs au lieu de 16 : de la vignette (256) à la pleine largeur
+    // sur écran haute densité (1920).
+    deviceSizes: [640, 1080, 1440, 1920],
+    imageSizes: [256],
+    // Une seule qualité : les URL /_next/image à une autre qualité sont refusées.
+    qualities: [75],
     remotePatterns: [
       {
         protocol: 'https',

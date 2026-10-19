@@ -90,6 +90,7 @@ export function ConcertDetail({
               <>
                 <Image
                   src={card.image.url}
+                  unoptimized={card.image.unoptimized}
                   alt=""
                   aria-hidden="true"
                   fill
@@ -102,6 +103,7 @@ export function ConcertDetail({
                 />
                 <Image
                   src={card.image.url}
+                  unoptimized={card.image.unoptimized}
                   alt={card.image.alt}
                   fill
                   priority
@@ -217,7 +219,7 @@ export function ConcertDetail({
                       <Link href={s.href} className="concert-page__soloist">
                         <span className="concert-page__soloist-photo" aria-hidden="true">
                           {s.photo ? (
-                            <Image src={s.photo.url} alt="" fill sizes="64px" style={{ objectFit: 'cover' }} />
+                            <Image src={s.photo.url} unoptimized={s.photo.unoptimized} alt="" fill sizes="64px" style={{ objectFit: 'cover' }} />
                           ) : (
                             <span>{s.name.charAt(0)}</span>
                           )}

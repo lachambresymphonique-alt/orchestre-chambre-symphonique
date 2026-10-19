@@ -184,6 +184,7 @@ function ConcertPoster({
             {/* Fond : la même image floutée, pour que l'affiche tienne entière dans le cadre sans recadrage. */}
             <Image
               src={concert.image.url}
+              unoptimized={concert.image.unoptimized}
               alt=""
               aria-hidden="true"
               fill
@@ -193,6 +194,7 @@ function ConcertPoster({
             />
             <Image
               src={concert.image.url}
+              unoptimized={concert.image.unoptimized}
               alt={concert.image.alt}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 33vw"

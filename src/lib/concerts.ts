@@ -20,6 +20,7 @@
  */
 
 import { foldAscii } from './slug';
+import { skipOptimization } from './imageOptimization';
 
 export const CONCERT_TIMEZONE = 'Europe/Paris';
 
@@ -90,7 +91,7 @@ export type ConcertSoloistView = {
   instrument: string;
   /** Page du ou de la soliste (/solistes/<slug>). */
   href: string;
-  photo: { url: string; alt: string } | null;
+  photo: { url: string; alt: string; unoptimized: boolean } | null;
 };
 
 /** Solistes peuplés → vues ; les références non peuplées (identifiants seuls) sont ignorées. */
@@ -107,7 +108,7 @@ export function soloistsOf(doc: Pick<ConcertDoc, 'soloists'>): ConcertSoloistVie
         name: (s.name ?? '').trim(),
         instrument: (s.instrument ?? '').trim(),
         href: `/solistes/${s.slug || s.id}`,
-        photo: url ? { url, alt: photo?.alt || s.name || '' } : null,
+        photo: url ? { url, alt: photo?.alt || s.name || '', unoptimized: skipOptimization(photo) } : null,
       };
     });
 }
@@ -160,7 +161,8 @@ export type ConcertCard = {
   program: string;
   /** Booking link of the performance shown in `date`. */
   bookingLink: string | null;
-  image: { url: string; alt: string; width: number | null; height: number | null } | null;
+  /** `unoptimized` : SVG ou image de moins de 50 Ko, servie telle quelle (voir imageOptimization). */
+  image: { url: string; alt: string; width: number | null; height: number | null; unoptimized: boolean } | null;
   status: ConcertStatus;
   /** Next performance (today or later) — or the last one once all have passed. */
   date: ConcertDateView;
@@ -456,6 +458,7 @@ export function toConcertCard(doc: ConcertDoc, now: Date = new Date()): ConcertC
           alt: img.alt || doc.title || 'Concert',
           width: typeof img.width === 'number' && img.width > 0 ? img.width : null,
           height: typeof img.height === 'number' && img.height > 0 ? img.height : null,
+          unoptimized: skipOptimization(img),
         }
       : null,
     status: doc.status === 'draft' || doc.status === 'cancelled' ? doc.status : 'published',
