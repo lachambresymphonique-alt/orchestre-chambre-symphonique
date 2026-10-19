@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { cache } from 'react';
 import { getPayloadClient } from '@/lib/payload';
-import { getFormSecret, issueFormToken } from '@/lib/antispam';
+import { getFormSecret, issueCaptcha, issueFormToken, turnstileConfigured } from '@/lib/antispam';
 import { ContactClient } from './ContactClient';
 
 const getContactPage = cache(async () => {
@@ -34,7 +34,12 @@ export default async function Contact() {
 
   // Jeton anti-robot : émis à chaque rendu (page dynamique), vérifié par /api/contact.
   const formToken = issueFormToken(getFormSecret());
-  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || null;
+  // Même règle que /api/contact : Turnstile si les deux clés existent, sinon
+  // une question remplace le captcha.
+  const turnstileSiteKey = turnstileConfigured()
+    ? (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY as string)
+    : null;
+  const captcha = turnstileSiteKey ? null : issueCaptcha(getFormSecret());
 
   return (
     <ContactClient
@@ -42,6 +47,7 @@ export default async function Contact() {
       pageContent={contactPage}
       formToken={formToken}
       turnstileSiteKey={turnstileSiteKey}
+      captcha={captcha}
     />
   );
 }

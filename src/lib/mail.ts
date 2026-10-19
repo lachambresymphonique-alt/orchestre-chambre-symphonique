@@ -19,14 +19,23 @@ export function teamNotificationEmail(env: NodeJS.ProcessEnv = process.env): str
   return env.MUSICIANS_NOTIFY_EMAIL || 'lachambresymphonique@gmail.com';
 }
 
+/** Boîtes qui reçoivent chaque message du formulaire de contact. */
+export const CONTACT_RECIPIENTS = [
+  'lachambresymphonique@outlook.fr',
+  'lachambresymphonique@gmail.com',
+];
+
 export async function sendMail({
   to,
   subject,
   text,
+  replyTo,
 }: {
-  to: string;
+  to: string | string[];
   subject: string;
   text: string;
+  /** Adresse à qui va la réponse quand on clique « Répondre ». */
+  replyTo?: string;
 }): Promise<void> {
   if (!mailConfigured()) throw new Error('SMTP non configuré');
   const transporter = nodemailer.createTransport({
@@ -35,10 +44,13 @@ export async function sendMail({
     secure: process.env.SMTP_SECURE === 'true',
     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
   });
-  await transporter.sendMail({
+  const info = await transporter.sendMail({
     from: `"La Chambre Symphonique" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
     to,
+    replyTo,
     subject,
     text,
   });
+  // Avec plusieurs destinataires, le serveur peut en refuser un et accepter l'autre.
+  if (info.rejected?.length) console.warn('E-mail refusé pour :', info.rejected);
 }

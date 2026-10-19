@@ -4,6 +4,7 @@ import { useState, FormEvent, CSSProperties } from 'react';
 import { Turnstile } from '@/components/Turnstile';
 import { renderEmphasis } from '@/lib/emphasis';
 import { renderInline } from '@/lib/richText';
+import type { CaptchaChallenge } from '@/lib/antispam';
 
 /** Textes du formulaire, modifiables dans Pages → Page Contact → Formulaire. */
 export type ContactFormCopy = {
@@ -41,6 +42,8 @@ type ContactFormProps = {
   formToken: string;
   /** Clé publique Cloudflare Turnstile ; `null` quand le captcha n'est pas configuré. */
   turnstileSiteKey: string | null;
+  /** Question anti-robot posée à la place de Turnstile ; `null` quand Turnstile est actif. */
+  captcha?: CaptchaChallenge | null;
   copy?: ContactFormCopy | null;
 };
 
@@ -55,7 +58,7 @@ const HONEYPOT_STYLE: CSSProperties = {
   overflow: 'hidden',
 };
 
-export function ContactForm({ formToken, turnstileSiteKey, copy }: ContactFormProps) {
+export function ContactForm({ formToken, turnstileSiteKey, captcha, copy }: ContactFormProps) {
   const c = copy || {};
   const subjects = (Array.isArray(c.subjects) ? c.subjects : [])
     .map((s) => ({ value: (s?.value || '').trim(), label: (s?.label || '').trim() }))
@@ -92,6 +95,8 @@ export function ContactForm({ formToken, turnstileSiteKey, copy }: ContactFormPr
       website: (form.elements.namedItem('website') as HTMLInputElement).value,
       formToken,
       turnstileToken,
+      captchaToken: captcha?.token ?? null,
+      captchaAnswer: (form.elements.namedItem('captchaAnswer') as HTMLInputElement | null)?.value ?? null,
     };
 
     try {
@@ -183,6 +188,26 @@ export function ContactForm({ formToken, turnstileSiteKey, copy }: ContactFormPr
           <label htmlFor="message">{c.messageLabel || 'Message'}</label>
           <textarea id="message" name="message" placeholder={c.messagePlaceholder || 'Votre message...'} required></textarea>
         </div>
+
+        {captcha && (
+          <div className="form-group">
+            <label htmlFor="captchaAnswer">{captcha.question}</label>
+            <input
+              type="text"
+              id="captchaAnswer"
+              name="captchaAnswer"
+              inputMode="numeric"
+              autoComplete="off"
+              maxLength={12}
+              placeholder="Votre réponse, en chiffres"
+              aria-describedby="captchaHint"
+              required
+            />
+            <p id="captchaHint" style={{ fontSize: '0.78rem', color: 'var(--rose-mute)', marginTop: '0.5rem' }}>
+              Une petite question pour vérifier que vous n&apos;êtes pas un robot.
+            </p>
+          </div>
+        )}
 
         {turnstileSiteKey && (
           <div className="form-group">

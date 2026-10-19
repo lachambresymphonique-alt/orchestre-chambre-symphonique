@@ -8,6 +8,7 @@ import { ContactForm } from '@/components/ContactForm';
 import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { socialLinksOf } from '@/components/SocialIcons';
 import { renderInline } from '@/lib/richText';
+import type { CaptchaChallenge } from '@/lib/antispam';
 
 interface ContactClientProps {
   /** Réglages du site (coordonnées, horaires, réseaux) — aperçu en direct. */
@@ -18,9 +19,11 @@ interface ContactClientProps {
   formToken: string;
   /** Clé publique Cloudflare Turnstile, ou `null` si le captcha n'est pas configuré. */
   turnstileSiteKey: string | null;
+  /** Question anti-robot posée à la place de Turnstile quand il n'est pas configuré. */
+  captcha: CaptchaChallenge | null;
 }
 
-export function ContactClient({ initialData, pageContent, formToken, turnstileSiteKey }: ContactClientProps) {
+export function ContactClient({ initialData, pageContent, formToken, turnstileSiteKey, captcha }: ContactClientProps) {
   // Aperçu en direct : les deux pages globales montrées ici (Réglages du site et
   // Page Contact) ; chacune ne se met à jour qu'avec sa propre fiche.
   const data = useLiveGlobal('site-settings', initialData, 0);
@@ -56,7 +59,12 @@ export function ContactClient({ initialData, pageContent, formToken, turnstileSi
 
       <section className="contact-section">
         <div className="contact-grid">
-            <ContactForm formToken={formToken} turnstileSiteKey={turnstileSiteKey} copy={liveContent?.form} />
+            <ContactForm
+              formToken={formToken}
+              turnstileSiteKey={turnstileSiteKey}
+              captcha={captcha}
+              copy={liveContent?.form}
+            />
 
             <FadeIn>
               <div className="contact-info-block" data-live-field="contact" data-live-owner="/admin/globals/site-settings">

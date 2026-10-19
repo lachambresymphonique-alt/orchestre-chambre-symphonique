@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPayloadClient } from '@/lib/payload';
-import nodemailer from 'nodemailer';
+import { CONTACT_RECIPIENTS, mailConfigured, sendMail } from '@/lib/mail';
+import { SITE_URL } from '@/lib/siteUrl';
 import {
   FORM_TOKEN_ERRORS,
+  checkCaptcha,
   checkFormToken,
   getFormSecret,
   isHoneypotFilled,
@@ -40,7 +42,7 @@ function badRequest(error: string) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { website, formToken, turnstileToken } = body ?? {};
+    const { website, formToken, turnstileToken, captchaToken, captchaAnswer } = body ?? {};
 
     // 1. Pot de miel : un humain ne voit pas ce champ. On répond « succès » sans
     //    rien enregistrer, pour ne pas renseigner le robot.
@@ -82,7 +84,8 @@ export async function POST(req: NextRequest) {
       return badRequest(FORM_TOKEN_ERRORS[tokenStatus]);
     }
 
-    // 4. Captcha Cloudflare Turnstile, si configuré.
+    // 4. Captcha : Cloudflare Turnstile s'il est configuré, sinon la question
+    //    posée dans le formulaire.
     if (turnstileConfigured()) {
       const result = await verifyTurnstile(
         turnstileToken,
@@ -93,46 +96,50 @@ export async function POST(req: NextRequest) {
         console.warn('Contact form: Turnstile refusé', result.errorCodes);
         return badRequest('La vérification anti-robot a échoué. Merci de réessayer.');
       }
+    } else if (!checkCaptcha(captchaToken, captchaAnswer, getFormSecret())) {
+      return badRequest('La réponse à la question anti-robot est incorrecte.');
     }
 
     // 5. Enregistrement. La collection refuse les créations anonymes via l'API
     //    publique (REST/GraphQL) ; ici on passe par l'API locale, hors contrôle d'accès.
     const payload = await getPayloadClient();
-    await payload.create({
+    const saved = await payload.create({
       collection: 'contact-submissions' as any,
       data: { name, email, phone, subject, message },
       overrideAccess: true,
     });
 
-    // 6. Notification e-mail si SMTP est configuré
-    if (process.env.SMTP_HOST) {
-      const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT) || 587,
-        secure: process.env.SMTP_SECURE === 'true',
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      });
-
-      const to = process.env.CONTACT_EMAIL || process.env.SMTP_USER;
+    // 6. Alerte e-mail aux deux boîtes de l'orchestre. Le message est déjà
+    //    enregistré dans l'admin : un échec d'envoi ne doit pas faire croire à
+    //    l'internaute que rien n'est parti (il renverrait un doublon).
+    if (mailConfigured()) {
       const subjectLabel = SUBJECT_LABELS[subject] || subject;
-
-      await transporter.sendMail({
-        from: `"La Chambre Symphonique" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
-        to,
-        replyTo: email,
-        subject: `[Contact] ${subjectLabel} — ${name}`,
-        text: [
-          `Nom : ${name}`,
-          `E-mail : ${email}`,
-          `Téléphone : ${phone}`,
-          `Objet : ${subjectLabel}`,
-          '',
-          message,
-        ].join('\n'),
-      });
+      const siteHost = new URL(SITE_URL).host;
+      try {
+        await sendMail({
+          to: CONTACT_RECIPIENTS,
+          replyTo: email,
+          subject: `[Site web] Message de ${name} : ${subjectLabel}`,
+          text: [
+            `Message envoyé depuis le formulaire de contact du site ${siteHost}`,
+            `(${SITE_URL}/contact).`,
+            '',
+            `Nom : ${name}`,
+            `E-mail : ${email}`,
+            `Téléphone : ${phone}`,
+            `Objet : ${subjectLabel}`,
+            '',
+            'Message :',
+            message,
+            '',
+            '—',
+            `Pour répondre, utilisez simplement « Répondre » : la réponse ira à ${email}.`,
+            `Dans l'admin : ${SITE_URL}/admin/collections/contact-submissions/${(saved as any).id}`,
+          ].join('\n'),
+        });
+      } catch (err) {
+        console.error('Contact form: e-mail non envoyé', err);
+      }
     }
 
     return NextResponse.json({ success: true });
