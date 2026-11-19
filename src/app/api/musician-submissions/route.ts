@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getPayloadClient } from '@/lib/payload';
 import nodemailer from 'nodemailer';
 import { teamNotificationEmail } from '@/lib/mail';
+import { URL_HINT, normalizeLinks } from '@/lib/links';
 import {
   FORM_TOKEN_ERRORS,
   checkFormToken,
@@ -34,7 +35,10 @@ const MAX_PHOTO_BYTES = 10 * 1024 * 1024; // 10 MB
 const MAX_FIELD_LENGTH = 10_000;
 
 /** Champs dont la valeur s'écrit sur plusieurs lignes dans l'e-mail d'alerte. */
-const MULTILINE_KEYS = new Set(['bio', 'formation', 'concours']);
+const MULTILINE_KEYS = new Set(['bio', 'formation', 'concours', 'projectLinks']);
+
+/** Questions dont la réponse est une adresse web (ou plusieurs, une par ligne). */
+const LINK_KEYS = new Set(['websiteUrl', 'projectLinks']);
 
 function badRequest(error: string) {
   return NextResponse.json({ error }, { status: 400 });
@@ -145,6 +149,16 @@ export async function POST(req: NextRequest) {
         submissionData.instagram = value
           .replace(/^https?:\/\/(www\.)?instagram\.com\//i, '@')
           .replace(/^([^@])/, '@$1');
+        continue;
+      }
+
+      if (LINK_KEYS.has(question.key)) {
+        // « www.monsite.fr » suffit : « https:// » est ajouté.
+        const links = normalizeLinks(value);
+        if (links.invalid) {
+          return badRequest(`« ${question.label} » : « ${links.invalid.slice(0, 80)} » n’est pas un lien — ${URL_HINT}.`);
+        }
+        submissionData[question.key] = links.value;
         continue;
       }
 

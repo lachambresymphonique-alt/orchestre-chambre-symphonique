@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload';
 import { richTextAdmin } from '@/lib/richTextAdmin';
 import { MUSICIAN_STATUSES, NEW_MUSICIAN_STATUS } from '@/lib/musicianVisibility';
+import { URL_HINT, normalizeUrl } from '@/lib/links';
 import { PUPITRES } from '@/lib/pupitres';
 
 const slugify = (s: string) =>
@@ -10,6 +11,15 @@ const slugify = (s: string) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
+
+/** « www.monsite.fr » devient « https://www.monsite.fr » à l'enregistrement. */
+const completeUrl = ({ value }: { value?: unknown }) =>
+  typeof value === 'string' && value.trim() ? normalizeUrl(value) || value.trim() : value;
+
+const isWebAddress = (value: unknown, required = false): true | string => {
+  if (typeof value !== 'string' || !value.trim()) return required ? 'Ce lien est vide.' : true;
+  return normalizeUrl(value) ? true : `Ce n’est pas un lien : ${URL_HINT}.`;
+};
 
 export const Musicians: CollectionConfig = {
   slug: 'musicians',
@@ -120,12 +130,28 @@ export const Musicians: CollectionConfig = {
       admin: { components: { Cell: '@/components/admin/MusicianCells#MusicianPhotoCell' } },
     },
     {
+      name: 'photoCredit',
+      type: 'text',
+      label: 'Crédit photo',
+      admin: {
+        description: 'Nom du ou de la photographe du portrait. Affiché sous la photo : « Photo : … » (optionnel).',
+      },
+    },
+    {
       name: 'instagram',
       type: 'text',
       label: 'Instagram',
       admin: {
         description: 'Identifiant ou URL Instagram du musicien (ex : @nom_compte). Utile pour le partage sur Instagram.',
       },
+    },
+    {
+      name: 'websiteUrl',
+      type: 'text',
+      label: 'Site internet',
+      admin: { description: 'Site personnel du musicien, par exemple www.monsite.fr. Affiché sur sa fiche (optionnel).' },
+      hooks: { beforeValidate: [completeUrl] },
+      validate: (value: unknown) => isWebAddress(value),
     },
     {
       name: 'tagline',
@@ -190,6 +216,25 @@ export const Musicians: CollectionConfig = {
       admin: {
         description: 'Lien YouTube ou Vimeo (ex : https://youtu.be/abc123 ou https://vimeo.com/123456). La vidéo sera intégrée sur la fiche du musicien.',
       },
+    },
+    {
+      name: 'projectLinks',
+      type: 'array',
+      label: 'Autres projets',
+      admin: {
+        description: 'Liens vers ses autres projets : ensemble, duo, album, chaîne… (un lien par ligne).',
+      },
+      labels: { singular: 'Lien', plural: 'Liens' },
+      fields: [
+        {
+          name: 'item',
+          type: 'text',
+          required: true,
+          label: 'Lien',
+          hooks: { beforeValidate: [completeUrl] },
+          validate: (value: unknown) => isWebAddress(value, true),
+        },
+      ],
     },
     {
       name: 'quote',

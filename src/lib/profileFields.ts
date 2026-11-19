@@ -9,7 +9,14 @@
  * et le référencement).
  */
 
-export type ProfileFieldKind = 'text' | 'longtext' | 'lines' | 'url' | 'photo';
+/**
+ * `url` : lien exigé complet (vidéo). `link` : adresse web où « https:// » est
+ * ajouté s'il manque. `links` : une adresse web par ligne.
+ */
+export type ProfileFieldKind = 'text' | 'longtext' | 'lines' | 'url' | 'link' | 'links' | 'photo';
+
+/** Champs rangés en liste dans la fiche (une entrée par ligne). */
+export const isListKind = (kind: ProfileFieldKind): boolean => kind === 'lines' || kind === 'links';
 
 export type ProfileField = {
   name: ProfileFieldName;
@@ -33,6 +40,10 @@ export const PROFILE_FIELD_NAMES = [
   'concours',
   'videoUrl',
   'quote',
+  // Ajoutés en fin de liste : l'ordre est celui des valeurs enregistrées en base (« Champs modifiés »).
+  'photoCredit',
+  'websiteUrl',
+  'projectLinks',
 ] as const;
 
 export type ProfileFieldName = (typeof PROFILE_FIELD_NAMES)[number];
@@ -40,8 +51,10 @@ export type ProfileFieldName = (typeof PROFILE_FIELD_NAMES)[number];
 export const PROFILE_FIELDS: ProfileField[] = [
   { name: 'name', label: 'Nom complet', kind: 'text', max: 120 },
   { name: 'photo', label: 'Photo', kind: 'photo', max: 0, help: 'JPG, PNG ou WebP, 4 Mo au plus. Un portrait vertical rend le mieux.' },
+  { name: 'photoCredit', label: 'Crédit photo', kind: 'text', max: 120, help: 'Nom du ou de la photographe de votre portrait.' },
   { name: 'tagline', label: 'Phrase signature', kind: 'text', max: 200, help: 'Une phrase courte qui vous résume.' },
   { name: 'instagram', label: 'Instagram', kind: 'text', max: 120, help: 'Votre identifiant, par exemple @nom_du_compte.' },
+  { name: 'websiteUrl', label: 'Site internet', kind: 'link', max: 300, help: 'Votre site personnel, par exemple www.monsite.fr.' },
   {
     name: 'bio',
     label: 'Biographie',
@@ -55,6 +68,13 @@ export const PROFILE_FIELDS: ProfileField[] = [
   { name: 'formation', label: 'Formation', kind: 'lines', max: 300, help: 'Établissements, diplômes, master classes : une entrée par ligne.' },
   { name: 'concours', label: 'Concours et distinctions', kind: 'lines', max: 300, help: 'Prix, finales, récompenses : une entrée par ligne.' },
   { name: 'videoUrl', label: 'Vidéo', kind: 'url', max: 300, help: 'Lien YouTube ou Vimeo.' },
+  {
+    name: 'projectLinks',
+    label: 'Autres projets',
+    kind: 'links',
+    max: 300,
+    help: 'Liens vers vos autres projets (ensemble, duo, album, chaîne…) : un lien par ligne.',
+  },
   { name: 'quote', label: 'Citation', kind: 'longtext', max: 1_000, help: 'Une phrase ou deux de vous.' },
 ];
 
@@ -81,7 +101,7 @@ function relationId(value: unknown): string {
 export function comparable(field: ProfileFieldName, value: unknown): string {
   const kind = PROFILE_FIELD_BY_NAME[field].kind;
   if (kind === 'photo') return relationId(value);
-  if (kind === 'lines') {
+  if (isListKind(kind)) {
     return ((value as Lines) ?? [])
       .map((row) => (row?.item ?? '').trim())
       .filter(Boolean)
@@ -93,7 +113,7 @@ export function comparable(field: ProfileFieldName, value: unknown): string {
 /** Valeur comparable → valeur à écrire dans la fiche musicien. */
 export function toMusicianValue(field: ProfileFieldName, value: string): unknown {
   const kind = PROFILE_FIELD_BY_NAME[field].kind;
-  if (kind === 'lines') return value ? value.split('\n').map((item) => ({ item })) : [];
+  if (isListKind(kind)) return value ? value.split('\n').map((item) => ({ item })) : [];
   if (kind === 'photo') return value ? Number(value) || value : null;
   return value || null;
 }

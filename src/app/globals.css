@@ -2426,6 +2426,32 @@ button.musician-card:hover .musician-name {
   .musician-feature__portrait { position: relative; top: 0; max-height: 70vh; }
 }
 
+/* Portrait + crédit photo : c'est l'ensemble qui reste accroché au défilement. */
+.musician-feature__figure {
+  margin: 0;
+  position: sticky;
+  top: calc(var(--header-height) + 2rem);
+}
+
+.musician-feature__figure > .musician-feature__portrait {
+  position: relative;
+  top: auto;
+}
+
+@media (max-width: 900px) {
+  .musician-feature__figure { position: static; }
+}
+
+.musician-feature__photo-credit {
+  margin-top: 0.6rem;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  color: var(--rose-mute);
+  text-align: right;
+}
+
 .musician-feature__halo {
   position: absolute;
   inset: -10%;
@@ -2539,6 +2565,30 @@ button.musician-card:hover .musician-name {
   width: 0.5rem;
   height: 1px;
   background: var(--velvet);
+}
+
+/* Site internet et autres projets : adresses lisibles, qui passent à la ligne plutôt que de déborder. */
+.musician-feature__link-line {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+
+.musician-feature__link {
+  color: var(--bordeaux-deep);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--velvet) 55%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  overflow-wrap: anywhere;
+  transition: color var(--d-quick) var(--ease-curtain), text-decoration-color var(--d-quick) var(--ease-curtain);
+}
+
+.musician-feature__link:hover,
+.musician-feature__link:focus-visible {
+  color: var(--bordeaux-bright);
+  text-decoration-color: currentColor;
 }
 
 /* Q&A trio — "symphonie", "œuvre préférée", "compositeur" */

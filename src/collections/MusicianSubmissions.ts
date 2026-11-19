@@ -80,6 +80,13 @@ export const MusicianSubmissions: CollectionConfig = {
       admin: { description: 'Une entrée par ligne.' },
     },
     { name: 'videoUrl', type: 'text', label: 'Lien vidéo (YouTube / Vimeo)' },
+    { name: 'websiteUrl', type: 'text', label: 'Site internet' },
+    {
+      name: 'projectLinks',
+      type: 'textarea',
+      label: 'Autres projets',
+      admin: { description: 'Un lien par ligne.' },
+    },
     {
       name: 'photo',
       type: 'upload',
@@ -89,6 +96,7 @@ export const MusicianSubmissions: CollectionConfig = {
         description: 'Photo téléversée par le musicien via le formulaire.',
       },
     },
+    { name: 'photoCredit', type: 'text', label: 'Crédit photo' },
     {
       name: 'status',
       type: 'select',

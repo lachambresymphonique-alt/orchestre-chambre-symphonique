@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getPayloadClient } from '@/lib/payload';
 import { getMemberSession } from '@/lib/memberSession';
 import { mailConfigured, sendMail, teamNotificationEmail } from '@/lib/mail';
+import { URL_HINT, normalizeLinks } from '@/lib/links';
 import {
   MAX_LINES,
   PROFILE_FIELDS,
   comparable,
+  isListKind,
   normalizeInstagram,
   toMusicianValue,
   type ProfileFieldName,
@@ -19,6 +21,8 @@ import {
  * fiche en ligne. Une seule proposition en attente par personne : un nouvel
  * envoi la remplace ; un envoi identique à la fiche en ligne la retire.
  */
+
+const URL_HINT_SENTENCE = `${URL_HINT.charAt(0).toUpperCase()}${URL_HINT.slice(1)}.`;
 
 const ALLOWED_PHOTO_MIMETYPES = new Set(['image/png', 'image/jpeg', 'image/webp']);
 /** Sous la limite de 4,5 Mo que Vercel impose au corps d'une requête. */
@@ -62,7 +66,7 @@ export async function POST(req: NextRequest) {
     const raw = form.get(field.name);
     if (typeof raw !== 'string') continue; // champ absent : inchangé
     let value = raw.replace(/\r\n/g, '\n').trim();
-    if (field.kind === 'lines') {
+    if (isListKind(field.kind)) {
       const items = value.split('\n').map((l) => l.trim()).filter(Boolean);
       if (items.length > MAX_LINES) return fail(`${field.label} : ${MAX_LINES} lignes au plus.`);
       if (items.some((l) => l.length > field.max)) return fail(`${field.label} : ${field.max} caractères au plus par ligne.`);
@@ -72,6 +76,12 @@ export async function POST(req: NextRequest) {
     }
     if (field.kind === 'url' && value && !/^https?:\/\/\S+$/i.test(value)) {
       return fail(`${field.label} : indiquez un lien complet, qui commence par https://`);
+    }
+    if (field.kind === 'link' || field.kind === 'links') {
+      // « www.monsite.fr » suffit : « https:// » est ajouté.
+      const links = normalizeLinks(value);
+      if (links.invalid) return fail(`${field.label} : « ${links.invalid.slice(0, 80)} » n’est pas un lien. ${URL_HINT_SENTENCE}`);
+      value = links.value;
     }
     if (field.name === 'instagram') value = normalizeInstagram(value);
     proposed[field.name] = value;
@@ -159,7 +169,7 @@ export async function POST(req: NextRequest) {
     if (field.kind === 'photo') continue;
     data[field.name] = changed.includes(field.name)
       ? toMusicianValue(field.name, proposed[field.name] ?? '')
-      : field.kind === 'lines'
+      : isListKind(field.kind)
         ? []
         : null;
   }

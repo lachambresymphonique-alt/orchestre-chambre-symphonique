@@ -4,6 +4,7 @@ import { skipOptimization } from '@/lib/imageOptimization';
 import { placeholderForMusician } from '@/lib/unsplash';
 import { toEmbedUrl } from '@/lib/videoEmbed';
 import { RichText, renderInline } from '@/lib/richText';
+import { linkList, normalizeUrl, shortUrl } from '@/lib/links';
 
 export type Musician = {
   id?: string;
@@ -13,6 +14,9 @@ export type Musician = {
   instrument?: string;
   section: 'direction' | 'cordes' | 'vents' | 'claviers';
   photo?: { url?: string; alt?: string } | null;
+  photoCredit?: string | null;
+  websiteUrl?: string | null;
+  projectLinks?: { item?: string | null }[] | null;
   tagline?: string;
   bio?: string;
   quote?: string;
@@ -45,6 +49,21 @@ export type MusicianDetailLabels = {
   } | null;
 };
 
+/** « Photo : Nom », sauf si le crédit saisi porte déjà sa mention (« © Nom », « Photo Nom »). */
+function photoCreditLine(credit: string): string {
+  return /^(©|\(c\)|photo|crédit|credit)/i.test(credit) ? credit : `Photo : ${credit}`;
+}
+
+function ExternalLink({ url }: { url: string }) {
+  return (
+    <a href={url} target="_blank" rel="noopener noreferrer" className="musician-feature__link">
+      {shortUrl(url)}
+      {/* Espace insécable : la flèche ne part pas seule à la ligne. */}
+      <span aria-hidden>{' '}↗</span>
+    </a>
+  );
+}
+
 type Props = {
   musician: Musician;
   /** Renders a discreet banner explaining this is a preview, hides the back link. */
@@ -55,6 +74,10 @@ type Props = {
 export function MusicianDetail({ musician: m, previewMode = false, labels }: Props) {
   const hasBio = Boolean(m.bio?.trim());
   const embedUrl = toEmbedUrl(m.videoUrl);
+  // Le crédit ne vaut que pour une vraie photo, pas pour les initiales de remplacement.
+  const photoCredit = m.photo?.url ? m.photoCredit?.trim() || '' : '';
+  const website = normalizeUrl(m.websiteUrl);
+  const projects = linkList(m.projectLinks);
   const sectionLabel = m.section
     ? labels?.sections?.[m.section] || defaultSectionLabels[m.section]
     : '—';
@@ -81,18 +104,25 @@ export function MusicianDetail({ musician: m, previewMode = false, labels }: Pro
       )}
 
       <article className="musician-feature">
-        <div className="musician-feature__portrait" data-live-field="photo">
-          <Image
-            src={m.photo?.url || placeholderForMusician(m.name)}
-            unoptimized={skipOptimization(m.photo)}
-            alt={m.photo?.alt || m.name}
-            fill
-            priority
-            sizes="(max-width: 900px) 100vw, 50vw"
-            style={{ objectFit: 'cover', objectPosition: 'center' }}
-          />
-          <div className="musician-feature__halo" aria-hidden />
-        </div>
+        <figure className="musician-feature__figure">
+          <div className="musician-feature__portrait" data-live-field="photo">
+            <Image
+              src={m.photo?.url || placeholderForMusician(m.name)}
+              unoptimized={skipOptimization(m.photo)}
+              alt={m.photo?.alt || m.name}
+              fill
+              priority
+              sizes="(max-width: 900px) 100vw, 50vw"
+              style={{ objectFit: 'cover', objectPosition: 'center' }}
+            />
+            <div className="musician-feature__halo" aria-hidden />
+          </div>
+          {photoCredit && (
+            <figcaption className="musician-feature__photo-credit" data-live-field="photoCredit">
+              {photoCreditLine(photoCredit)}
+            </figcaption>
+          )}
+        </figure>
 
         <div className="musician-feature__text">
           <p className="breadcrumb">
@@ -178,6 +208,31 @@ export function MusicianDetail({ musician: m, previewMode = false, labels }: Pro
                   allowFullScreen
                 />
               </div>
+            </div>
+          )}
+
+          {(website || projects.length > 0) && (
+            <div className="musician-feature__credits">
+              {website && (
+                <section className="musician-feature__credits-block" data-live-field="websiteUrl">
+                  <h2 className="musician-feature__credits-title">Site internet</h2>
+                  <p className="musician-feature__link-line">
+                    <ExternalLink url={website} />
+                  </p>
+                </section>
+              )}
+              {projects.length > 0 && (
+                <section className="musician-feature__credits-block" data-live-field="projectLinks">
+                  <h2 className="musician-feature__credits-title">Autres projets</h2>
+                  <ul className="musician-feature__credits-list">
+                    {projects.map((url) => (
+                      <li key={url}>
+                        <ExternalLink url={url} />
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
             </div>
           )}
 

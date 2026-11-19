@@ -24,7 +24,7 @@ type Row = {
 function Value({ kind, value, url }: { kind: string; value: string; url: string | null }) {
   if (!value) return <span className="lcs-diff__empty">vide</span>;
   if (kind === 'photo') return url ? <img className="lcs-diff__photo" src={url} alt="" /> : <span>Photo n° {value}</span>;
-  if (kind === 'lines') {
+  if (kind === 'lines' || kind === 'links') {
     return (
       <ul className="lcs-diff__list">
         {value.split('\n').map((line, i) => (

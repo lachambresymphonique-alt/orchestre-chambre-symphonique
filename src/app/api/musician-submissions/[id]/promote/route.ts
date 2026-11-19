@@ -4,6 +4,7 @@ import { getPayloadClient } from '@/lib/payload';
 import { NEW_MUSICIAN_STATUS } from '@/lib/musicianVisibility';
 import { isAdminUser } from '@/lib/access';
 import { SECTION_VALUES } from '@/lib/musicianForm';
+import { linkList, normalizeUrl } from '@/lib/links';
 
 // Toutes les sections du projet, bureau et équipe technique compris : cette
 // liste était figée ici, si bien qu'une fiche de bureau validée atterrissait
@@ -155,6 +156,10 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     formation: lines(submission.formation),
     concours: lines(submission.concours),
     videoUrl: submission.videoUrl || undefined,
+    photoCredit: submission.photoCredit || undefined,
+    // L'équipe a pu corriger la fiche reçue à la main : seules les vraies adresses sont recopiées.
+    websiteUrl: normalizeUrl(submission.websiteUrl) || undefined,
+    projectLinks: linkList(lines(submission.projectLinks)).map((item) => ({ item })),
     quote: submission.quote || undefined,
     order: nextOrder,
     // Pas encore publiée : l'équipe complète la fiche puis la passe « En ligne ».

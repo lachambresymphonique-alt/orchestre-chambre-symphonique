@@ -1,6 +1,6 @@
 import type { CollectionConfig, Field } from 'payload';
 import { richTextAdmin } from '@/lib/richTextAdmin';
-import { PROFILE_FIELDS, type ProfileFieldName } from '@/lib/profileFields';
+import { PROFILE_FIELD_BY_NAME, PROFILE_FIELD_NAMES, type ProfileFieldName } from '@/lib/profileFields';
 
 /**
  * Modifications de fiche proposées par les membres depuis /espace-membres.
@@ -21,13 +21,13 @@ const shownIfChanged = (name: ProfileFieldName) => ({
     Array.isArray(data?.changedFields) && (data.changedFields as string[]).includes(name),
 });
 
-const lines = (name: ProfileFieldName, label: string): Field => ({
+const lines = (name: ProfileFieldName, label: string, itemLabel = 'Texte'): Field => ({
   name,
   type: 'array',
   label,
   labels: { singular: 'Entrée', plural: 'Entrées' },
   admin: shownIfChanged(name),
-  fields: [{ name: 'item', type: 'text', required: true, label: 'Texte' }],
+  fields: [{ name: 'item', type: 'text', required: true, label: itemLabel }],
 });
 
 export const ProfileChanges: CollectionConfig = {
@@ -114,12 +114,15 @@ export const ProfileChanges: CollectionConfig = {
       admin: {
         description: 'Seuls ces champs seront recopiés dans la fiche. Retirez-en un pour l’écarter.',
       },
-      options: PROFILE_FIELDS.map((f) => ({ label: f.label, value: f.name })),
+      // Ordre de PROFILE_FIELD_NAMES : un nouveau champ s'ajoute à la fin des valeurs en base.
+      options: PROFILE_FIELD_NAMES.map((name) => ({ label: PROFILE_FIELD_BY_NAME[name].label, value: name })),
     },
     { name: 'name', type: 'text', label: 'Nom complet', admin: shownIfChanged('name') },
     { name: 'photo', type: 'upload', relationTo: 'media', label: 'Photo', admin: shownIfChanged('photo') },
+    { name: 'photoCredit', type: 'text', label: 'Crédit photo', admin: shownIfChanged('photoCredit') },
     { name: 'tagline', type: 'text', label: 'Phrase signature', admin: shownIfChanged('tagline') },
     { name: 'instagram', type: 'text', label: 'Instagram', admin: shownIfChanged('instagram') },
+    { name: 'websiteUrl', type: 'text', label: 'Site internet', admin: shownIfChanged('websiteUrl') },
     {
       name: 'bio',
       type: 'textarea',
@@ -137,6 +140,7 @@ export const ProfileChanges: CollectionConfig = {
     lines('formation', 'Formation'),
     lines('concours', 'Concours et distinctions'),
     { name: 'videoUrl', type: 'text', label: 'Vidéo', admin: shownIfChanged('videoUrl') },
+    lines('projectLinks', 'Autres projets', 'Lien'),
     {
       name: 'quote',
       type: 'textarea',

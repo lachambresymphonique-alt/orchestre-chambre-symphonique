@@ -40,7 +40,10 @@ export type FieldKey =
   | 'concours'
   | 'photo'
   | 'videoUrl'
-  | 'instagram';
+  | 'instagram'
+  | 'photoCredit'
+  | 'websiteUrl'
+  | 'projectLinks';
 
 export type QuestionWidth = 'full' | 'half';
 
@@ -223,6 +226,36 @@ export const FIELD_CATALOGUE: readonly CatalogueEntry[] = [
     hint: 'Si vous souhaitez le partager — c’est principalement sur Instagram que nous mettons en avant les musiciens.',
     placeholder: '@votre_compte',
     width: 'full',
+  },
+  // Ajoutées en fin de catalogue : l'ordre est celui des valeurs enregistrées en base.
+  {
+    key: 'photoCredit',
+    kind: 'text',
+    adminLabel: 'Crédit photo du portrait',
+    label: 'Crédit photo',
+    hint: 'Nom du ou de la photographe de votre portrait.',
+    placeholder: 'Prénom Nom',
+    width: 'full',
+  },
+  {
+    // Champ texte et non « url » : le navigateur refuserait « www.monsite.fr ».
+    key: 'websiteUrl',
+    kind: 'text',
+    adminLabel: 'Site internet',
+    label: 'Site internet',
+    hint: '',
+    placeholder: 'www.monsite.fr',
+    width: 'full',
+  },
+  {
+    key: 'projectLinks',
+    kind: 'textarea',
+    adminLabel: 'Liens vers d’autres projets',
+    label: 'Vos autres projets',
+    hint: 'Ensemble, duo, album, chaîne… Un lien par ligne.',
+    placeholder: 'www.mon-quatuor.fr\nwww.youtube.com/@ma-chaine',
+    width: 'full',
+    rows: 3,
   },
 ] as const;
 

@@ -123,12 +123,19 @@ export function ProfileForm({ fields, values, photoUrl, photoPending }: Props) {
         return (
           <div className="form-group" key={field.name}>
             <label htmlFor={id}>{field.label}</label>
-            {field.kind === 'longtext' || field.kind === 'lines' ? (
-              <textarea {...common} rows={field.name === 'bio' ? 10 : field.kind === 'lines' ? 5 : 3} />
+            {field.kind === 'longtext' || field.kind === 'lines' || field.kind === 'links' ? (
+              <textarea
+                {...common}
+                rows={field.name === 'bio' ? 10 : field.kind === 'lines' ? 5 : 3}
+                // Adresses web : ni majuscule automatique ni correcteur.
+                {...(field.kind === 'links' ? { inputMode: 'url' as const, autoCapitalize: 'none', spellCheck: false } : {})}
+              />
             ) : (
               <input
                 {...common}
                 type={field.kind === 'url' ? 'url' : 'text'}
+                // Champ texte et non « url » : le navigateur refuserait « www.monsite.fr ».
+                {...(field.kind === 'link' ? { inputMode: 'url' as const, autoCapitalize: 'none', spellCheck: false } : {})}
                 maxLength={field.max}
                 required={field.name === 'name'}
               />
