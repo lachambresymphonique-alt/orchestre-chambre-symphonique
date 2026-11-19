@@ -53,6 +53,12 @@ export const MusiciansPage: GlobalConfig = {
         },
         { name: 'favoriteWorkLabel', type: 'text', label: 'Libellé œuvre préférée', defaultValue: 'Œuvre préférée' },
         { name: 'favoriteComposerLabel', type: 'text', label: 'Libellé compositeur préféré', defaultValue: 'Compositeur préféré' },
+        {
+          name: 'desertIslandLabel',
+          type: 'text',
+          label: 'Question « île déserte »',
+          defaultValue: 'Le morceau à emmener sur une île déserte',
+        },
         { name: 'formationTitle', type: 'text', label: 'Titre Formation', defaultValue: 'Formation' },
         { name: 'concoursTitle', type: 'text', label: 'Titre Concours et distinctions', defaultValue: 'Concours et distinctions' },
         { name: 'videoTitle', type: 'text', label: 'Titre de la vidéo', defaultValue: 'En écoute' },

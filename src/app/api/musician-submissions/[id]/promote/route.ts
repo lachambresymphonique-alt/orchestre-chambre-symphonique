@@ -153,6 +153,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     inspiringSymphony: submission.inspiringSymphony || undefined,
     favoriteWork: submission.favoriteWork || undefined,
     favoriteComposer: submission.favoriteComposer || undefined,
+    desertIslandPiece: submission.desertIslandPiece || undefined,
     formation: lines(submission.formation),
     concours: lines(submission.concours),
     videoUrl: submission.videoUrl || undefined,

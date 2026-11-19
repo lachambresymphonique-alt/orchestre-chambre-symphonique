@@ -67,6 +67,7 @@ export const MusicianSubmissions: CollectionConfig = {
     },
     { name: 'favoriteWork', type: 'text', label: 'Œuvre préférée' },
     { name: 'favoriteComposer', type: 'text', label: 'Compositeur préféré' },
+    { name: 'desertIslandPiece', type: 'text', label: 'Le morceau à emmener sur une île déserte' },
     {
       name: 'formation',
       type: 'textarea',

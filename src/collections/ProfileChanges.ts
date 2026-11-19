@@ -137,6 +137,12 @@ export const ProfileChanges: CollectionConfig = {
     },
     { name: 'favoriteWork', type: 'text', label: 'Œuvre préférée', admin: shownIfChanged('favoriteWork') },
     { name: 'favoriteComposer', type: 'text', label: 'Compositeur préféré', admin: shownIfChanged('favoriteComposer') },
+    {
+      name: 'desertIslandPiece',
+      type: 'text',
+      label: 'Le morceau à emmener sur une île déserte',
+      admin: shownIfChanged('desertIslandPiece'),
+    },
     lines('formation', 'Formation'),
     lines('concours', 'Concours et distinctions'),
     { name: 'videoUrl', type: 'text', label: 'Vidéo', admin: shownIfChanged('videoUrl') },

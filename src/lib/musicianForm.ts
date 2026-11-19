@@ -43,7 +43,8 @@ export type FieldKey =
   | 'instagram'
   | 'photoCredit'
   | 'websiteUrl'
-  | 'projectLinks';
+  | 'projectLinks'
+  | 'desertIslandPiece';
 
 export type QuestionWidth = 'full' | 'half';
 
@@ -256,6 +257,15 @@ export const FIELD_CATALOGUE: readonly CatalogueEntry[] = [
     placeholder: 'www.mon-quatuor.fr\nwww.youtube.com/@ma-chaine',
     width: 'full',
     rows: 3,
+  },
+  {
+    key: 'desertIslandPiece',
+    kind: 'text',
+    adminLabel: 'Morceau à emmener sur une île déserte',
+    label: 'Quel morceau emmènerais-tu sur une île déserte ?',
+    hint: '',
+    placeholder: 'Ex : Variations Goldberg, Adagietto de la 5ᵉ de Mahler…',
+    width: 'full',
   },
 ] as const;
 

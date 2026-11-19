@@ -186,6 +186,12 @@ export const Musicians: CollectionConfig = {
       admin: { description: 'Affiché sur la fiche du musicien (optionnel).' },
     },
     {
+      name: 'desertIslandPiece',
+      type: 'text',
+      label: 'Le morceau à emmener sur une île déserte',
+      admin: { description: 'Réponse à « Quel morceau emmènerais-tu sur une île déserte ? ». Affiché sur la fiche du musicien (optionnel).' },
+    },
+    {
       name: 'formation',
       type: 'array',
       label: 'Formation',

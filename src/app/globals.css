@@ -2591,7 +2591,7 @@ button.musician-card:hover .musician-name {
   text-decoration-color: currentColor;
 }
 
-/* Q&A trio — "symphonie", "œuvre préférée", "compositeur" */
+/* Q&A — "symphonie", "œuvre préférée", "compositeur", "île déserte" */
 .musician-feature__qa {
   display: grid;
   gap: 1.5rem;

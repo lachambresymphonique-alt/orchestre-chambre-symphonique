@@ -44,6 +44,7 @@ export const PROFILE_FIELD_NAMES = [
   'photoCredit',
   'websiteUrl',
   'projectLinks',
+  'desertIslandPiece',
 ] as const;
 
 export type ProfileFieldName = (typeof PROFILE_FIELD_NAMES)[number];
@@ -65,6 +66,7 @@ export const PROFILE_FIELDS: ProfileField[] = [
   { name: 'inspiringSymphony', label: 'La symphonie qui vous a donné envie de faire de la musique', kind: 'text', max: 200 },
   { name: 'favoriteWork', label: 'Œuvre préférée', kind: 'text', max: 200 },
   { name: 'favoriteComposer', label: 'Compositeur préféré', kind: 'text', max: 200 },
+  { name: 'desertIslandPiece', label: 'Le morceau que vous emmèneriez sur une île déserte', kind: 'text', max: 200 },
   { name: 'formation', label: 'Formation', kind: 'lines', max: 300, help: 'Établissements, diplômes, master classes : une entrée par ligne.' },
   { name: 'concours', label: 'Concours et distinctions', kind: 'lines', max: 300, help: 'Prix, finales, récompenses : une entrée par ligne.' },
   { name: 'videoUrl', label: 'Vidéo', kind: 'url', max: 300, help: 'Lien YouTube ou Vimeo.' },

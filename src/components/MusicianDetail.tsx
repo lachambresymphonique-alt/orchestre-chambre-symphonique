@@ -26,6 +26,7 @@ export type Musician = {
   inspiringSymphony?: string;
   favoriteWork?: string;
   favoriteComposer?: string;
+  desertIslandPiece?: string | null;
 };
 
 const defaultSectionLabels: Record<Musician['section'], string> = {
@@ -42,6 +43,7 @@ export type MusicianDetailLabels = {
     inspiringLabel?: string | null;
     favoriteWorkLabel?: string | null;
     favoriteComposerLabel?: string | null;
+    desertIslandLabel?: string | null;
     formationTitle?: string | null;
     concoursTitle?: string | null;
     videoTitle?: string | null;
@@ -85,6 +87,7 @@ export function MusicianDetail({ musician: m, previewMode = false, labels }: Pro
     inspiring: labels?.detail?.inspiringLabel || 'La symphonie qui lui a donné envie de faire de la musique',
     favoriteWork: labels?.detail?.favoriteWorkLabel || 'Œuvre préférée',
     favoriteComposer: labels?.detail?.favoriteComposerLabel || 'Compositeur préféré',
+    desertIsland: labels?.detail?.desertIslandLabel || 'Le morceau à emmener sur une île déserte',
     formation: labels?.detail?.formationTitle || 'Formation',
     concours: labels?.detail?.concoursTitle || 'Concours et distinctions',
     video: labels?.detail?.videoTitle || 'En écoute',
@@ -148,7 +151,7 @@ export function MusicianDetail({ musician: m, previewMode = false, labels }: Pro
             </div>
           )}
 
-          {(m.inspiringSymphony || m.favoriteWork || m.favoriteComposer) && (
+          {(m.inspiringSymphony || m.favoriteWork || m.favoriteComposer || m.desertIslandPiece) && (
             <dl className="musician-feature__qa">
               {m.inspiringSymphony && (
                 <div className="musician-feature__qa-item" data-live-field="inspiringSymphony">
@@ -166,6 +169,12 @@ export function MusicianDetail({ musician: m, previewMode = false, labels }: Pro
                 <div className="musician-feature__qa-item" data-live-field="favoriteComposer">
                   <dt>{t.favoriteComposer}</dt>
                   <dd>{m.favoriteComposer}</dd>
+                </div>
+              )}
+              {m.desertIslandPiece && (
+                <div className="musician-feature__qa-item" data-live-field="desertIslandPiece">
+                  <dt>{t.desertIsland}</dt>
+                  <dd>{m.desertIslandPiece}</dd>
                 </div>
               )}
             </dl>

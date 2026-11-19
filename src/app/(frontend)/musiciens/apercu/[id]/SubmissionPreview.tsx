@@ -54,6 +54,7 @@ function submissionToMusician(s: any): Musician {
     inspiringSymphony: s?.inspiringSymphony || undefined,
     favoriteWork: s?.favoriteWork || undefined,
     favoriteComposer: s?.favoriteComposer || undefined,
+    desertIslandPiece: s?.desertIslandPiece || undefined,
   };
 }
 
