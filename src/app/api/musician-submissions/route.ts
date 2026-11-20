@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPayloadClient } from '@/lib/payload';
-import nodemailer from 'nodemailer';
-import { teamNotificationEmail } from '@/lib/mail';
+import { mailConfigured, sendMail, teamNotificationEmail } from '@/lib/mail';
 import { URL_HINT, normalizeLinks } from '@/lib/links';
 import { projectList, projectRows, projectsSummary, readProjects } from '@/lib/projects';
 import {
@@ -216,17 +215,10 @@ export async function POST(req: NextRequest) {
       overrideAccess: true,
     });
 
-    if (process.env.SMTP_HOST) {
-      const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT) || 587,
-        secure: process.env.SMTP_SECURE === 'true',
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      });
-
+    // Alerte à l'équipe. La fiche est déjà enregistrée : un échec d'envoi (SMTP
+    // refusé, serveur injoignable) est noté dans les journaux, sans faire échouer
+    // l'envoi du musicien — il réessaierait et créerait des doublons.
+    if (mailConfigured()) {
       // L'e-mail reprend les questions du formulaire, dans le même ordre.
       const lines: string[] = ['Nouvelle fiche reçue via le formulaire musicien :', ''];
       for (const question of questions) {
@@ -248,14 +240,16 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const to = teamNotificationEmail();
-      await transporter.sendMail({
-        from: `"La Chambre Symphonique" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
-        to,
-        replyTo: get('email') || undefined,
-        subject: `[Fiche musicien] ${fullName}`,
-        text: lines.join('\n'),
-      });
+      try {
+        await sendMail({
+          to: teamNotificationEmail(),
+          replyTo: get('email') || undefined,
+          subject: `[Fiche musicien] ${fullName}`,
+          text: lines.join('\n'),
+        });
+      } catch (err) {
+        console.error('Fiche musicien enregistrée, mais alerte e-mail non envoyée :', err);
+      }
     }
 
     return NextResponse.json({ success: true });
