@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import config from '@payload-config';
+import { REST_DELETE, REST_GET, REST_PATCH } from '@payloadcms/next/routes';
 import { getPayloadClient } from '@/lib/payload';
 import { mailConfigured, sendMail, teamNotificationEmail } from '@/lib/mail';
 import { URL_HINT, normalizeLinks } from '@/lib/links';
@@ -261,3 +263,14 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+/**
+ * Cette route occupe l'adresse REST de la collection : sans ces trois
+ * méthodes, l'admin recevait 405 en listant, en modifiant ou en supprimant
+ * plusieurs fiches à la fois (cases cochées puis « Supprimer »). Elles sont
+ * rendues à Payload, avec son contrôle d'accès (administrateurs seulement).
+ */
+const restArgs = () => ({ params: Promise.resolve({ slug: ['musician-submissions'] }) });
+export const GET = (req: Request) => REST_GET(config)(req, restArgs());
+export const PATCH = (req: Request) => REST_PATCH(config)(req, restArgs());
+export const DELETE = (req: Request) => REST_DELETE(config)(req, restArgs());
