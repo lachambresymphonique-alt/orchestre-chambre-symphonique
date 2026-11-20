@@ -3,6 +3,7 @@ import { richTextAdmin } from '@/lib/richTextAdmin';
 import { MUSICIAN_STATUSES, NEW_MUSICIAN_STATUS } from '@/lib/musicianVisibility';
 import { URL_HINT, normalizeUrl } from '@/lib/links';
 import { LEGACY_LINKS_NOTE, hasLegacyLinks, projectsField } from '@/lib/projectFields';
+import { notifyMusicianOnline } from '@/lib/musicianEmails';
 import { PUPITRES } from '@/lib/pupitres';
 
 const slugify = (s: string) =>
@@ -44,6 +45,8 @@ export const Musicians: CollectionConfig = {
   },
   defaultSort: 'order',
   hooks: {
+    // Fiche passée « En ligne » : le musicien reçoit le lien de sa page.
+    afterChange: [notifyMusicianOnline],
     // L'accès à l'espace membres et les propositions de modification n'existent
     // que par la fiche : la base refuse de les garder sans elle.
     beforeDelete: [

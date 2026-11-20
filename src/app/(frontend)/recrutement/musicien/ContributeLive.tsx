@@ -5,6 +5,7 @@ import { RefreshOnSave } from '@/components/RefreshOnSave';
 import { useLiveGlobal } from '@/hooks/useLiveDocument';
 import { useLivePreviewSync } from '@/hooks/useLivePreviewSync';
 import { resolveMusicianForm } from '@/lib/musicianForm';
+import type { CaptchaChallenge } from '@/lib/antispam';
 
 /**
  * Page « Compléter ma fiche musicien », rendue côté client pour l'aperçu en
@@ -15,10 +16,12 @@ export function ContributeLive({
   doc: initialDoc,
   formToken,
   turnstileSiteKey,
+  captcha = null,
 }: {
   doc: Record<string, any> | null;
   formToken: string;
   turnstileSiteKey: string | null;
+  captcha?: CaptchaChallenge | null;
 }) {
   const doc = useLiveGlobal('musician-form', initialDoc, 0);
   useLivePreviewSync(null);
@@ -39,7 +42,7 @@ export function ContributeLive({
       </header>
 
       <section className="contribute-form-wrap">
-        <MusicianSubmissionForm formToken={formToken} turnstileSiteKey={turnstileSiteKey} form={form} />
+        <MusicianSubmissionForm formToken={formToken} turnstileSiteKey={turnstileSiteKey} captcha={captcha} form={form} />
       </section>
     </div>
   );

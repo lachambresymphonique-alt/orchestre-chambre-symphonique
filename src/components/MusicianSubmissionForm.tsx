@@ -5,6 +5,7 @@ import { Turnstile } from '@/components/Turnstile';
 import { renderInline } from '@/lib/richText';
 import { MAX_UPLOAD_BYTES, shrinkPhoto } from '@/lib/shrinkPhoto';
 import { ProjectsInput } from '@/components/ProjectsInput';
+import type { CaptchaChallenge } from '@/lib/antispam';
 import {
   allQuestions,
   layoutQuestions,
@@ -46,11 +47,13 @@ type MusicianSubmissionFormProps = {
   formToken: string;
   /** Clé publique Cloudflare Turnstile ; `null` quand le captcha n'est pas configuré. */
   turnstileSiteKey: string | null;
+  /** Question anti-robot, quand Turnstile n'est pas configuré. */
+  captcha?: CaptchaChallenge | null;
   /** Questions à poser, telles que réglées dans l'admin. */
   form: ResolvedMusicianForm;
 };
 
-export function MusicianSubmissionForm({ formToken, turnstileSiteKey, form }: MusicianSubmissionFormProps) {
+export function MusicianSubmissionForm({ formToken, turnstileSiteKey, captcha = null, form }: MusicianSubmissionFormProps) {
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
   const [section, setSection] = useState<string>('');
@@ -328,6 +331,7 @@ export function MusicianSubmissionForm({ formToken, turnstileSiteKey, form }: Mu
     <form className="contribute-form" onSubmit={handleSubmit} noValidate>
       {/* Anti-robots : jeton signé (vérifié par l'API) et pot de miel. */}
       <input type="hidden" name="formToken" value={formToken} />
+      {captcha && <input type="hidden" name="captchaToken" value={captcha.token} />}
       <div style={HONEYPOT_STYLE} aria-hidden="true">
         <label htmlFor="website">Site web</label>
         <input type="text" id="website" name="website" tabIndex={-1} autoComplete="off" />
@@ -365,6 +369,26 @@ export function MusicianSubmissionForm({ formToken, turnstileSiteKey, form }: Mu
             <em>{errorMsg || 'Une erreur est survenue.'}</em> Merci de réessayer ou de nous écrire
             directement.
           </p>
+        )}
+
+        {captcha && (
+          <div className="form-group contribute-captcha">
+            <label htmlFor="captchaAnswer">{captcha.question}</label>
+            <input
+              type="text"
+              id="captchaAnswer"
+              name="captchaAnswer"
+              inputMode="numeric"
+              autoComplete="off"
+              maxLength={12}
+              placeholder="Ta réponse, en chiffres"
+              aria-describedby="captchaHint"
+              required
+            />
+            <p id="captchaHint" className="form-hint">
+              Une petite question pour vérifier que tu n’es pas un robot.
+            </p>
+          </div>
         )}
 
         {turnstileSiteKey && (

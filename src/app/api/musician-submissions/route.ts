@@ -5,8 +5,10 @@ import { getPayloadClient } from '@/lib/payload';
 import { mailConfigured, sendMail, teamNotificationEmail } from '@/lib/mail';
 import { URL_HINT, normalizeLinks } from '@/lib/links';
 import { projectList, projectRows, projectsSummary, readProjects } from '@/lib/projects';
+import { sendThanksEmail } from '@/lib/musicianEmails';
 import {
   FORM_TOKEN_ERRORS,
+  checkCaptcha,
   checkFormToken,
   getFormSecret,
   isHoneypotFilled,
@@ -105,6 +107,9 @@ export async function POST(req: NextRequest) {
         console.warn('Musician form: Turnstile refusé', result.errorCodes);
         return badRequest('La vérification anti-robot a échoué. Merci de réessayer.');
       }
+    } else if (!checkCaptcha(get('captchaToken'), get('captchaAnswer'), getFormSecret())) {
+      // Sans Turnstile : la question posée en bas du formulaire.
+      return badRequest('La réponse à la question anti-robot est incorrecte.');
     }
 
     // La collection refuse les créations anonymes via l'API publique (REST/GraphQL) ;
@@ -253,6 +258,9 @@ export async function POST(req: NextRequest) {
         console.error('Fiche musicien enregistrée, mais alerte e-mail non envoyée :', err);
       }
     }
+
+    // Remerciement au musicien : l'équipe valide ensuite sa fiche.
+    await sendThanksEmail(get('email'), firstName);
 
     return NextResponse.json({ success: true });
   } catch (error) {

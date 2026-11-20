@@ -96,3 +96,27 @@
   box-shadow: inset 0 0 0 1px var(--theme-elevation-200);
   color: var(--theme-elevation-500);
 }
+
+/* Toute la ligne ouvre la fiche : le lien de la vignette s'étend sur la ligne
+   entière (lien étiré) ; la case à cocher reste au-dessus, cliquable. Dans une
+   fenêtre de choix, la vignette n'est pas un lien : rien ne s'étend. */
+.collection-list--musicians .table tbody tr {
+  position: relative;
+  cursor: pointer;
+}
+
+.collection-list--musicians .table tbody td {
+  position: static;
+}
+
+.collection-list--musicians .table .lcs-avatar-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.collection-list--musicians .table tbody td.cell-_select {
+  position: relative;
+  z-index: 2;
+}

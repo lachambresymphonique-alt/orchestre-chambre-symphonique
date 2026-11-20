@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { cache } from 'react';
 import { ContributeLive } from './ContributeLive';
-import { getFormSecret, issueFormToken } from '@/lib/antispam';
+import { getFormSecret, issueCaptcha, issueFormToken, turnstileConfigured } from '@/lib/antispam';
 import { getPayloadClient } from '@/lib/payload';
 import { resolveMusicianForm } from '@/lib/musicianForm';
 
@@ -37,8 +37,10 @@ export default async function MusicianContributePage() {
   const doc = await getMusicianFormDoc();
   // Jeton anti-robot : émis à chaque rendu (page dynamique), vérifié par /api/musician-submissions.
   const formToken = issueFormToken(getFormSecret());
-  // Captcha Cloudflare Turnstile : mêmes clés que le formulaire de contact ; absent tant qu'elles ne sont pas configurées.
-  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || null;
+  // Captcha : Cloudflare Turnstile quand ses deux clés existent (mêmes que le
+  // formulaire de contact), sinon une petite question vérifiée par la route.
+  const turnstileSiteKey = turnstileConfigured() ? (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY as string) : null;
+  const captcha = turnstileSiteKey ? null : issueCaptcha(getFormSecret());
 
-  return <ContributeLive doc={doc} formToken={formToken} turnstileSiteKey={turnstileSiteKey} />;
+  return <ContributeLive doc={doc} formToken={formToken} turnstileSiteKey={turnstileSiteKey} captcha={captcha} />;
 }

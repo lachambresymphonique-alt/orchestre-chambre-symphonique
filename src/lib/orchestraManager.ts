@@ -76,12 +76,12 @@ export function invitationEmailText(firstName: string, link: string, expiresAt: 
   return [
     `Bonjour${firstName ? ` ${firstName}` : ''},`,
     '',
-    'Bienvenue dans La Chambre Symphonique ! Votre espace musicien se trouve sur Apollo, l’application de l’orchestre : sessions et répétitions, covoiturage, remboursements, partitions.',
+    'Bienvenue dans La Chambre Symphonique ! Ton espace musicien se trouve sur Apollo, l’application de l’orchestre : sessions et répétitions, covoiturage, remboursements, partitions.',
     '',
-    `Pour créer votre accès (identifiant et mot de passe), ouvrez ce lien, valable jusqu’au ${formatDate(expiresAt)} :`,
+    `Pour créer ton accès (identifiant et mot de passe), ouvre ce lien, valable jusqu’au ${formatDate(expiresAt)} :`,
     link,
     '',
-    'Si vous n’attendiez pas ce message, ignorez-le simplement.',
+    'Si tu n’attendais pas ce message, ignore-le simplement.',
     '',
     '— La Chambre Symphonique',
   ].join('\n');
