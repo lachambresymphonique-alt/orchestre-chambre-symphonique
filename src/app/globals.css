@@ -2591,6 +2591,117 @@ button.musician-card:hover .musician-name {
   text-decoration-color: currentColor;
 }
 
+/* Autres projets : nom, puis ses liens (site, YouTube, Instagram) */
+.musician-feature__projects {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 1.1rem;
+}
+
+.musician-feature__project {
+  display: grid;
+  gap: 0.3rem;
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--bordeaux-deep);
+}
+
+.musician-feature__project-name {
+  font-family: var(--font-body-serif);
+  font-size: 1.15rem;
+  line-height: 1.4;
+}
+
+.musician-feature__project-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  font-size: 0.92rem;
+}
+
+/* Saisie des projets (ProjectsInput) : un bloc par projet, recrutement et « Ma fiche » */
+.project-inputs {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.project-inputs__project {
+  min-width: 0;
+  margin: 0;
+  padding: 1.25rem 0 0;
+  border: 0;
+  border-top: 1px solid var(--paper-rule);
+}
+
+.project-inputs__legend {
+  /* Sous le filet du bloc, et non posée dessus comme une légende ordinaire. */
+  float: left;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 0.9rem;
+  font-family: var(--font-body-serif);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--velvet);
+}
+
+.project-inputs__grid {
+  clear: both;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 1.25rem clamp(1rem, 2.5vw, 1.75rem);
+}
+
+.project-inputs__field--name { grid-column: 1 / -1; }
+
+.project-inputs .form-group.project-inputs__field { margin-bottom: 0; }
+
+.project-inputs__add,
+.project-inputs__remove {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: color var(--d-quick) var(--ease-curtain), border-color var(--d-quick) var(--ease-curtain);
+}
+
+.project-inputs__add {
+  justify-self: start;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bordeaux-bright);
+  border-bottom: 1px solid transparent;
+}
+
+.project-inputs__add:hover { border-bottom-color: currentColor; }
+
+.project-inputs__remove {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--rose-mute);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.project-inputs__remove:hover { color: var(--bordeaux-bright); }
+
+.project-inputs__add:focus-visible,
+.project-inputs__remove:focus-visible {
+  outline: 2px solid var(--velvet);
+  outline-offset: 3px;
+}
+
 /* Q&A — "symphonie", "œuvre préférée", "compositeur", "île déserte" */
 .musician-feature__qa {
   display: grid;
@@ -2868,7 +2979,8 @@ button.musician-card:hover .musician-name {
   margin-bottom: 1.5rem;
 }
 
-.contribute-form label {
+.contribute-form label,
+.contribute-form .project-inputs__heading {
   display: block;
   font-family: var(--font-body);
   font-size: 0.82rem;
@@ -2879,7 +2991,8 @@ button.musician-card:hover .musician-name {
   color: var(--rose-mute);
 }
 
-.contribute-form label em {
+.contribute-form label em,
+.contribute-form .project-inputs__heading em {
   font-family: var(--font-body-serif);
   font-style: italic;
   font-weight: 400;
@@ -4170,7 +4283,8 @@ button.musician-card:hover .musician-name {
 
 .contact-form .form-group { margin-bottom: 1.5rem; }
 
-.contact-form label {
+.contact-form label,
+.contact-form .project-inputs__heading {
   display: block;
   font-family: var(--font-body);
   font-size: 0.68rem;

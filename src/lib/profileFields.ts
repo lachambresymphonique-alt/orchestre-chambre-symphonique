@@ -1,3 +1,5 @@
+import { projectRows, projectsFromText, projectsToText } from './projects';
+
 /**
  * Champs de la fiche musicien qu'un membre peut proposer de modifier depuis
  * l'espace membres. Seule source de cette liste : le formulaire, la route
@@ -13,10 +15,13 @@
  * `url` : lien exigé complet (vidéo). `link` : adresse web où « https:// » est
  * ajouté s'il manque. `links` : une adresse web par ligne.
  */
-export type ProfileFieldKind = 'text' | 'longtext' | 'lines' | 'url' | 'link' | 'links' | 'photo';
+export type ProfileFieldKind = 'text' | 'longtext' | 'lines' | 'url' | 'link' | 'links' | 'photo' | 'projects';
 
 /** Champs rangés en liste dans la fiche (une entrée par ligne). */
 export const isListKind = (kind: ProfileFieldKind): boolean => kind === 'lines' || kind === 'links';
+
+/** Champs rangés en lignes dans la fiche : listes et projets (vides = []). */
+export const isRowsKind = (kind: ProfileFieldKind): boolean => isListKind(kind) || kind === 'projects';
 
 export type ProfileField = {
   name: ProfileFieldName;
@@ -43,8 +48,8 @@ export const PROFILE_FIELD_NAMES = [
   // Ajoutés en fin de liste : l'ordre est celui des valeurs enregistrées en base (« Champs modifiés »).
   'photoCredit',
   'websiteUrl',
-  'projectLinks',
   'desertIslandPiece',
+  'projects',
 ] as const;
 
 export type ProfileFieldName = (typeof PROFILE_FIELD_NAMES)[number];
@@ -71,11 +76,11 @@ export const PROFILE_FIELDS: ProfileField[] = [
   { name: 'concours', label: 'Concours et distinctions', kind: 'lines', max: 300, help: 'Prix, finales, récompenses : une entrée par ligne.' },
   { name: 'videoUrl', label: 'Vidéo', kind: 'url', max: 300, help: 'Lien YouTube ou Vimeo.' },
   {
-    name: 'projectLinks',
+    name: 'projects',
     label: 'Autres projets',
-    kind: 'links',
-    max: 300,
-    help: 'Liens vers vos autres projets (ensemble, duo, album, chaîne…) : un lien par ligne.',
+    kind: 'projects',
+    max: 0,
+    help: 'Ensemble, duo, album… Un nom et, s’il en a, un site, une chaîne YouTube et un compte Instagram.',
   },
   { name: 'quote', label: 'Citation', kind: 'longtext', max: 1_000, help: 'Une phrase ou deux de vous.' },
 ];
@@ -103,6 +108,7 @@ function relationId(value: unknown): string {
 export function comparable(field: ProfileFieldName, value: unknown): string {
   const kind = PROFILE_FIELD_BY_NAME[field].kind;
   if (kind === 'photo') return relationId(value);
+  if (kind === 'projects') return projectsToText(value);
   if (isListKind(kind)) {
     return ((value as Lines) ?? [])
       .map((row) => (row?.item ?? '').trim())
@@ -115,6 +121,7 @@ export function comparable(field: ProfileFieldName, value: unknown): string {
 /** Valeur comparable → valeur à écrire dans la fiche musicien. */
 export function toMusicianValue(field: ProfileFieldName, value: string): unknown {
   const kind = PROFILE_FIELD_BY_NAME[field].kind;
+  if (kind === 'projects') return projectRows(projectsFromText(value));
   if (isListKind(kind)) return value ? value.split('\n').map((item) => ({ item })) : [];
   if (kind === 'photo') return value ? Number(value) || value : null;
   return value || null;

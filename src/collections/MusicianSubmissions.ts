@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload';
 import { isAdmin } from '@/lib/access';
+import { LEGACY_LINKS_NOTE, hasLegacyLinks, projectsField } from '@/lib/projectFields';
 
 export const MusicianSubmissions: CollectionConfig = {
   slug: 'musician-submissions',
@@ -82,11 +83,13 @@ export const MusicianSubmissions: CollectionConfig = {
     },
     { name: 'videoUrl', type: 'text', label: 'Lien vidéo (YouTube / Vimeo)' },
     { name: 'websiteUrl', type: 'text', label: 'Site internet' },
+    projectsField(),
     {
+      // Premier format (liens sans nom) : visible seulement s'il contient encore quelque chose.
       name: 'projectLinks',
       type: 'textarea',
-      label: 'Autres projets',
-      admin: { description: 'Un lien par ligne.' },
+      label: 'Autres projets (ancien format)',
+      admin: { description: LEGACY_LINKS_NOTE, condition: (data) => hasLegacyLinks(data) },
     },
     {
       name: 'photo',

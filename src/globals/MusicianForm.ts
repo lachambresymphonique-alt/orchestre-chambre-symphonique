@@ -159,7 +159,7 @@ export const MusicianForm: GlobalConfig = {
               label: 'Exemple affiché en gris dans le champ',
               admin: {
                 condition: (_, siblingData) =>
-                  siblingData?.field !== 'section' && siblingData?.field !== 'photo',
+                  !['section', 'photo', 'projects', 'projectLinks'].includes(siblingData?.field),
               },
             },
             {
@@ -175,7 +175,7 @@ export const MusicianForm: GlobalConfig = {
                 description:
                   'Deux demi-largeurs qui se suivent se placent côte à côte. Une demi-largeur isolée reprend toute la largeur.',
                 condition: (_, siblingData) =>
-                  siblingData?.field !== 'section' && siblingData?.field !== 'photo',
+                  !['section', 'photo', 'projects', 'projectLinks'].includes(siblingData?.field),
               },
             },
             {

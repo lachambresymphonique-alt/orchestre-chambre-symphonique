@@ -1,6 +1,7 @@
 import type { CollectionConfig, Field } from 'payload';
 import { richTextAdmin } from '@/lib/richTextAdmin';
 import { PROFILE_FIELD_BY_NAME, PROFILE_FIELD_NAMES, type ProfileFieldName } from '@/lib/profileFields';
+import { projectsField } from '@/lib/projectFields';
 
 /**
  * Modifications de fiche proposées par les membres depuis /espace-membres.
@@ -21,14 +22,29 @@ const shownIfChanged = (name: ProfileFieldName) => ({
     Array.isArray(data?.changedFields) && (data.changedFields as string[]).includes(name),
 });
 
-const lines = (name: ProfileFieldName, label: string, itemLabel = 'Texte'): Field => ({
+const lines = (name: ProfileFieldName | 'projectLinks', label: string, itemLabel = 'Texte'): Field => ({
   name,
   type: 'array',
   label,
   labels: { singular: 'Entrée', plural: 'Entrées' },
-  admin: shownIfChanged(name),
+  admin: shownIfChanged(name as ProfileFieldName),
   fields: [{ name: 'item', type: 'text', required: true, label: itemLabel }],
 });
+
+/**
+ * Valeurs de « Champs modifiés », dans l'ordre de la liste en base : un champ
+ * nouveau s'ajoute à la fin. « projectLinks » (liens sans nom, remplacé par
+ * « projects ») garde sa place pour que la liste en base n'ait pas à changer.
+ */
+const changedFieldOptions: { label: string; value: string }[] = PROFILE_FIELD_NAMES.map((name) => ({
+  label: PROFILE_FIELD_BY_NAME[name].label,
+  value: name,
+}));
+changedFieldOptions.splice(
+  changedFieldOptions.findIndex((option) => option.value === 'desertIslandPiece'),
+  0,
+  { label: 'Autres projets (ancien format)', value: 'projectLinks' },
+);
 
 export const ProfileChanges: CollectionConfig = {
   slug: 'profile-changes',
@@ -114,8 +130,7 @@ export const ProfileChanges: CollectionConfig = {
       admin: {
         description: 'Seuls ces champs seront recopiés dans la fiche. Retirez-en un pour l’écarter.',
       },
-      // Ordre de PROFILE_FIELD_NAMES : un nouveau champ s'ajoute à la fin des valeurs en base.
-      options: PROFILE_FIELD_NAMES.map((name) => ({ label: PROFILE_FIELD_BY_NAME[name].label, value: name })),
+      options: changedFieldOptions,
     },
     { name: 'name', type: 'text', label: 'Nom complet', admin: shownIfChanged('name') },
     { name: 'photo', type: 'upload', relationTo: 'media', label: 'Photo', admin: shownIfChanged('photo') },
@@ -146,7 +161,10 @@ export const ProfileChanges: CollectionConfig = {
     lines('formation', 'Formation'),
     lines('concours', 'Concours et distinctions'),
     { name: 'videoUrl', type: 'text', label: 'Vidéo', admin: shownIfChanged('videoUrl') },
-    lines('projectLinks', 'Autres projets', 'Lien'),
+    projectsField(shownIfChanged('projects')),
+    // Premier format (liens sans nom), plus proposé aux membres ; gardé pour ne pas supprimer sa table.
+    // Jamais affiché ; une condition (et non `hidden`) garde la colonne telle qu'elle est en base.
+    { ...lines('projectLinks', 'Autres projets (ancien format)', 'Lien'), admin: { condition: () => false } } as Field,
     {
       name: 'quote',
       type: 'textarea',

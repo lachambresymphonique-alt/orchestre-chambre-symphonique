@@ -4,6 +4,7 @@ import { useState, FormEvent, useRef, ChangeEvent, CSSProperties } from 'react';
 import { Turnstile } from '@/components/Turnstile';
 import { renderInline } from '@/lib/richText';
 import { MAX_UPLOAD_BYTES, shrinkPhoto } from '@/lib/shrinkPhoto';
+import { ProjectsInput } from '@/components/ProjectsInput';
 import {
   allQuestions,
   layoutQuestions,
@@ -276,6 +277,19 @@ export function MusicianSubmissionForm({ formToken, turnstileSiteKey, form }: Mu
               )}
             </span>
           </div>
+        </div>
+      );
+    }
+
+    if (question.kind === 'projects') {
+      const headingId = `${question.key}-heading`;
+      return (
+        <div className="form-group" key={question.key} role="group" aria-labelledby={headingId}>
+          <span className="project-inputs__heading" id={headingId}>
+            {label}
+          </span>
+          {question.hint && <p className="form-hint project-inputs__hint">{question.hint}</p>}
+          <ProjectsInput name={question.key} />
         </div>
       );
     }

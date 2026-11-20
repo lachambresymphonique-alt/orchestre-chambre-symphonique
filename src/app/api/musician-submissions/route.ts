@@ -3,6 +3,7 @@ import { getPayloadClient } from '@/lib/payload';
 import nodemailer from 'nodemailer';
 import { teamNotificationEmail } from '@/lib/mail';
 import { URL_HINT, normalizeLinks } from '@/lib/links';
+import { projectList, projectRows, projectsSummary, readProjects } from '@/lib/projects';
 import {
   FORM_TOKEN_ERRORS,
   checkFormToken,
@@ -35,10 +36,16 @@ const MAX_PHOTO_BYTES = 10 * 1024 * 1024; // 10 MB
 const MAX_FIELD_LENGTH = 10_000;
 
 /** Champs dont la valeur s'écrit sur plusieurs lignes dans l'e-mail d'alerte. */
-const MULTILINE_KEYS = new Set(['bio', 'formation', 'concours', 'projectLinks']);
+const MULTILINE_KEYS = new Set(['bio', 'formation', 'concours', 'projects']);
 
-/** Questions dont la réponse est une adresse web (ou plusieurs, une par ligne). */
-const LINK_KEYS = new Set(['websiteUrl', 'projectLinks']);
+/** Questions dont la réponse est une adresse web. */
+const LINK_KEYS = new Set(['websiteUrl']);
+
+/** Au moins un projet saisi ; une saisie fautive compte comme une réponse, pour afficher l'erreur précise plus bas. */
+function hasProjectAnswer(raw: string): boolean {
+  const { projects, error } = readProjects(raw);
+  return projects.length > 0 || error !== null;
+}
 
 function badRequest(error: string) {
   return NextResponse.json({ error }, { status: 400 });
@@ -115,7 +122,12 @@ export async function POST(req: NextRequest) {
     // 3. Questions obligatoires, telles que réglées dans l'admin.
     for (const question of questions) {
       if (!question.required) continue;
-      const answered = question.kind === 'photo' ? hasPhoto : get(question.key) !== '';
+      const answered =
+        question.kind === 'photo'
+          ? hasPhoto
+          : question.kind === 'projects'
+            ? hasProjectAnswer(get(question.key))
+            : get(question.key) !== '';
       if (!answered) {
         return badRequest(`La question « ${question.label} » est obligatoire.`);
       }
@@ -139,6 +151,13 @@ export async function POST(req: NextRequest) {
           submissionData.section = choice.value;
           sectionLabel = choice.label;
         }
+        continue;
+      }
+
+      if (question.kind === 'projects') {
+        const { projects, error } = readProjects(get(question.key));
+        if (error) return badRequest(error);
+        if (projects.length > 0) submissionData.projects = projectRows(projects);
         continue;
       }
 
@@ -216,7 +235,11 @@ export async function POST(req: NextRequest) {
           continue;
         }
         const value =
-          question.kind === 'section' ? sectionLabel : (submissionData[question.key] as string);
+          question.kind === 'section'
+            ? sectionLabel
+            : question.kind === 'projects'
+              ? projectsSummary(projectList(submissionData.projects))
+              : (submissionData[question.key] as string);
         if (!value) continue;
         lines.push(
           MULTILINE_KEYS.has(question.key)

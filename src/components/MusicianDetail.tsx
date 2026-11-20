@@ -5,6 +5,7 @@ import { placeholderForMusician } from '@/lib/unsplash';
 import { toEmbedUrl } from '@/lib/videoEmbed';
 import { RichText, renderInline } from '@/lib/richText';
 import { linkList, normalizeUrl, shortUrl } from '@/lib/links';
+import { instagramUrl, projectList, type Project } from '@/lib/projects';
 
 export type Musician = {
   id?: string;
@@ -16,6 +17,8 @@ export type Musician = {
   photo?: { url?: string; alt?: string } | null;
   photoCredit?: string | null;
   websiteUrl?: string | null;
+  projects?: Partial<Record<keyof Project, string | null>>[] | null;
+  /** Premier format des projets (liens sans nom), encore affiché s'il est rempli. */
   projectLinks?: { item?: string | null }[] | null;
   tagline?: string;
   bio?: string;
@@ -66,6 +69,15 @@ function ExternalLink({ url }: { url: string }) {
   );
 }
 
+/** Liens d'un projet, dans l'ordre d'affichage. */
+function projectLinks(p: Project): { label: string; url: string }[] {
+  return [
+    { label: 'Site', url: p.websiteUrl },
+    { label: 'YouTube', url: p.youtubeUrl },
+    { label: 'Instagram', url: instagramUrl(p.instagram) },
+  ].filter((link) => link.url);
+}
+
 type Props = {
   musician: Musician;
   /** Renders a discreet banner explaining this is a preview, hides the back link. */
@@ -79,7 +91,9 @@ export function MusicianDetail({ musician: m, previewMode = false, labels }: Pro
   // Le crédit ne vaut que pour une vraie photo, pas pour les initiales de remplacement.
   const photoCredit = m.photo?.url ? m.photoCredit?.trim() || '' : '';
   const website = normalizeUrl(m.websiteUrl);
-  const projects = linkList(m.projectLinks);
+  const projects = projectList(m.projects);
+  const legacyLinks = linkList(m.projectLinks);
+  const hasProjects = projects.length > 0 || legacyLinks.length > 0;
   const sectionLabel = m.section
     ? labels?.sections?.[m.section] || defaultSectionLabels[m.section]
     : '—';
@@ -220,7 +234,7 @@ export function MusicianDetail({ musician: m, previewMode = false, labels }: Pro
             </div>
           )}
 
-          {(website || projects.length > 0) && (
+          {(website || hasProjects) && (
             <div className="musician-feature__credits">
               {website && (
                 <section className="musician-feature__credits-block" data-live-field="websiteUrl">
@@ -230,12 +244,37 @@ export function MusicianDetail({ musician: m, previewMode = false, labels }: Pro
                   </p>
                 </section>
               )}
-              {projects.length > 0 && (
-                <section className="musician-feature__credits-block" data-live-field="projectLinks">
+              {hasProjects && (
+                <section className="musician-feature__credits-block" data-live-field="projects">
                   <h2 className="musician-feature__credits-title">Autres projets</h2>
-                  <ul className="musician-feature__credits-list">
-                    {projects.map((url) => (
-                      <li key={url}>
+                  <ul className="musician-feature__projects">
+                    {projects.map((p, i) => {
+                      const links = projectLinks(p);
+                      return (
+                        <li key={i} className="musician-feature__project">
+                          <span className="musician-feature__project-name">{p.name}</span>
+                          {links.length > 0 && (
+                            <span className="musician-feature__project-links">
+                              {links.map((link) => (
+                                <a
+                                  key={link.label}
+                                  href={link.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="musician-feature__link"
+                                  aria-label={`${p.name} : ${link.label} (nouvel onglet)`}
+                                >
+                                  {link.label}
+                                  <span aria-hidden>{'\u00A0'}↗</span>
+                                </a>
+                              ))}
+                            </span>
+                          )}
+                        </li>
+                      );
+                    })}
+                    {legacyLinks.map((url) => (
+                      <li key={url} className="musician-feature__project">
                         <ExternalLink url={url} />
                       </li>
                     ))}

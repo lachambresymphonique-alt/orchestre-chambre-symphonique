@@ -5,6 +5,7 @@ import { NEW_MUSICIAN_STATUS } from '@/lib/musicianVisibility';
 import { isAdminUser } from '@/lib/access';
 import { SECTION_VALUES } from '@/lib/musicianForm';
 import { linkList, normalizeUrl } from '@/lib/links';
+import { projectList, projectRows } from '@/lib/projects';
 
 // Toutes les sections du projet, bureau et équipe technique compris : cette
 // liste était figée ici, si bien qu'une fiche de bureau validée atterrissait
@@ -160,6 +161,8 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     photoCredit: submission.photoCredit || undefined,
     // L'équipe a pu corriger la fiche reçue à la main : seules les vraies adresses sont recopiées.
     websiteUrl: normalizeUrl(submission.websiteUrl) || undefined,
+    projects: projectRows(projectList(submission.projects)),
+    // Premier format (liens sans nom), pour une fiche reçue avant les projets.
     projectLinks: linkList(lines(submission.projectLinks)).map((item) => ({ item })),
     quote: submission.quote || undefined,
     order: nextOrder,

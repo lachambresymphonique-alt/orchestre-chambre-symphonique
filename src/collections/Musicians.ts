@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload';
 import { richTextAdmin } from '@/lib/richTextAdmin';
 import { MUSICIAN_STATUSES, NEW_MUSICIAN_STATUS } from '@/lib/musicianVisibility';
 import { URL_HINT, normalizeUrl } from '@/lib/links';
+import { LEGACY_LINKS_NOTE, hasLegacyLinks, projectsField } from '@/lib/projectFields';
 import { PUPITRES } from '@/lib/pupitres';
 
 const slugify = (s: string) =>
@@ -223,12 +224,15 @@ export const Musicians: CollectionConfig = {
         description: 'Lien YouTube ou Vimeo (ex : https://youtu.be/abc123 ou https://vimeo.com/123456). La vidéo sera intégrée sur la fiche du musicien.',
       },
     },
+    projectsField(),
     {
+      // Premier format (liens sans nom), remplacé par « Autres projets » : visible seulement s'il contient encore quelque chose.
       name: 'projectLinks',
       type: 'array',
-      label: 'Autres projets',
+      label: 'Autres projets (ancien format)',
       admin: {
-        description: 'Liens vers ses autres projets : ensemble, duo, album, chaîne… (un lien par ligne).',
+        description: LEGACY_LINKS_NOTE,
+        condition: (data) => hasLegacyLinks(data),
       },
       labels: { singular: 'Lien', plural: 'Liens' },
       fields: [

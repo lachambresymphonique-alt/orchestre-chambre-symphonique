@@ -50,6 +50,7 @@ function submissionToMusician(s: any): Musician {
     videoUrl: s?.videoUrl || undefined,
     photoCredit: s?.photoCredit || undefined,
     websiteUrl: s?.websiteUrl || undefined,
+    projects: s?.projects,
     projectLinks: lines(s?.projectLinks),
     inspiringSymphony: s?.inspiringSymphony || undefined,
     favoriteWork: s?.favoriteWork || undefined,

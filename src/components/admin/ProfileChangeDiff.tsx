@@ -3,6 +3,7 @@
 import './admin-profile-change.css';
 import { useEffect, useState } from 'react';
 import { useDocumentInfo } from '@payloadcms/ui';
+import { projectsFromText } from '@/lib/projects';
 
 /**
  * En tête d'une modification proposée : la fiche en ligne et la proposition,
@@ -24,6 +25,20 @@ type Row = {
 function Value({ kind, value, url }: { kind: string; value: string; url: string | null }) {
   if (!value) return <span className="lcs-diff__empty">vide</span>;
   if (kind === 'photo') return url ? <img className="lcs-diff__photo" src={url} alt="" /> : <span>Photo n° {value}</span>;
+  if (kind === 'projects') {
+    return (
+      <ul className="lcs-diff__list">
+        {projectsFromText(value).map((p, i) => (
+          <li key={i}>
+            <strong>{p.name}</strong>
+            {[p.websiteUrl, p.youtubeUrl, p.instagram].filter(Boolean).map((link) => (
+              <span key={link}> · {link}</span>
+            ))}
+          </li>
+        ))}
+      </ul>
+    );
+  }
   if (kind === 'lines' || kind === 'links') {
     return (
       <ul className="lcs-diff__list">

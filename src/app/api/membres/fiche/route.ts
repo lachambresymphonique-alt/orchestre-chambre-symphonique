@@ -3,11 +3,13 @@ import { getPayloadClient } from '@/lib/payload';
 import { getMemberSession } from '@/lib/memberSession';
 import { mailConfigured, sendMail, teamNotificationEmail } from '@/lib/mail';
 import { URL_HINT, normalizeLinks } from '@/lib/links';
+import { projectsToText, readProjects } from '@/lib/projects';
 import {
   MAX_LINES,
   PROFILE_FIELDS,
   comparable,
   isListKind,
+  isRowsKind,
   normalizeInstagram,
   toMusicianValue,
   type ProfileFieldName,
@@ -65,6 +67,12 @@ export async function POST(req: NextRequest) {
     if (field.kind === 'photo') continue;
     const raw = form.get(field.name);
     if (typeof raw !== 'string') continue; // champ absent : inchangé
+    if (field.kind === 'projects') {
+      const { projects, error } = readProjects(raw);
+      if (error) return fail(error);
+      proposed[field.name] = projectsToText(projects);
+      continue;
+    }
     let value = raw.replace(/\r\n/g, '\n').trim();
     if (isListKind(field.kind)) {
       const items = value.split('\n').map((l) => l.trim()).filter(Boolean);
@@ -169,7 +177,7 @@ export async function POST(req: NextRequest) {
     if (field.kind === 'photo') continue;
     data[field.name] = changed.includes(field.name)
       ? toMusicianValue(field.name, proposed[field.name] ?? '')
-      : isListKind(field.kind)
+      : isRowsKind(field.kind)
         ? []
         : null;
   }

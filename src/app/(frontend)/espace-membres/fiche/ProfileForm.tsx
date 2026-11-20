@@ -4,6 +4,8 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import type { ProfileField } from '@/lib/profileFields';
 import { shrinkPhoto } from '@/lib/shrinkPhoto';
+import { projectsFromText } from '@/lib/projects';
+import { ProjectsInput } from '@/components/ProjectsInput';
 
 const MAX_PHOTO_BYTES = 4 * 1024 * 1024;
 
@@ -111,6 +113,17 @@ export function ProfileForm({ fields, values, photoUrl, photoPending }: Props) {
               </label>
               {fileName && <span className="member-profile__file-name">{fileName}</span>}
               {help}
+            </div>
+          );
+        }
+        if (field.kind === 'projects') {
+          return (
+            <div className="form-group" key={field.name} role="group" aria-labelledby={`${id}-heading`}>
+              <span className="project-inputs__heading" id={`${id}-heading`}>
+                {field.label}
+              </span>
+              {help}
+              <ProjectsInput name={field.name} initial={projectsFromText(values[field.name])} />
             </div>
           );
         }

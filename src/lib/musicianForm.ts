@@ -22,7 +22,7 @@
 // ─── Catalogue des questions ─────────────────────────────────────────────────
 
 /** Nature d'une question, qui détermine le champ affiché. */
-export type QuestionKind = 'text' | 'email' | 'tel' | 'url' | 'textarea' | 'section' | 'photo';
+export type QuestionKind = 'text' | 'email' | 'tel' | 'url' | 'textarea' | 'section' | 'photo' | 'projects';
 
 export type FieldKey =
   | 'firstName'
@@ -44,7 +44,8 @@ export type FieldKey =
   | 'photoCredit'
   | 'websiteUrl'
   | 'projectLinks'
-  | 'desertIslandPiece';
+  | 'desertIslandPiece'
+  | 'projects';
 
 export type QuestionWidth = 'full' | 'half';
 
@@ -61,6 +62,12 @@ type CatalogueEntry = {
   rows?: number;
   /** Indispensable à la création d'une fiche : ni retirable, ni facultative. */
   core?: true;
+  /**
+   * Question retirée, remplacée par une autre : déjà posée dans le formulaire,
+   * elle s'affiche sous sa nouvelle forme. Gardée au catalogue pour que la
+   * liste des choix en base ne change pas.
+   */
+  replacedBy?: FieldKey;
   /** Obligatoire par défaut lorsque la question est remise. */
   required?: boolean;
   autoComplete?: string;
@@ -251,7 +258,8 @@ export const FIELD_CATALOGUE: readonly CatalogueEntry[] = [
   {
     key: 'projectLinks',
     kind: 'textarea',
-    adminLabel: 'Liens vers d’autres projets',
+    adminLabel: 'Liens vers d’autres projets (ancien — devient « Autres projets »)',
+    replacedBy: 'projects',
     label: 'Vos autres projets',
     hint: 'Ensemble, duo, album, chaîne… Un lien par ligne.',
     placeholder: 'www.mon-quatuor.fr\nwww.youtube.com/@ma-chaine',
@@ -265,6 +273,15 @@ export const FIELD_CATALOGUE: readonly CatalogueEntry[] = [
     label: 'Quel morceau emmènerais-tu sur une île déserte ?',
     hint: '',
     placeholder: 'Ex : Variations Goldberg, Adagietto de la 5ᵉ de Mahler…',
+    width: 'full',
+  },
+  {
+    key: 'projects',
+    kind: 'projects',
+    adminLabel: 'Autres projets (nom, site, YouTube, Instagram)',
+    label: 'Vos autres projets',
+    hint: 'Ensemble, duo, album… Un bloc par projet : son nom et, s’il en a, son site, sa chaîne YouTube, son compte Instagram.',
+    placeholder: '',
     width: 'full',
   },
 ] as const;
@@ -455,17 +472,20 @@ const text = (value: unknown, fallback = ''): string => {
 function resolveQuestion(row: unknown, seen: Set<string>): ResolvedQuestion | null {
   const data = (row ?? {}) as Record<string, unknown>;
   const key = typeof data.field === 'string' ? data.field : '';
-  const entry = CATALOGUE_BY_KEY.get(key);
+  const saved = CATALOGUE_BY_KEY.get(key);
+  // Question remplacée : posée sous sa nouvelle forme, sans l'aide ni l'exemple de l'ancienne.
+  const entry = saved?.replacedBy ? CATALOGUE_BY_KEY.get(saved.replacedBy) : saved;
+  const upgraded = entry !== saved;
   // Question inconnue (champ supprimé du code) ou déjà posée plus haut.
-  if (!entry || seen.has(key)) return null;
-  seen.add(key);
+  if (!entry || seen.has(entry.key)) return null;
+  seen.add(entry.key);
 
   const question: ResolvedQuestion = {
     key: entry.key,
     kind: entry.kind,
     label: text(data.label, entry.label),
-    hint: text(data.hint, ''),
-    placeholder: text(data.placeholder, ''),
+    hint: upgraded ? entry.hint : text(data.hint, ''),
+    placeholder: upgraded ? entry.placeholder : text(data.placeholder, ''),
     // Les questions indispensables restent obligatoires quoi qu'il arrive.
     required: entry.core ? true : data.required === true,
     width: data.width === 'half' || data.width === 'full' ? data.width : entry.width,
