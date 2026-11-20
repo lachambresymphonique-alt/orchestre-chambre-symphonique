@@ -17,6 +17,7 @@ import { cache } from 'react';
 import { cookies } from 'next/headers';
 import { getFormSecret } from './antispam';
 import { getPayloadClient } from './payload';
+import { memberAreaAllows } from './memberArea';
 
 export const MEMBER_COOKIE = 'lcs_membre';
 export const SESSION_MAX_AGE_S = 30 * 24 * 60 * 60;
@@ -120,6 +121,8 @@ export const getMemberSession = cache(async (): Promise<MemberSession | null> =>
     if (!account || account.status !== 'actif') return null;
     if ((Number(account.sessionVersion) || 0) !== session.version) return null;
     if (!account.musician || typeof account.musician !== 'object') return null;
+    // Espace réservé au bureau : un compte d'une autre section n'ouvre plus de session.
+    if (!memberAreaAllows(account.musician.section)) return null;
     return { account, musician: account.musician };
   } catch {
     return null;

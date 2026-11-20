@@ -16,6 +16,7 @@ import {
   loginLink,
   newLoginToken,
 } from '@/lib/memberSession';
+import { accountSection, memberAreaAllows } from '@/lib/memberArea';
 
 /**
  * Demande d'un lien de connexion depuis /espace-membres.
@@ -86,6 +87,8 @@ export async function POST(req: NextRequest) {
     });
     const account = found.docs[0] as any;
     if (!account || !account.musician) return NextResponse.json(SENT);
+    // Hors du bureau : même réponse qu'une adresse inconnue, aucun lien émis.
+    if (!memberAreaAllows(accountSection(account.musician))) return NextResponse.json(SENT);
 
     const now = Date.now();
     const lastIssued = account.loginTokenIssuedAt ? Date.parse(account.loginTokenIssuedAt) : 0;

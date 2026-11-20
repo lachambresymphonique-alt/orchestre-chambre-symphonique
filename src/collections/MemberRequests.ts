@@ -14,7 +14,7 @@ export const MemberRequests: CollectionConfig = {
     useAsTitle: 'title',
     group: 'Espace membres',
     description:
-      'Inscriptions reçues par les liens partagés. Acceptez pour relier la personne à sa fiche (ou la créer) et lui envoyer son lien de connexion.',
+      'Fermé depuis le 20 novembre 2026 : l’espace membres de ce site est réservé au bureau, invité depuis sa fiche (Musiciens). Inscriptions reçues par les liens partagés. Acceptez pour relier la personne à sa fiche (ou la créer) et lui envoyer son lien de connexion.',
     defaultColumns: ['title', 'role', 'pupitre', 'status', 'createdAt'],
     components: {
       beforeListTable: ['@/components/admin/MembersGuide#MembersGuide'],

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPayloadClient } from '@/lib/payload';
 import { encodeSession, hashLoginToken, sessionCookie } from '@/lib/memberSession';
+import { accountSection, memberAreaAllows } from '@/lib/memberArea';
 
 /**
  * Ouverture de session à partir d'un lien reçu par e-mail.
@@ -32,7 +33,7 @@ export async function POST(req: NextRequest) {
     collection: 'member-accounts' as any,
     where: { loginTokenHash: { equals: hashLoginToken(token) } } as any,
     limit: 1,
-    depth: 0,
+    depth: 1,
     overrideAccess: true,
   });
   const account = found.docs[0] as any;
@@ -40,6 +41,8 @@ export async function POST(req: NextRequest) {
   if (!account || account.status === 'desactive' || !account.musician || expires < Date.now()) {
     return redirectTo(req, '/espace-membres?lien=invalide');
   }
+  // Lien valable, mais l'espace n'est plus ouvert à cette section : le compte reste tel quel.
+  if (!memberAreaAllows(accountSection(account.musician))) return redirectTo(req, '/espace-membres?lien=reserve');
 
   await payload.update({
     collection: 'member-accounts' as any,

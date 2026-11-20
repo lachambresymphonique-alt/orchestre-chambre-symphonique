@@ -20,7 +20,14 @@ type Account = {
   lastLoginAt: string | null;
 };
 
-type State = { account: Account | null; suggestedEmail: string | null; mailConfigured: boolean };
+type State = {
+  account: Account | null;
+  suggestedEmail: string | null;
+  mailConfigured: boolean;
+  /** Faux hors du bureau : l'espace membres de ce site lui est réservé (lib/memberArea). */
+  allowed?: boolean;
+  reservedNote?: string;
+};
 
 const BUTTON_LABELS: Record<Account['status'] | 'none', string> = {
   none: 'Inviter à l’espace membres',
@@ -112,6 +119,17 @@ export function InviteMemberButton() {
 
   const status = state?.account?.status ?? 'none';
   const label = statusLabel(state?.account ?? null);
+
+  // Fiche hors du bureau : pas d'invitation possible, une simple mention à la place du bouton.
+  if (state?.allowed === false) {
+    return (
+      <div className="lcs-promote lcs-promote--inline lcs-invite">
+        <span className="lcs-invite__status" title={state.reservedNote}>
+          Espace membres réservé au bureau
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div className="lcs-promote lcs-promote--inline lcs-invite">

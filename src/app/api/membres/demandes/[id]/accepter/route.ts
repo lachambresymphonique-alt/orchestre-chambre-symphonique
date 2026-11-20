@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getPayloadClient } from '@/lib/payload';
 import { requestIsAdmin } from '@/lib/profileChanges';
 import { inviteMember } from '@/lib/memberInvitations';
+import { MEMBER_AREA_RESERVED, joinRoleAllowed } from '@/lib/memberArea';
 import { findPupitre } from '@/lib/pupitres';
 import { NEW_MUSICIAN_STATUS } from '@/lib/musicianVisibility';
 
@@ -22,6 +23,13 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     request = await payload.findByID({ collection: 'member-requests' as any, id, depth: 0, overrideAccess: true });
   } catch {
     return NextResponse.json({ error: 'Demande introuvable.' }, { status: 404 });
+  }
+  // Avant tout : accepter ne doit ni créer de fiche ni toucher aux pupitres pour rien.
+  if (!joinRoleAllowed(request.role)) {
+    return NextResponse.json(
+      { error: `${MEMBER_AREA_RESERVED} Les demandes des musiciens et de l’équipe technique ne peuvent plus être acceptées ici : refusez-les.` },
+      { status: 403 },
+    );
   }
   if (request.status !== 'nouvelle') {
     return NextResponse.json({ error: 'Cette demande a déjà été traitée.' }, { status: 409 });

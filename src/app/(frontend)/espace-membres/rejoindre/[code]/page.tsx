@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getPayloadClient } from '@/lib/payload';
 import { getFormSecret, issueFormToken } from '@/lib/antispam';
 import { findActiveInviteLink } from '@/lib/inviteLinks';
+import { MEMBER_AREA_RESERVED, joinRoleAllowed } from '@/lib/memberArea';
 import { getMemberSession } from '@/lib/memberSession';
 import { PUPITRES } from '@/lib/pupitres';
 import { JoinForm } from './JoinForm';
@@ -27,7 +28,10 @@ const SUBTITLES = {
 
 export default async function JoinPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
-  const link = await findActiveInviteLink(await getPayloadClient(), code);
+  const found = await findActiveInviteLink(await getPayloadClient(), code);
+  // Lien encore actif dans l'admin, mais pour un rôle qui n'a plus accès à cet espace.
+  const closed = Boolean(found && !joinRoleAllowed(found.role));
+  const link = closed ? null : found;
   const session = await getMemberSession();
 
   return (
@@ -58,7 +62,9 @@ export default async function JoinPage({ params }: { params: Promise<{ code: str
             />
           ) : (
             <p className="member-area__notice" role="status">
-              Ce lien d’inscription n’est plus valable. Demandez-en un nouveau à l’équipe de l’orchestre.
+              {closed
+                ? `Inscriptions fermées. ${MEMBER_AREA_RESERVED}`
+                : 'Ce lien d’inscription n’est plus valable. Demandez-en un nouveau à l’équipe de l’orchestre.'}
             </p>
           )}
         </div>

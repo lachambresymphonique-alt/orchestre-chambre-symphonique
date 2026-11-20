@@ -12,6 +12,7 @@ import { mailConfigured, sendMail, teamNotificationEmail } from '@/lib/mail';
 import { normalizeEmail } from '@/lib/memberInvitations';
 import { findPupitre, joinRoleLabel } from '@/lib/pupitres';
 import { findActiveInviteLink } from '@/lib/inviteLinks';
+import { MEMBER_AREA_RESERVED, joinRoleAllowed } from '@/lib/memberArea';
 
 /**
  * Demande d'accès envoyée depuis un lien d'inscription
@@ -50,6 +51,7 @@ export async function POST(req: NextRequest) {
   const payload = await getPayloadClient();
   const link = await findActiveInviteLink(payload, body.code);
   if (!link) return fail('Ce lien d’inscription n’est plus valable. Demandez-en un nouveau à l’équipe.', 410);
+  if (!joinRoleAllowed(link.role)) return fail(`Inscriptions fermées. ${MEMBER_AREA_RESERVED}`, 410);
 
   const text = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
   const firstName = text(body.firstName, MAX_NAME);

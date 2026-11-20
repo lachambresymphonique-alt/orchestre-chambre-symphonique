@@ -8,6 +8,7 @@ import { latestProposal } from '@/lib/profileChanges';
 import { MemberLoginForm } from './MemberLoginForm';
 import { ProposalStatus } from './ProposalStatus';
 import { isMusicianPublic } from '@/lib/musicianVisibility';
+import { MEMBER_AREA_RESERVED } from '@/lib/memberArea';
 import '@/components/member-area.css';
 
 /**
@@ -24,6 +25,7 @@ export const metadata: Metadata = {
 const NOTICES: Record<string, string> = {
   invalide: 'Ce lien n’est plus valable : il a déjà servi ou il a expiré. Demandez-en un nouveau ci-dessous.',
   deconnecte: 'Vous êtes déconnecté·e.',
+  reserve: `${MEMBER_AREA_RESERVED} Pour votre fiche ou vos partitions, adressez-vous à l’équipe de l’orchestre.`,
 };
 
 export default async function MemberAreaPage({
@@ -38,7 +40,14 @@ export default async function MemberAreaPage({
   }
 
   const params = await searchParams;
-  const notice = params.lien === 'invalide' ? NOTICES.invalide : params.deconnecte ? NOTICES.deconnecte : null;
+  const notice =
+    params.lien === 'invalide'
+      ? NOTICES.invalide
+      : params.lien === 'reserve'
+        ? NOTICES.reserve
+        : params.deconnecte
+          ? NOTICES.deconnecte
+          : null;
 
   return (
     <>
@@ -48,7 +57,7 @@ export default async function MemberAreaPage({
             <Link href="/">Accueil</Link> / Espace membres
           </p>
           <h1>Espace membres</h1>
-          <p>Musiciens, bureau, équipe technique : retrouvez ici votre fiche.</p>
+          <p>Membres du bureau : retrouvez ici votre fiche et les documents de l’association.</p>
         </div>
       </div>
       <section className="contact-section member-area">

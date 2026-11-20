@@ -17,7 +17,7 @@ export const MemberInviteLinks: CollectionConfig = {
     useAsTitle: 'label',
     group: 'Espace membres',
     description:
-      'Liens à partager dans une discussion de groupe. Ils ne donnent aucun accès par eux-mêmes : chaque inscription arrive dans « Demandes d’accès », à valider.',
+      'Fermé depuis le 20 novembre 2026 : l’espace membres de ce site est réservé au bureau, invité depuis sa fiche (Musiciens). Liens à partager dans une discussion de groupe. Ils ne donnent aucun accès par eux-mêmes : chaque inscription arrive dans « Demandes d’accès », à valider.',
     defaultColumns: ['label', 'role', 'active', 'updatedAt'],
     components: { beforeListTable: ['@/components/admin/MembersGuide#MembersGuide'] },
   },

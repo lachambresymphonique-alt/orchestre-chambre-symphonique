@@ -4,6 +4,7 @@ import { getPayloadClient } from '@/lib/payload';
 import { isAdminUser } from '@/lib/access';
 import { mailConfigured } from '@/lib/mail';
 import { findAccountBy, inviteMember, normalizeEmail } from '@/lib/memberInvitations';
+import { MEMBER_AREA_RESERVED, memberAreaAllows } from '@/lib/memberArea';
 
 /**
  * Invitation à l'espace membres, depuis la fiche d'un musicien dans l'admin
@@ -79,6 +80,9 @@ export async function GET(req: NextRequest) {
     account: publicAccount(account),
     suggestedEmail,
     mailConfigured: mailConfigured(),
+    // Faux hors du bureau : le bouton d'invitation s'efface au profit d'une explication.
+    allowed: memberAreaAllows(musician.section),
+    reservedNote: MEMBER_AREA_RESERVED,
   });
 }
 

@@ -9,6 +9,7 @@
 import { getPayloadClient } from './payload';
 import { mailConfigured, sendMail } from './mail';
 import { INVITATION_TTL_MS, firstName, loginLink, newLoginToken } from './memberSession';
+import { MEMBER_AREA_RESERVED, memberAreaAllows } from './memberArea';
 
 type Payload = Awaited<ReturnType<typeof getPayloadClient>>;
 
@@ -36,8 +37,15 @@ export type InvitationResult =
 
 export async function inviteMember(
   payload: Payload,
-  { musician, email, origin }: { musician: { id: number | string; name?: string | null }; email: string; origin: string },
+  {
+    musician,
+    email,
+    origin,
+  }: { musician: { id: number | string; name?: string | null; section?: string | null }; email: string; origin: string },
 ): Promise<InvitationResult> {
+  if (!memberAreaAllows(musician.section)) {
+    return { ok: false, status: 403, error: `${MEMBER_AREA_RESERVED} Passez la fiche dans la section « Bureau » pour l’inviter.` };
+  }
   const existing = await findAccountBy(payload, 'musician', musician.id);
   const sameEmail = await findAccountBy(payload, 'email', email);
   if (sameEmail && sameEmail.id !== existing?.id) {
