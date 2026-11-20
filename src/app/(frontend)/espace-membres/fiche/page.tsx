@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getPayloadClient } from '@/lib/payload';
 import { getMemberSession } from '@/lib/memberSession';
-import { PROFILE_FIELDS, comparable } from '@/lib/profileFields';
+import { PROFILE_FIELDS } from '@/lib/profileFields';
+import { profileFormState } from '@/lib/profileProposals';
 import { latestProposal } from '@/lib/profileChanges';
 import { ProposalStatus } from '../ProposalStatus';
 import { ProfileForm } from './ProfileForm';
@@ -31,16 +32,7 @@ export default async function MemberProfilePage() {
     depth: 1,
   })) as any;
   const latest = await latestProposal(payload, musician.id);
-  const pending = latest?.status === 'en-attente' ? latest : null;
-  const inPending = (name: string) => Boolean(pending?.changedFields?.includes(name));
-
-  const values: Record<string, string> = {};
-  for (const field of PROFILE_FIELDS) {
-    if (field.kind === 'photo') continue;
-    values[field.name] = comparable(field.name, inPending(field.name) ? pending[field.name] : musician[field.name]);
-  }
-  const photo = inPending('photo') ? pending.photo : musician.photo;
-  const photoUrl = photo && typeof photo === 'object' ? photo.sizes?.card?.url || photo.url || null : null;
+  const { values, photoUrl, photoPending } = await profileFormState(payload, musician);
 
   return (
     <>
@@ -60,7 +52,7 @@ export default async function MemberProfilePage() {
             fields={PROFILE_FIELDS}
             values={values}
             photoUrl={photoUrl}
-            photoPending={inPending('photo')}
+            photoPending={photoPending}
           />
         </div>
       </section>

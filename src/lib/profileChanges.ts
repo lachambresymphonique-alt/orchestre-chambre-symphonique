@@ -6,6 +6,7 @@ import { headers } from 'next/headers';
 import { isAdminUser } from './access';
 import { getPayloadClient } from './payload';
 import { mailConfigured, sendMail } from './mail';
+import { musicianContact } from './musicianContact';
 
 type Payload = Awaited<ReturnType<typeof getPayloadClient>>;
 
@@ -51,7 +52,19 @@ export async function notifyMember(
   subject: string,
   lines: string[],
 ): Promise<void> {
-  if (!mailConfigured() || !proposal?.account) return;
+  if (!mailConfigured()) return;
+  // Proposition venue d'Orchestra Manager : pas d'accès membre, l'adresse est celle de la fiche reçue.
+  if (!proposal?.account) {
+    try {
+      const musicianId = typeof proposal?.musician === 'object' ? proposal.musician.id : proposal?.musician;
+      const musician = (await payload.findByID({ collection: 'musicians' as any, id: musicianId, depth: 0 })) as any;
+      const { email } = await musicianContact(payload, musician);
+      if (email) await sendMail({ to: email, subject, text: [...lines, '', '— La Chambre Symphonique'].join('\n') });
+    } catch (err) {
+      console.error('E-mail au musicien :', err);
+    }
+    return;
+  }
   try {
     const account = (await payload.findByID({
       collection: 'member-accounts' as any,
