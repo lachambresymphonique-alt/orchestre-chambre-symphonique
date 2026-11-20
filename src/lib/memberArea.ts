@@ -1,5 +1,5 @@
 /**
- * Qui a droit à l'espace membres de ce site : le bureau seulement.
+ * Qui a droit à l'espace membres de ce site : le bureau et la direction artistique.
  *
  * Décision du 2026-11-20 : musiciens et équipe technique auront leur espace
  * dans Orchestra manager. Les comptes existants ne sont pas supprimés ; ils
@@ -9,9 +9,9 @@
  */
 import { PUPITRE_SECTIONS, type SectionValue } from './musicianForm';
 
-export const MEMBER_AREA_SECTIONS: readonly SectionValue[] = ['bureau'];
+export const MEMBER_AREA_SECTIONS: readonly SectionValue[] = ['bureau', 'direction'];
 
-export const MEMBER_AREA_RESERVED = 'L’espace membres de ce site est réservé aux membres du bureau.';
+export const MEMBER_AREA_RESERVED = 'L’espace membres de ce site est réservé au bureau et à la direction artistique.';
 
 /** Vrai si une fiche de cette section peut se connecter à l'espace membres. */
 export function memberAreaAllows(section: unknown): boolean {

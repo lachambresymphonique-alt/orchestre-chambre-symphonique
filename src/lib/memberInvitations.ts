@@ -44,7 +44,7 @@ export async function inviteMember(
   }: { musician: { id: number | string; name?: string | null; section?: string | null }; email: string; origin: string },
 ): Promise<InvitationResult> {
   if (!memberAreaAllows(musician.section)) {
-    return { ok: false, status: 403, error: `${MEMBER_AREA_RESERVED} Passez la fiche dans la section « Bureau » pour l’inviter.` };
+    return { ok: false, status: 403, error: `${MEMBER_AREA_RESERVED} Passez la fiche dans la section « Bureau » ou « Direction artistique » pour l’inviter.` };
   }
   const existing = await findAccountBy(payload, 'musician', musician.id);
   const sameEmail = await findAccountBy(payload, 'email', email);

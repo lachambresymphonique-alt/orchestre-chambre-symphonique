@@ -80,7 +80,7 @@ export async function GET(req: NextRequest) {
     account: publicAccount(account),
     suggestedEmail,
     mailConfigured: mailConfigured(),
-    // Faux hors du bureau : le bouton d'invitation s'efface au profit d'une explication.
+    // Faux hors des sections admises (lib/memberArea) : le bouton d'invitation s'efface au profit d'une explication.
     allowed: memberAreaAllows(musician.section),
     reservedNote: MEMBER_AREA_RESERVED,
   });

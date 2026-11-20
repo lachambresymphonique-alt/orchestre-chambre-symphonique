@@ -57,7 +57,7 @@ export default async function MemberAreaPage({
             <Link href="/">Accueil</Link> / Espace membres
           </p>
           <h1>Espace membres</h1>
-          <p>Membres du bureau : retrouvez ici votre fiche et les documents de l’association.</p>
+          <p>Bureau et direction artistique : retrouvez ici votre fiche et les documents de l’association.</p>
         </div>
       </div>
       <section className="contact-section member-area">

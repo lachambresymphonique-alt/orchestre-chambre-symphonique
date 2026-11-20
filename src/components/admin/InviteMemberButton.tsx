@@ -24,7 +24,7 @@ type State = {
   account: Account | null;
   suggestedEmail: string | null;
   mailConfigured: boolean;
-  /** Faux hors du bureau : l'espace membres de ce site lui est réservé (lib/memberArea). */
+  /** Faux hors du bureau et de la direction : l'espace membres de ce site leur est réservé (lib/memberArea). */
   allowed?: boolean;
   reservedNote?: string;
 };
@@ -125,7 +125,7 @@ export function InviteMemberButton() {
     return (
       <div className="lcs-promote lcs-promote--inline lcs-invite">
         <span className="lcs-invite__status" title={state.reservedNote}>
-          Espace membres réservé au bureau
+          Espace membres réservé au bureau et à la direction
         </span>
       </div>
     );

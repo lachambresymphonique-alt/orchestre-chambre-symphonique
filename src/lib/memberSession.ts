@@ -121,7 +121,7 @@ export const getMemberSession = cache(async (): Promise<MemberSession | null> =>
     if (!account || account.status !== 'actif') return null;
     if ((Number(account.sessionVersion) || 0) !== session.version) return null;
     if (!account.musician || typeof account.musician !== 'object') return null;
-    // Espace réservé au bureau : un compte d'une autre section n'ouvre plus de session.
+    // Espace réservé au bureau et à la direction (lib/memberArea) : un compte d'une autre section n'ouvre plus de session.
     if (!memberAreaAllows(account.musician.section)) return null;
     return { account, musician: account.musician };
   } catch {
