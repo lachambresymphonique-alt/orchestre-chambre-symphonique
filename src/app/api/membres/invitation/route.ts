@@ -82,6 +82,7 @@ export async function GET(req: NextRequest) {
     mailConfigured: mailConfigured(),
     // Faux hors des sections admises (lib/memberArea) : le bouton d'invitation s'efface au profit d'une explication.
     allowed: memberAreaAllows(musician.section),
+    section: musician.section ?? null,
     reservedNote: MEMBER_AREA_RESERVED,
   });
 }

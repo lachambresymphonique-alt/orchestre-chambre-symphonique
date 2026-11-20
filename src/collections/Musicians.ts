@@ -34,7 +34,11 @@ export const Musicians: CollectionConfig = {
       beforeList: ['@/components/admin/MusiciansTabsNav#MusiciansTabsNav'],
       edit: {
         // Accès à l'espace membres (collection Accès membres).
-        beforeDocumentControls: ['@/components/admin/InviteMemberButton#InviteMemberButton'],
+        // Espace membres du site (bureau, direction) ; espace musicien d'Orchestra Manager (pupitres).
+        beforeDocumentControls: [
+          '@/components/admin/InviteMemberButton#InviteMemberButton',
+          '@/components/admin/OrchestraManagerButton#OrchestraManagerButton',
+        ],
       },
     },
   },

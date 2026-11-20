@@ -3,7 +3,9 @@ import { headers } from 'next/headers';
 import { getPayloadClient } from '@/lib/payload';
 import { NEW_MUSICIAN_STATUS } from '@/lib/musicianVisibility';
 import { isAdminUser } from '@/lib/access';
-import { SECTION_VALUES } from '@/lib/musicianForm';
+import { PUPITRE_SECTIONS, SECTION_VALUES } from '@/lib/musicianForm';
+import { inviteToOrchestraManager, omConfigured, splitName } from '@/lib/orchestraManager';
+import { normalizeEmail } from '@/lib/memberInvitations';
 import { linkList, normalizeUrl } from '@/lib/links';
 import { projectList, projectRows } from '@/lib/projects';
 
@@ -193,8 +195,29 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     // Non-blocking: musician was created, status update is best-effort.
   }
 
+  // Espace musicien sur Orchestra Manager : invitation envoyée d'office aux pupitres.
+  // Un échec ne bloque rien : le bouton « Inviter sur Orchestra Manager » de la
+  // fiche affiche l'état et permet de réessayer.
+  let orchestraManager: unknown = null;
+  const email = normalizeEmail(submission.email);
+  if (omConfigured() && email && (PUPITRE_SECTIONS as readonly string[]).includes(section)) {
+    const names = splitName(fullName);
+    try {
+      orchestraManager = await inviteToOrchestraManager({
+        firstName: submission.firstName || names.firstName,
+        lastName: submission.lastName || names.lastName,
+        email,
+        phone: submission.phone || null,
+      });
+    } catch (err) {
+      console.error('Invitation Orchestra Manager à la validation :', err);
+      orchestraManager = { error: (err as Error).message };
+    }
+  }
+
   return NextResponse.json({
     success: true,
+    orchestraManager,
     musicianId: musician.id,
     slug: musician.slug,
     redirectTo: `/admin/collections/musicians/${musician.id}`,

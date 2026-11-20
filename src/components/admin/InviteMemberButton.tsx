@@ -4,6 +4,7 @@ import './admin-theme.css';
 import './admin-member-invite.css';
 import { useCallback, useEffect, useState } from 'react';
 import { ConfirmationModal, useDocumentInfo, useModal } from '@payloadcms/ui';
+import { PUPITRE_SECTIONS } from '@/lib/musicianForm';
 
 /**
  * « Inviter à l'espace membres », à côté de Sauvegarder sur la fiche d'un
@@ -27,7 +28,9 @@ type State = {
   /** Faux hors du bureau et de la direction : l'espace membres de ce site leur est réservé (lib/memberArea). */
   allowed?: boolean;
   reservedNote?: string;
+  section?: string | null;
 };
+
 
 const BUTTON_LABELS: Record<Account['status'] | 'none', string> = {
   none: 'Inviter à l’espace membres',
@@ -122,6 +125,8 @@ export function InviteMemberButton() {
 
   // Fiche hors du bureau : pas d'invitation possible, une simple mention à la place du bouton.
   if (state?.allowed === false) {
+    // Pupitres : leur espace est sur Orchestra Manager (OrchestraManagerButton).
+    if ((PUPITRE_SECTIONS as readonly string[]).includes(state.section ?? '')) return null;
     return (
       <div className="lcs-promote lcs-promote--inline lcs-invite">
         <span className="lcs-invite__status" title={state.reservedNote}>
